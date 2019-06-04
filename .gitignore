@@ -1,0 +1,7 @@
+ 
+Builds/LinuxMakefile/build
+Builds/VisualStudio2017/Debug
+Builds/VisualStudio2017/Release
+Builds/VisualStudio2017/x64
+Builds/VisualStudio2017/*.filters
+Builds/x64

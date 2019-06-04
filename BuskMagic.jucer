@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="C2wpTw" name="BuskMagic" projectType="guiapp" jucerVersion="5.4.3"
+              reportAppUsage="0" displaySplashScreen="0" splashScreenColour="Light"
+              companyWebsite="sauraen.com" companyEmail="sauraen@gmail.com"
+              companyName="Sauraen" companyCopyright="Copyright (C) 2019 Sauraen / Licensed under the GPL3"
+              cppLanguageStandard="14" version="0.01" headerPath="../../src/">
+  <MAINGROUP id="nK6FP9" name="BuskMagic">
+    <GROUP id="{10D6CFA7-0177-1248-18A7-BE991C404BD4}" name="src">
+      <GROUP id="{E2D2E361-BE7B-6D4F-0D41-F7DB50F45452}" name="gui">
+        <FILE id="UvwTXt" name="MIDISetup.cpp" compile="1" resource="0" file="src/gui/MIDISetup.cpp"/>
+        <FILE id="mYeBXE" name="MIDISetup.h" compile="0" resource="0" file="src/gui/MIDISetup.h"/>
+        <FILE id="YywxUI" name="TextListModel.cpp" compile="1" resource="0"
+              file="src/gui/TextListModel.cpp"/>
+        <FILE id="hPHz1t" name="TextListModel.h" compile="0" resource="0" file="src/gui/TextListModel.h"/>
+      </GROUP>
+      <FILE id="k7pcwg" name="MainComponent.h" compile="0" resource="0" file="src/MainComponent.h"/>
+      <FILE id="lAhqSj" name="MainComponent.cpp" compile="1" resource="0"
+            file="src/MainComponent.cpp"/>
+      <FILE id="phqWng" name="Main.cpp" compile="1" resource="0" file="src/Main.cpp"/>
+      <FILE id="titMmb" name="MIDISystem.cpp" compile="1" resource="0" file="src/MIDISystem.cpp"/>
+      <FILE id="Hmf3m6" name="MIDISystem.h" compile="0" resource="0" file="src/MIDISystem.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" osxArchitecture="64BitUniversal"/>
+        <CONFIGURATION isDebug="0" name="Release" osxArchitecture="64BitUniversal"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="external/juce"/>
+        <MODULEPATH id="juce_audio_devices" path="external/juce"/>
+        <MODULEPATH id="juce_core" path="external/juce"/>
+        <MODULEPATH id="juce_data_structures" path="external/juce"/>
+        <MODULEPATH id="juce_events" path="external/juce"/>
+        <MODULEPATH id="juce_graphics" path="external/juce"/>
+        <MODULEPATH id="juce_gui_basics" path="external/juce"/>
+        <MODULEPATH id="juce_gui_extra" path="external/juce"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+    <VS2017 targetFolder="Builds/VisualStudio2017">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" winArchitecture="x64" winWarningLevel="3"
+                       useRuntimeLibDLL="0"/>
+        <CONFIGURATION isDebug="0" name="Release" useRuntimeLibDLL="0" winWarningLevel="3"
+                       winArchitecture="x64"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="external/juce"/>
+        <MODULEPATH id="juce_audio_devices" path="external/juce"/>
+        <MODULEPATH id="juce_core" path="external/juce"/>
+        <MODULEPATH id="juce_data_structures" path="external/juce"/>
+        <MODULEPATH id="juce_events" path="external/juce"/>
+        <MODULEPATH id="juce_graphics" path="external/juce"/>
+        <MODULEPATH id="juce_gui_basics" path="external/juce"/>
+        <MODULEPATH id="juce_gui_extra" path="external/juce"/>
+      </MODULEPATHS>
+    </VS2017>
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="external/juce"/>
+        <MODULEPATH id="juce_audio_devices" path="external/juce"/>
+        <MODULEPATH id="juce_core" path="external/juce"/>
+        <MODULEPATH id="juce_data_structures" path="external/juce"/>
+        <MODULEPATH id="juce_events" path="external/juce"/>
+        <MODULEPATH id="juce_graphics" path="external/juce"/>
+        <MODULEPATH id="juce_gui_basics" path="external/juce"/>
+        <MODULEPATH id="juce_gui_extra" path="external/juce"/>
+      </MODULEPATHS>
+    </LINUX_MAKE>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_devices" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_core" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_data_structures" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_events" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_graphics" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_gui_basics" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_gui_extra" showAllCode="0" useLocalCopy="0" useGlobalPath="0"/>
+  </MODULES>
+  <LIVE_SETTINGS>
+    <LINUX/>
+  </LIVE_SETTINGS>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+</JUCERPROJECT>
