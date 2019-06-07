@@ -229,6 +229,14 @@ MIDISetup::~MIDISetup()
 
 
     //[Destructor]. You can add your own custom destruction code here..
+    lstInDevices = nullptr;
+    lsmInDevices = nullptr;
+    lstInPorts = nullptr;
+    lsmInPorts = nullptr;
+    lstOutDevices = nullptr;
+    lsmOutDevices = nullptr;
+    lstOutPorts = nullptr;
+    lsmOutPorts = nullptr;
     //[/Destructor]
 }
 
@@ -518,3 +526,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

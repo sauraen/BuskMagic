@@ -138,8 +138,10 @@
     <Lib/>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\gui\ArtNetSetup.cpp"/>
     <ClCompile Include="..\..\src\gui\MIDISetup.cpp"/>
     <ClCompile Include="..\..\src\gui\TextListModel.cpp"/>
+    <ClCompile Include="..\..\src\ArtNetSystem.cpp"/>
     <ClCompile Include="..\..\src\MainComponent.cpp"/>
     <ClCompile Include="..\..\src\Main.cpp"/>
     <ClCompile Include="..\..\src\MIDISystem.cpp"/>
@@ -153,8 +155,10 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\gui\ArtNetSetup.h"/>
     <ClInclude Include="..\..\src\gui\MIDISetup.h"/>
     <ClInclude Include="..\..\src\gui\TextListModel.h"/>
+    <ClInclude Include="..\..\src\ArtNetSystem.h"/>
     <ClInclude Include="..\..\src\MainComponent.h"/>
     <ClInclude Include="..\..\src\MIDISystem.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h"/>

@@ -68,8 +68,10 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS_APP := \
+  $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o \
   $(JUCE_OBJDIR)/MIDISetup_7c6b09b2.o \
   $(JUCE_OBJDIR)/TextListModel_35ca1eb4.o \
+  $(JUCE_OBJDIR)/ArtNetSystem_e2a73c9.o \
   $(JUCE_OBJDIR)/MainComponent_dd9a9ece.o \
   $(JUCE_OBJDIR)/Main_36be1979.o \
   $(JUCE_OBJDIR)/MIDISystem_f9013c90.o \
@@ -95,6 +97,11 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(JUCE_LDFLAGS_APP) $(RESOURCES) $(TARGET_ARCH)
 
+$(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o: ../../src/gui/ArtNetSetup.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ArtNetSetup.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
 $(JUCE_OBJDIR)/MIDISetup_7c6b09b2.o: ../../src/gui/MIDISetup.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling MIDISetup.cpp"
@@ -103,6 +110,11 @@ $(JUCE_OBJDIR)/MIDISetup_7c6b09b2.o: ../../src/gui/MIDISetup.cpp
 $(JUCE_OBJDIR)/TextListModel_35ca1eb4.o: ../../src/gui/TextListModel.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling TextListModel.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/ArtNetSystem_e2a73c9.o: ../../src/ArtNetSystem.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ArtNetSystem.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/MainComponent_dd9a9ece.o: ../../src/MainComponent.cpp

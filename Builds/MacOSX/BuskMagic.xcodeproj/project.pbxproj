@@ -49,6 +49,10 @@
 			isa = PBXBuildFile;
 			fileRef = F32C4C6DA3B9375862D89018;
 		};
+		16FBF7251CA38AB7C3B2999F = {
+			isa = PBXBuildFile;
+			fileRef = 0931C17F4AB4A2340A912B7F;
+		};
 		373DBAE866ED8F17906C1266 = {
 			isa = PBXBuildFile;
 			fileRef = B00F8F87CA52FC56D0553BC0;
@@ -56,6 +60,10 @@
 		C7EA9627119D6D6D886D6EB8 = {
 			isa = PBXBuildFile;
 			fileRef = 2FBFF8EE1333B830BF03EC5D;
+		};
+		1B790381B4E8DD68C64B60C6 = {
+			isa = PBXBuildFile;
+			fileRef = 363442D52A030D802F0667D7;
 		};
 		B565100F8B2B765F45847885 = {
 			isa = PBXBuildFile;
@@ -100,6 +108,20 @@
 		CECC169869C34266B4B25F3D = {
 			isa = PBXBuildFile;
 			fileRef = 427353EBFDA1166B7D705B14;
+		};
+		0931C17F4AB4A2340A912B7F = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ArtNetSetup.cpp;
+			path = ../../src/gui/ArtNetSetup.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		09D8B0FDE7FDB19885A49874 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ArtNetSystem.h;
+			path = ../../src/ArtNetSystem.h;
+			sourceTree = "SOURCE_ROOT";
 		};
 		0A70ABDFE06DC9DAF9636F1A = {
 			isa = PBXFileReference;
@@ -157,6 +179,13 @@
 			path = ../../src/gui/TextListModel.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		363442D52A030D802F0667D7 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ArtNetSystem.cpp;
+			path = ../../src/ArtNetSystem.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		427353EBFDA1166B7D705B14 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -183,6 +212,13 @@
 			lastKnownFileType = sourcecode.cpp.objcpp;
 			name = "include_juce_events.mm";
 			path = "../../JuceLibraryCode/include_juce_events.mm";
+			sourceTree = "SOURCE_ROOT";
+		};
+		702B51A655BAB27C38760312 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ArtNetSetup.h;
+			path = ../../src/gui/ArtNetSetup.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		71B5A66ABD804EB8C97E5B88 = {
@@ -321,6 +357,8 @@
 		B7D6698B4B68121DBA2C5C7E = {
 			isa = PBXGroup;
 			children = (
+				0931C17F4AB4A2340A912B7F,
+				702B51A655BAB27C38760312,
 				B00F8F87CA52FC56D0553BC0,
 				8D1240203F285B28C57C55E2,
 				2FBFF8EE1333B830BF03EC5D,
@@ -333,6 +371,8 @@
 			isa = PBXGroup;
 			children = (
 				B7D6698B4B68121DBA2C5C7E,
+				363442D52A030D802F0667D7,
+				09D8B0FDE7FDB19885A49874,
 				89CDB3028D7A3780F7B4DFC9,
 				E27FBABA80566BB825BA8EEC,
 				12708D3BB00C4E063550ED8A,
@@ -625,8 +665,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16FBF7251CA38AB7C3B2999F,
 				373DBAE866ED8F17906C1266,
 				C7EA9627119D6D6D886D6EB8,
+				1B790381B4E8DD68C64B60C6,
 				B565100F8B2B765F45847885,
 				7EE2E61A8CB78EE8ACEB013C,
 				7B1D415BADF2C14F9097CA68,
