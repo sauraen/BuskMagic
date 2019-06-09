@@ -18,6 +18,7 @@
 */
 
 //[Headers] You can add your own extra header files here...
+#include "ArtNetSystem.h"
 //[/Headers]
 
 #include "ArtNetSetup.h"
@@ -52,18 +53,22 @@ ArtNetSetup::ArtNetSetup ()
     lblHeader->setBounds (0, 24, 360, 24);
 
     lblInfo1.reset (new Label ("lblInfo1",
-                               TRANS("Discovered Node: Long Name")));
+                               TRANS("Discovered Node: Long Name\n"
+                               "Device status/diagnostic message")));
     addAndMakeVisible (lblInfo1.get());
     lblInfo1->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblInfo1->setJustificationType (Justification::centredLeft);
+    lblInfo1->setJustificationType (Justification::topLeft);
     lblInfo1->setEditable (false, false, false);
     lblInfo1->setColour (TextEditor::textColourId, Colours::black);
     lblInfo1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblInfo1->setBounds (0, 184, 600, 24);
+    lblInfo1->setBounds (0, 184, 600, 40);
 
     lblInfo2.reset (new Label ("lblInfo2",
-                               TRANS("OEM: 0x0000 (__) | ESTA: 0x4040 (AA) | F/W: 0x0000 | Status: 0x00, 0x00")));
+                               TRANS("OEM: 0x0000 (__)\n"
+                               "ESTA: 0x4040 (AA)\n"
+                               "F/W: 0x0000\n"
+                               "Status: 0x00, 0x00")));
     addAndMakeVisible (lblInfo2.get());
     lblInfo2->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lblInfo2->setJustificationType (Justification::centredLeft);
@@ -71,7 +76,7 @@ ArtNetSetup::ArtNetSetup ()
     lblInfo2->setColour (TextEditor::textColourId, Colours::black);
     lblInfo2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblInfo2->setBounds (0, 208, 600, 24);
+    lblInfo2->setBounds (448, 248, 152, 72);
 
     lblIP.reset (new Label ("lblIP",
                             TRANS("IP:")));
@@ -82,7 +87,7 @@ ArtNetSetup::ArtNetSetup ()
     lblIP->setColour (TextEditor::textColourId, Colours::black);
     lblIP->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblIP->setBounds (0, 280, 32, 24);
+    lblIP->setBounds (0, 224, 32, 24);
 
     txtIP.reset (new TextEditor ("txtIP"));
     addAndMakeVisible (txtIP.get());
@@ -94,7 +99,7 @@ ArtNetSetup::ArtNetSetup ()
     txtIP->setPopupMenuEnabled (true);
     txtIP->setText (TRANS("000.000.000.000"));
 
-    txtIP->setBounds (32, 280, 104, 24);
+    txtIP->setBounds (32, 224, 104, 24);
 
     btnIP.reset (new TextButton ("btnIP"));
     addAndMakeVisible (btnIP.get());
@@ -102,7 +107,7 @@ ArtNetSetup::ArtNetSetup ()
     btnIP->setConnectedEdges (Button::ConnectedOnLeft);
     btnIP->addListener (this);
 
-    btnIP->setBounds (136, 280, 32, 24);
+    btnIP->setBounds (136, 224, 32, 24);
 
     lblUniverseHeader.reset (new Label ("lblUniverseHeader",
                                         TRANS("Net   Sub     Inputs        Outputs")));
@@ -113,7 +118,7 @@ ArtNetSetup::ArtNetSetup ()
     lblUniverseHeader->setColour (TextEditor::textColourId, Colours::black);
     lblUniverseHeader->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblUniverseHeader->setBounds (312, 256, 200, 24);
+    lblUniverseHeader->setBounds (120, 248, 200, 24);
 
     lblUni.reset (new Label ("lblUni",
                              TRANS("Device universes:")));
@@ -124,14 +129,14 @@ ArtNetSetup::ArtNetSetup ()
     lblUni->setColour (TextEditor::textColourId, Colours::black);
     lblUni->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblUni->setBounds (192, 280, 120, 24);
+    lblUni->setBounds (0, 272, 120, 24);
 
     chkMap.reset (new ToggleButton ("new toggle button"));
     addAndMakeVisible (chkMap.get());
     chkMap->setButtonText (TRANS("Map from uni:"));
     chkMap->addListener (this);
 
-    chkMap->setBounds (192, 304, 120, 24);
+    chkMap->setBounds (0, 296, 120, 24);
 
     txtUniNet.reset (new TextEditor ("txtUniNet"));
     addAndMakeVisible (txtUniNet.get());
@@ -143,7 +148,7 @@ ArtNetSetup::ArtNetSetup ()
     txtUniNet->setPopupMenuEnabled (true);
     txtUniNet->setText (TRANS("00"));
 
-    txtUniNet->setBounds (312, 280, 24, 24);
+    txtUniNet->setBounds (120, 272, 24, 24);
 
     lblUniPt1.reset (new Label ("lblUniPt1",
                                 TRANS(".")));
@@ -154,7 +159,7 @@ ArtNetSetup::ArtNetSetup ()
     lblUniPt1->setColour (TextEditor::textColourId, Colours::black);
     lblUniPt1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblUniPt1->setBounds (336, 280, 16, 24);
+    lblUniPt1->setBounds (144, 272, 16, 24);
 
     txtUniSub.reset (new TextEditor ("txtUniSub"));
     addAndMakeVisible (txtUniSub.get());
@@ -166,7 +171,7 @@ ArtNetSetup::ArtNetSetup ()
     txtUniSub->setPopupMenuEnabled (true);
     txtUniSub->setText (TRANS("0"));
 
-    txtUniSub->setBounds (352, 280, 16, 24);
+    txtUniSub->setBounds (160, 272, 16, 24);
 
     lblUniPt2.reset (new Label ("lblUniPt1",
                                 TRANS(".")));
@@ -177,7 +182,7 @@ ArtNetSetup::ArtNetSetup ()
     lblUniPt2->setColour (TextEditor::textColourId, Colours::black);
     lblUniPt2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblUniPt2->setBounds (368, 280, 16, 24);
+    lblUniPt2->setBounds (176, 272, 16, 24);
 
     txtUniInputs.reset (new TextEditor ("txtUniInputs"));
     addAndMakeVisible (txtUniInputs.get());
@@ -189,7 +194,7 @@ ArtNetSetup::ArtNetSetup ()
     txtUniInputs->setPopupMenuEnabled (true);
     txtUniInputs->setText (TRANS("8,9,A,B"));
 
-    txtUniInputs->setBounds (384, 280, 56, 24);
+    txtUniInputs->setBounds (192, 272, 56, 24);
 
     lblUniSlash1.reset (new Label ("lblUniSlash1",
                                    TRANS("/")));
@@ -200,7 +205,7 @@ ArtNetSetup::ArtNetSetup ()
     lblUniSlash1->setColour (TextEditor::textColourId, Colours::black);
     lblUniSlash1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblUniSlash1->setBounds (440, 280, 16, 24);
+    lblUniSlash1->setBounds (248, 272, 16, 24);
 
     txtUniOutputs.reset (new TextEditor ("txtUniOutputs"));
     addAndMakeVisible (txtUniOutputs.get());
@@ -212,7 +217,7 @@ ArtNetSetup::ArtNetSetup ()
     txtUniOutputs->setPopupMenuEnabled (true);
     txtUniOutputs->setText (TRANS("0,1,2,3"));
 
-    txtUniOutputs->setBounds (456, 280, 56, 24);
+    txtUniOutputs->setBounds (264, 272, 56, 24);
 
     txtMapNet.reset (new TextEditor ("txtMapNet"));
     addAndMakeVisible (txtMapNet.get());
@@ -224,7 +229,7 @@ ArtNetSetup::ArtNetSetup ()
     txtMapNet->setPopupMenuEnabled (true);
     txtMapNet->setText (TRANS("00"));
 
-    txtMapNet->setBounds (312, 304, 24, 24);
+    txtMapNet->setBounds (120, 296, 24, 24);
 
     lblUniPt3.reset (new Label ("lblUniPt3",
                                 TRANS(".")));
@@ -235,7 +240,7 @@ ArtNetSetup::ArtNetSetup ()
     lblUniPt3->setColour (TextEditor::textColourId, Colours::black);
     lblUniPt3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblUniPt3->setBounds (336, 304, 16, 24);
+    lblUniPt3->setBounds (144, 296, 16, 24);
 
     txtMapSub.reset (new TextEditor ("txtMapSub"));
     addAndMakeVisible (txtMapSub.get());
@@ -247,7 +252,7 @@ ArtNetSetup::ArtNetSetup ()
     txtMapSub->setPopupMenuEnabled (true);
     txtMapSub->setText (TRANS("0"));
 
-    txtMapSub->setBounds (352, 304, 16, 24);
+    txtMapSub->setBounds (160, 296, 16, 24);
 
     lblUniPt4.reset (new Label ("lblUniPt4",
                                 TRANS(".")));
@@ -258,7 +263,7 @@ ArtNetSetup::ArtNetSetup ()
     lblUniPt4->setColour (TextEditor::textColourId, Colours::black);
     lblUniPt4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblUniPt4->setBounds (368, 304, 16, 24);
+    lblUniPt4->setBounds (176, 296, 16, 24);
 
     txtMapInputs.reset (new TextEditor ("txtMapInputs"));
     addAndMakeVisible (txtMapInputs.get());
@@ -270,7 +275,7 @@ ArtNetSetup::ArtNetSetup ()
     txtMapInputs->setPopupMenuEnabled (true);
     txtMapInputs->setText (TRANS("8,9,A,B"));
 
-    txtMapInputs->setBounds (384, 304, 56, 24);
+    txtMapInputs->setBounds (192, 296, 56, 24);
 
     lblUniSlash2.reset (new Label ("lblUniSlash2",
                                    TRANS("/")));
@@ -281,7 +286,7 @@ ArtNetSetup::ArtNetSetup ()
     lblUniSlash2->setColour (TextEditor::textColourId, Colours::black);
     lblUniSlash2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblUniSlash2->setBounds (440, 304, 16, 24);
+    lblUniSlash2->setBounds (248, 296, 16, 24);
 
     txtMapOutputs.reset (new TextEditor ("txtMapOutputs"));
     addAndMakeVisible (txtMapOutputs.get());
@@ -293,15 +298,15 @@ ArtNetSetup::ArtNetSetup ()
     txtMapOutputs->setPopupMenuEnabled (true);
     txtMapOutputs->setText (TRANS("0,1,2,3"));
 
-    txtMapOutputs->setBounds (456, 304, 56, 24);
+    txtMapOutputs->setBounds (264, 296, 56, 24);
 
     btnChangeUni.reset (new TextButton ("btnChangeUni"));
     addAndMakeVisible (btnChangeUni.get());
-    btnChangeUni->setButtonText (TRANS("Change"));
+    btnChangeUni->setButtonText (TRANS("Ask to Change"));
     btnChangeUni->setConnectedEdges (Button::ConnectedOnLeft);
     btnChangeUni->addListener (this);
 
-    btnChangeUni->setBounds (520, 280, 64, 24);
+    btnChangeUni->setBounds (320, 272, 104, 24);
 
     btnAddDevice.reset (new TextButton ("btnAddDevice"));
     addAndMakeVisible (btnAddDevice.get());
@@ -328,18 +333,7 @@ ArtNetSetup::ArtNetSetup ()
     lblMAC->setColour (TextEditor::textColourId, Colours::black);
     lblMAC->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblMAC->setBounds (0, 256, 168, 24);
-
-    lblInfo3.reset (new Label ("lblInfo2",
-                               TRANS("Node report message")));
-    addAndMakeVisible (lblInfo3.get());
-    lblInfo3->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblInfo3->setJustificationType (Justification::centredLeft);
-    lblInfo3->setEditable (false, false, false);
-    lblInfo3->setColour (TextEditor::textColourId, Colours::black);
-    lblInfo3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    lblInfo3->setBounds (0, 232, 600, 24);
+    lblMAC->setBounds (176, 224, 168, 24);
 
 
     //[UserPreSize]
@@ -361,10 +355,13 @@ ArtNetSetup::ArtNetSetup ()
 
     //[/UserPreSize]
 
-    setSize (600, 330);
+    setSize (600, 322);
 
 
     //[Constructor] You can add your own custom stuff here..
+    chkPoll->setToggleState(ArtNetSystem::IsPolling());
+
+    startTimer(100);
     //[/Constructor]
 }
 
@@ -401,7 +398,6 @@ ArtNetSetup::~ArtNetSetup()
     btnAddDevice = nullptr;
     btnRemoveDevice = nullptr;
     lblMAC = nullptr;
-    lblInfo3 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -440,31 +436,51 @@ void ArtNetSetup::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == chkPoll.get())
     {
         //[UserButtonCode_chkPoll] -- add your button handler code here..
+        ArtNetSystem::EnablePolling(chkPoll->getToggleState());
         //[/UserButtonCode_chkPoll]
     }
     else if (buttonThatWasClicked == btnIP.get())
     {
         //[UserButtonCode_btnIP] -- add your button handler code here..
+        ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(lstDevices->getLastRowSelected());
+        if(dev == nullptr) return;
+        if(dev->mode != ArtNetSystem::ArtNetDevice::Mode::manual) return;
+        dev->ip = IPAddress(txtIP->getText());
         //[/UserButtonCode_btnIP]
     }
     else if (buttonThatWasClicked == chkMap.get())
     {
         //[UserButtonCode_chkMap] -- add your button handler code here..
+        ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(lstDevices->getLastRowSelected());
+        if(dev == nullptr) return;
+        dev->map = chkMap->getToggleState();
         //[/UserButtonCode_chkMap]
     }
     else if (buttonThatWasClicked == btnChangeUni.get())
     {
         //[UserButtonCode_btnChangeUni] -- add your button handler code here..
+        int d = lstDevices->getLastRowSelected();
+        if(d < 0 || d >= ArtNetSystem::NumDevices()) return;
+        int net = txtUniNet->getText().getHexValue32();
+        int subnet = txtUniSub->getText().getHexValue32();
+        uint32_t inuni = ArtNetSystem::ParseUniverseText(txtUniInputs->getText());
+        uint32_t outuni = ArtNetSystem::ParseUniverseText(txtUniOutputs->getText());
+        if(inuni == 0xFFFFFFFF || outuni == 0xFFFFFFFF) return;
+        ArtNetSystem::ChangeDeviceUniverses(d, net, subnet, (uint8_t*)&inuni, (uint8_t*)&outuni);
         //[/UserButtonCode_btnChangeUni]
     }
     else if (buttonThatWasClicked == btnAddDevice.get())
     {
         //[UserButtonCode_btnAddDevice] -- add your button handler code here..
+        ArtNetSystem::AddBlankDevice();
         //[/UserButtonCode_btnAddDevice]
     }
     else if (buttonThatWasClicked == btnRemoveDevice.get())
     {
         //[UserButtonCode_btnRemoveDevice] -- add your button handler code here..
+        int d = lstDevices->getLastRowSelected();
+        if(d < 0 || d >= ArtNetSystem::NumDevices()) return;
+        ArtNetSystem::RemoveDevice(d);
         //[/UserButtonCode_btnRemoveDevice]
     }
 
@@ -475,20 +491,59 @@ void ArtNetSetup::buttonClicked (Button* buttonThatWasClicked)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void ArtNetSetup::rowSelected(TextListModel *parent, int row){
+    if(parent == lsmDevices.get()){
+        //Nothing right now
+    }
+}
 
+void ArtNetSetup::textEditorTextChanged(TextEditor *editorThatWasChanged){
+    ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(lstDevices->getLastRowSelected());
+    if(dev == nullptr) return;
+    String text = editorThatWasChanged->getText();
+    bool isint = isInt(text);
+    int val = text.getIntValue();
+    bool ishex = isHex(text);
+    int hexval = text.getHexValue32();
+    bool turnRed = false;
+    if(editorThatWasChanged == txtMapNet.get()){
+        if(!ishex || hexval < 0 || hexval >= 0x100){
+            turnRed = true;
+        }else{
+            dev->map_net = hexval;
+        }
+    }else if(editorThatWasChanged == txtMapSub.get()){
+        if(!ishex || hexval < 0 || hexval >= 0x10){
+            turnRed = true;
+        }else{
+            dev->map_subnet = hexval;
+        }
+    }else if(editorThatWasChanged == txtMapInputs.get()){
+        uint32_t inputs = ArtNetSystem::ParseUniverseText(text);
+        if(inputs == 0xFFFFFFFF){
+            turnRed = true;
+        }else{
+            *(uint32_t*)&dev->map_inuni[0] = inputs;
+        }
+    }else if(editorThatWasChanged == txtMapOutputs.get()){
+        uint32_t outputs = ArtNetSystem::ParseUniverseText(text);
+        if(outputs == 0xFFFFFFFF){
+            turnRed = true;
+        }else{
+            *(uint32_t*)&dev->map_outuni[0] = outputs;
+        }
+    }
+    if(turnRed){
+        editorThatWasChanged->setColour(TextEditor::backgroundColourId, Colours::red);
+    }else{
+        editorThatWasChanged->setColour(TextEditor::backgroundColourId, Colours::darkgrey);
+    }
+}
 
-
-
-
-void ArtNetSetup::fillDevicesBox(){
+void ArtNetSetup::timerCallback(){
 
 }
-void ArtNetSetup::fillDeviceRow(){
 
-}
-void ArtNetSetup::fillDeviceInfo(){
-
-}
 //[/MiscUserCode]
 
 
@@ -502,10 +557,10 @@ void ArtNetSetup::fillDeviceInfo(){
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ArtNetSetup" componentName=""
-                 parentClasses="public Component, public TextListModel::Listener, public TextEditor::Listener"
+                 parentClasses="public Component, public TextListModel::Listener, public TextEditor::Listener, public Timer"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="600"
-                 initialHeight="330">
+                 initialHeight="322">
   <BACKGROUND backgroundColour="ff323e44"/>
   <TOGGLEBUTTON name="chkPoll" id="7da47f7a98100feb" memberName="chkPoll" virtualName=""
                 explicitFocusOrder="0" pos="0 0 112 24" buttonText="Poll network"
@@ -517,106 +572,107 @@ BEGIN_JUCER_METADATA
          fontname="Default monospaced font" fontsize="15.0" kerning="0.0"
          bold="0" italic="0" justification="33"/>
   <LABEL name="lblInfo1" id="c0173b0f81b41697" memberName="lblInfo1" virtualName=""
-         explicitFocusOrder="0" pos="0 184 600 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Discovered Node: Long Name" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         explicitFocusOrder="0" pos="0 184 600 40" edTextCol="ff000000"
+         edBkgCol="0" labelText="Discovered Node: Long Name&#10;Device status/diagnostic message"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
+         italic="0" justification="9"/>
   <LABEL name="lblInfo2" id="8d04887dd8380ed4" memberName="lblInfo2" virtualName=""
-         explicitFocusOrder="0" pos="0 208 600 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="OEM: 0x0000 (__) | ESTA: 0x4040 (AA) | F/W: 0x0000 | Status: 0x00, 0x00"
+         explicitFocusOrder="0" pos="448 248 152 72" edTextCol="ff000000"
+         edBkgCol="0" labelText="OEM: 0x0000 (__)&#10;ESTA: 0x4040 (AA)&#10;F/W: 0x0000&#10;Status: 0x00, 0x00"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
          italic="0" justification="33"/>
   <LABEL name="lblIP" id="f1f0c1e0d38b0a2c" memberName="lblIP" virtualName=""
-         explicitFocusOrder="0" pos="0 280 32 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="0 224 32 24" edTextCol="ff000000"
          edBkgCol="0" labelText="IP:" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtIP" id="793ba136fbe526f2" memberName="txtIP" virtualName=""
-              explicitFocusOrder="0" pos="32 280 104 24" initialText="000.000.000.000"
+              explicitFocusOrder="0" pos="32 224 104 24" initialText="000.000.000.000"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
   <TEXTBUTTON name="btnIP" id="590a68f0509ca9d9" memberName="btnIP" virtualName=""
-              explicitFocusOrder="0" pos="136 280 32 24" buttonText="Set" connectedEdges="1"
+              explicitFocusOrder="0" pos="136 224 32 24" buttonText="Set" connectedEdges="1"
               needsCallback="1" radioGroupId="0"/>
   <LABEL name="lblUniverseHeader" id="f295d9b0d1b31a34" memberName="lblUniverseHeader"
-         virtualName="" explicitFocusOrder="0" pos="312 256 200 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="120 248 200 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Net   Sub     Inputs        Outputs"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
          italic="0" justification="33"/>
   <LABEL name="lblUni" id="86c1ebc7b4aea96d" memberName="lblUni" virtualName=""
-         explicitFocusOrder="0" pos="192 280 120 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="0 272 120 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Device universes:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="new toggle button" id="c07831b30c342dbc" memberName="chkMap"
-                virtualName="" explicitFocusOrder="0" pos="192 304 120 24" buttonText="Map from uni:"
+                virtualName="" explicitFocusOrder="0" pos="0 296 120 24" buttonText="Map from uni:"
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TEXTEDITOR name="txtUniNet" id="c7845550147bcdf8" memberName="txtUniNet"
-              virtualName="" explicitFocusOrder="0" pos="312 280 24 24" initialText="00"
+              virtualName="" explicitFocusOrder="0" pos="120 272 24 24" initialText="00"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
               caret="1" popupmenu="1"/>
   <LABEL name="lblUniPt1" id="58d603994d4c6271" memberName="lblUniPt1"
-         virtualName="" explicitFocusOrder="0" pos="336 280 16 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="144 272 16 24" edTextCol="ff000000"
          edBkgCol="0" labelText="." editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default monospaced font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtUniSub" id="bd208cff56ac9065" memberName="txtUniSub"
-              virtualName="" explicitFocusOrder="0" pos="352 280 16 24" initialText="0"
+              virtualName="" explicitFocusOrder="0" pos="160 272 16 24" initialText="0"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
               caret="1" popupmenu="1"/>
   <LABEL name="lblUniPt1" id="6354456708acfc6a" memberName="lblUniPt2"
-         virtualName="" explicitFocusOrder="0" pos="368 280 16 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="176 272 16 24" edTextCol="ff000000"
          edBkgCol="0" labelText="." editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default monospaced font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtUniInputs" id="a4dbf1f8ebda57e8" memberName="txtUniInputs"
-              virtualName="" explicitFocusOrder="0" pos="384 280 56 24" initialText="8,9,A,B"
+              virtualName="" explicitFocusOrder="0" pos="192 272 56 24" initialText="8,9,A,B"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
               caret="1" popupmenu="1"/>
   <LABEL name="lblUniSlash1" id="b559a0b72688537" memberName="lblUniSlash1"
-         virtualName="" explicitFocusOrder="0" pos="440 280 16 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="248 272 16 24" edTextCol="ff000000"
          edBkgCol="0" labelText="/" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default monospaced font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtUniOutputs" id="c8e7697cf4782629" memberName="txtUniOutputs"
-              virtualName="" explicitFocusOrder="0" pos="456 280 56 24" initialText="0,1,2,3"
+              virtualName="" explicitFocusOrder="0" pos="264 272 56 24" initialText="0,1,2,3"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
               caret="1" popupmenu="1"/>
   <TEXTEDITOR name="txtMapNet" id="9ba3c0ed36d5af56" memberName="txtMapNet"
-              virtualName="" explicitFocusOrder="0" pos="312 304 24 24" initialText="00"
+              virtualName="" explicitFocusOrder="0" pos="120 296 24 24" initialText="00"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
               caret="1" popupmenu="1"/>
   <LABEL name="lblUniPt3" id="f3be54f9b57e22a3" memberName="lblUniPt3"
-         virtualName="" explicitFocusOrder="0" pos="336 304 16 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="144 296 16 24" edTextCol="ff000000"
          edBkgCol="0" labelText="." editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default monospaced font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtMapSub" id="b6cf960763fda67f" memberName="txtMapSub"
-              virtualName="" explicitFocusOrder="0" pos="352 304 16 24" initialText="0"
+              virtualName="" explicitFocusOrder="0" pos="160 296 16 24" initialText="0"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
               caret="1" popupmenu="1"/>
   <LABEL name="lblUniPt4" id="d043c68ab6557487" memberName="lblUniPt4"
-         virtualName="" explicitFocusOrder="0" pos="368 304 16 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="176 296 16 24" edTextCol="ff000000"
          edBkgCol="0" labelText="." editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default monospaced font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtMapInputs" id="202c159d9d5303e3" memberName="txtMapInputs"
-              virtualName="" explicitFocusOrder="0" pos="384 304 56 24" initialText="8,9,A,B"
+              virtualName="" explicitFocusOrder="0" pos="192 296 56 24" initialText="8,9,A,B"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
               caret="1" popupmenu="1"/>
   <LABEL name="lblUniSlash2" id="f4f2d75537f7f359" memberName="lblUniSlash2"
-         virtualName="" explicitFocusOrder="0" pos="440 304 16 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="248 296 16 24" edTextCol="ff000000"
          edBkgCol="0" labelText="/" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default monospaced font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtMapOutputs" id="cf35c4119449d4d0" memberName="txtMapOutputs"
-              virtualName="" explicitFocusOrder="0" pos="456 304 56 24" initialText="0,1,2,3"
+              virtualName="" explicitFocusOrder="0" pos="264 296 56 24" initialText="0,1,2,3"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="0"
               caret="1" popupmenu="1"/>
   <TEXTBUTTON name="btnChangeUni" id="5ea00af7a01ee815" memberName="btnChangeUni"
-              virtualName="" explicitFocusOrder="0" pos="520 280 64 24" buttonText="Change"
+              virtualName="" explicitFocusOrder="0" pos="320 272 104 24" buttonText="Ask to Change"
               connectedEdges="1" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnAddDevice" id="7ceb28d89a1747a0" memberName="btnAddDevice"
               virtualName="" explicitFocusOrder="0" pos="552 24 23 24" buttonText="+"
@@ -625,13 +681,8 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="576 24 23 24" buttonText="&#8722;"
               connectedEdges="9" needsCallback="1" radioGroupId="0"/>
   <LABEL name="lblMAC" id="6a5bac3590aa317b" memberName="lblMAC" virtualName=""
-         explicitFocusOrder="0" pos="0 256 168 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="176 224 168 24" edTextCol="ff000000"
          edBkgCol="0" labelText="MAC: 00:00:00:00:00:00" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <LABEL name="lblInfo2" id="27dd17b50cc9f8dc" memberName="lblInfo3" virtualName=""
-         explicitFocusOrder="0" pos="0 232 600 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Node report message" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>

@@ -19,6 +19,7 @@
       <FILE id="XoowRq" name="ArtNetSystem.cpp" compile="1" resource="0"
             file="src/ArtNetSystem.cpp"/>
       <FILE id="ofkb2X" name="ArtNetSystem.h" compile="0" resource="0" file="src/ArtNetSystem.h"/>
+      <FILE id="LqBOIb" name="Common.h" compile="0" resource="0" file="src/Common.h"/>
       <FILE id="k7pcwg" name="MainComponent.h" compile="0" resource="0" file="src/MainComponent.h"/>
       <FILE id="lAhqSj" name="MainComponent.cpp" compile="1" resource="0"
             file="src/MainComponent.cpp"/>

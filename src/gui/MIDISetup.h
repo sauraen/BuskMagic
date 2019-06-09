@@ -40,6 +40,7 @@
 */
 
 #include "JuceHeader.h"
+#include "Common.h"
 #include "gui/TextListModel.h"
 //[/Headers]
 

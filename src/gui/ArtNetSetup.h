@@ -20,7 +20,9 @@
 #pragma once
 
 //[Headers]     -- You can add your own extra header files here --
-#include "../../JuceLibraryCode/JuceHeader.h"
+#include "JuceHeader.h"
+#include "Common.h"
+#include "gui/TextListModel.h"
 //[/Headers]
 
 
@@ -36,6 +38,7 @@
 class ArtNetSetup  : public Component,
                      public TextListModel::Listener,
                      public TextEditor::Listener,
+                     public Timer,
                      public Button::Listener
 {
 public:
@@ -45,6 +48,7 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    virtual void timerCallback();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -55,10 +59,6 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    void fillDevicesBox();
-    void fillDeviceRow();
-    void fillDeviceInfo();
-
     std::unique_ptr<TextListModel> lsmDevices;
     std::unique_ptr<ListBox> lstDevices;
     //[/UserVariables]
@@ -92,7 +92,6 @@ private:
     std::unique_ptr<TextButton> btnAddDevice;
     std::unique_ptr<TextButton> btnRemoveDevice;
     std::unique_ptr<Label> lblMAC;
-    std::unique_ptr<Label> lblInfo3;
 
 
     //==============================================================================

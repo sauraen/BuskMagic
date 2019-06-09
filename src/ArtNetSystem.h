@@ -34,14 +34,14 @@ namespace ArtNetSystem {
         
         uint8_t net;
         uint8_t subnet;
-        uint8_t inuni[4];
-        uint8_t outuni[4];
+        uint8_t inuni[4]; //0x7F for not present
+        uint8_t outuni[4]; //0x7F for not present
         
         bool map;
         uint8_t map_net;
         uint8_t map_subnet;
-        uint8_t map_inuni[4];
-        uint8_t map_outuni[4];
+        uint8_t map_inuni[4]; //0x7F for not present
+        uint8_t map_outuni[4]; //0x7F for not present
         
         uint8_t bindindex;
         IPAddress ip;
@@ -72,7 +72,9 @@ namespace ArtNetSystem {
     void AddBlankDevice();
     void RemoveDevice(int d);
     
-    void ChangeDeviceUniverses(int d, uint8_t net, uint8_t subnet, const uint8_t (&inuni)[4], const uint8_t (&outuni)[4]);
+    uint32_t ParseUniverseText(String unitxt);
+    
+    void ChangeDeviceUniverses(int d, uint8_t net, uint8_t subnet, const uint8_t *inuni, const uint8_t *outuni);
     
     void SendDMX512(uint16_t universe, const uint8_t (&buf)[512]);
 }

@@ -263,6 +263,13 @@
 			path = ../../src/gui/MIDISetup.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		9640A05CA7D688309DF158E4 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = Common.h;
+			path = ../../src/Common.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		9B03A3406991FBD0960C1076 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -373,6 +380,7 @@
 				B7D6698B4B68121DBA2C5C7E,
 				363442D52A030D802F0667D7,
 				09D8B0FDE7FDB19885A49874,
+				9640A05CA7D688309DF158E4,
 				89CDB3028D7A3780F7B4DFC9,
 				E27FBABA80566BB825BA8EEC,
 				12708D3BB00C4E063550ED8A,

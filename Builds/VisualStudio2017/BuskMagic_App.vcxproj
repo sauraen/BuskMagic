@@ -159,6 +159,7 @@
     <ClInclude Include="..\..\src\gui\MIDISetup.h"/>
     <ClInclude Include="..\..\src\gui\TextListModel.h"/>
     <ClInclude Include="..\..\src\ArtNetSystem.h"/>
+    <ClInclude Include="..\..\src\Common.h"/>
     <ClInclude Include="..\..\src\MainComponent.h"/>
     <ClInclude Include="..\..\src\MIDISystem.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h"/>

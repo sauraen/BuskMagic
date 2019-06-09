@@ -79,7 +79,9 @@ namespace ArtNetSystem {
     ArtNetDevice::ArtNetDevice() : mode(Mode::manual), style(Style::node),
         inuni({0xFF, 0xFF, 0xFF, 0xFF}), outuni({0xFF, 0xFF, 0xFF, 0xFF}),
         map(false), bindindex(0), 
-        shortname("<unset>"), longname("<unset>"), nodereport("<status>") {}
+        shortname("<Device short name>"), 
+        longname("<Device long name>"), 
+        nodereport("<Device status/diagnostic message>") {}
     
     void Init(){
         //TODO
@@ -108,5 +110,24 @@ namespace ArtNetSystem {
     }
     void RemoveDevice(int d){
         devices.remove(d);
+    }
+    
+    uint32_t ParseUniverseText(String unitxt){
+        StringArray unis = StringArray::fromTokens(unitxt, ",", "");
+        if(unis.size() != 4) return 0xFFFFFFF;
+        uint32_t ret = 0, thisuni;
+        for(int i=0; i<4; ++i){
+            String str = unis[i].trim();
+            if(str == "-"){
+                thisuni = 0x7F;
+            }else if(isHex(str, false)){
+                thisuni = str.getHexValue32();
+                if(thisuni >= 0x10) return 0xFFFFFFFF;
+            }else{
+                return 0xFFFFFFFF;
+            }
+            ret |= (thisuni << (i << 3));
+        }
+        return ret;
     }
 }
