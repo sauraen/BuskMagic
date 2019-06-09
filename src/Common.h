@@ -50,3 +50,19 @@ inline bool isHex(String str, bool allow0x = true){
     }
     return true;
 }
+
+template<typename INT_TYPE> inline String hex(INT_TYPE i, int bits){
+    String ret;
+    while(bits > 0){
+        char nybble = i & 0xF;
+        if(nybble <= 9) ret = String((char)('0' + nybble)) + ret;
+        else ret = String((char)('A' + (nybble - 0xA))) + ret;
+        i >>= 4;
+        bits -= 4;
+    }
+    return ret;
+}
+
+inline String hex(uint8_t i) { return hex(i, 8); }
+inline String hex(uint16_t i) { return hex(i, 16); }
+inline String hex(uint32_t i) { return hex(i, 32); }

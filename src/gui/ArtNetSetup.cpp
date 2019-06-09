@@ -65,10 +65,11 @@ ArtNetSetup::ArtNetSetup ()
     lblInfo1->setBounds (0, 184, 600, 40);
 
     lblInfo2.reset (new Label ("lblInfo2",
-                               TRANS("OEM: 0x0000 (__)\n"
+                               TRANS("OEM: 0x0000\n"
                                "ESTA: 0x4040 (AA)\n"
                                "F/W: 0x0000\n"
-                               "Status: 0x00, 0x00")));
+                               "Status: 0x00, 0x00\n"
+                               "DMX Seq: 0x01")));
     addAndMakeVisible (lblInfo2.get());
     lblInfo2->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lblInfo2->setJustificationType (Justification::centredLeft);
@@ -76,7 +77,7 @@ ArtNetSetup::ArtNetSetup ()
     lblInfo2->setColour (TextEditor::textColourId, Colours::black);
     lblInfo2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblInfo2->setBounds (448, 248, 152, 72);
+    lblInfo2->setBounds (448, 224, 152, 96);
 
     lblIP.reset (new Label ("lblIP",
                             TRANS("IP:")));
@@ -359,7 +360,7 @@ ArtNetSetup::ArtNetSetup ()
 
 
     //[Constructor] You can add your own custom stuff here..
-    chkPoll->setToggleState(ArtNetSystem::IsPolling());
+    chkPoll->setToggleState(ArtNetSystem::IsPolling(), dontSendNotification);
 
     startTimer(100);
     //[/Constructor]
@@ -454,6 +455,10 @@ void ArtNetSetup::buttonClicked (Button* buttonThatWasClicked)
         ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(lstDevices->getLastRowSelected());
         if(dev == nullptr) return;
         dev->map = chkMap->getToggleState();
+        txtMapNet->setEnabled(dev->map);
+        txtMapSub->setEnabled(dev->map);
+        txtMapInputs->setEnabled(dev->map);
+        txtMapOutputs->setEnabled(dev->map);
         //[/UserButtonCode_chkMap]
     }
     else if (buttonThatWasClicked == btnChangeUni.get())
@@ -493,39 +498,53 @@ void ArtNetSetup::buttonClicked (Button* buttonThatWasClicked)
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void ArtNetSetup::rowSelected(TextListModel *parent, int row){
     if(parent == lsmDevices.get()){
-        //Nothing right now
+        ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(lstDevices->getLastRowSelected());
+        if(dev == nullptr) return;
+        txtIP->setText(dev->ip.toString());
+        bool ipChangeEnabled = dev->mode == ArtNetSystem::ArtNetDevice::Mode::manual;
+        txtIP->setEnabled(ipChangeEnabled);
+        btnIP->setEnabled(ipChangeEnabled);
+        chkMap->setToggleState(dev->map, dontSendNotification);
+        txtMapNet->setEnabled(dev->map);
+        txtMapSub->setEnabled(dev->map);
+        txtMapInputs->setEnabled(dev->map);
+        txtMapOutputs->setEnabled(dev->map);
+        txtMapNet->setText(hex(dev->map_net));
+        txtMapSub->setText(hex(dev->map_subnet, 4));
+        txtMapInputs->setText(ArtNetSystem::GetUniverseText(&dev->map_inuni[0]));
+        txtMapOutputs->setText(ArtNetSystem::GetUniverseText(&dev->map_outuni[0]));
     }
 }
 
-void ArtNetSetup::textEditorTextChanged(TextEditor *editorThatWasChanged){
+void ArtNetSetup::textEditorTextChanged(TextEditor &editorThatWasChanged){
     ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(lstDevices->getLastRowSelected());
     if(dev == nullptr) return;
-    String text = editorThatWasChanged->getText();
+    String text = editorThatWasChanged.getText();
     bool isint = isInt(text);
     int val = text.getIntValue();
     bool ishex = isHex(text);
     int hexval = text.getHexValue32();
     bool turnRed = false;
-    if(editorThatWasChanged == txtMapNet.get()){
+    if(&editorThatWasChanged == txtMapNet.get()){
         if(!ishex || hexval < 0 || hexval >= 0x100){
             turnRed = true;
         }else{
             dev->map_net = hexval;
         }
-    }else if(editorThatWasChanged == txtMapSub.get()){
+    }else if(&editorThatWasChanged == txtMapSub.get()){
         if(!ishex || hexval < 0 || hexval >= 0x10){
             turnRed = true;
         }else{
             dev->map_subnet = hexval;
         }
-    }else if(editorThatWasChanged == txtMapInputs.get()){
+    }else if(&editorThatWasChanged == txtMapInputs.get()){
         uint32_t inputs = ArtNetSystem::ParseUniverseText(text);
         if(inputs == 0xFFFFFFFF){
             turnRed = true;
         }else{
             *(uint32_t*)&dev->map_inuni[0] = inputs;
         }
-    }else if(editorThatWasChanged == txtMapOutputs.get()){
+    }else if(&editorThatWasChanged == txtMapOutputs.get()){
         uint32_t outputs = ArtNetSystem::ParseUniverseText(text);
         if(outputs == 0xFFFFFFFF){
             turnRed = true;
@@ -534,14 +553,46 @@ void ArtNetSetup::textEditorTextChanged(TextEditor *editorThatWasChanged){
         }
     }
     if(turnRed){
-        editorThatWasChanged->setColour(TextEditor::backgroundColourId, Colours::red);
+        editorThatWasChanged.setColour(TextEditor::backgroundColourId, Colours::red);
     }else{
-        editorThatWasChanged->setColour(TextEditor::backgroundColourId, Colours::darkgrey);
+        editorThatWasChanged.setColour(TextEditor::backgroundColourId, Colours::darkgrey);
     }
 }
 
 void ArtNetSetup::timerCallback(){
-
+    bool updateList = lsmDevices->getNumRows() != ArtNetSystem::NumDevices();
+    int d = lstDevices->getLastRowSelected();
+    int i;
+    for(i=0; i<ArtNetSystem::NumDevices(); ++i){
+        String str = ArtNetSystem::GetDevice(i)->GetTableRow();
+        if(lsmDevices->getNumRows() <= i) lsmDevices->add(str);
+        else lsmDevices->set(i, str);
+        lstDevices->repaintRow(i);
+    }
+    for(; i<lsmDevices->getNumRows();){
+        lsmDevices->remove(i);
+    }
+    if(updateList){
+        lstDevices->updateContent();
+        if(d < ArtNetSystem::NumDevices()) lstDevices->selectRow(d);
+    }
+    if(d < 0 || d >= ArtNetSystem::NumDevices()) return;
+    ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(d);
+    lblInfo1->setText(dev->GetLongDescription() + "\n" + dev->nodereport, dontSendNotification);
+    lblInfo2->setText("OEM: 0x" + hex(dev->oem) + "\n"
+                    + "ESTA: 0x" + hex(dev->esta) + " (" + String((char)(dev->esta & 0xFF)) + String((char)(dev->esta >> 8)) + ")\n"
+                    + "F/W: 0x" + hex(dev->fw) + "\n"
+                    + "Status: 0x" + hex(dev->status[0]) + ", 0x" + hex(dev->status[1]) + "\n"
+                    + "DMX Seq: 0x" + hex(dev->artdmx_sequence), dontSendNotification);
+    lblMAC->setText(dev->mac.toString(":"), dontSendNotification);
+    if(!txtUniNet->hasKeyboardFocus(false) && !txtUniSub->hasKeyboardFocus(false)
+            && !txtUniInputs->hasKeyboardFocus(false) && !txtUniOutputs->hasKeyboardFocus(false)
+            && !btnChangeUni->hasKeyboardFocus(false)){
+        txtUniNet->setText(hex(dev->net));
+        txtUniSub->setText(hex(dev->subnet, 4));
+        txtUniInputs->setText(ArtNetSystem::GetUniverseText(&dev->inuni[0]));
+        txtUniOutputs->setText(ArtNetSystem::GetUniverseText(&dev->outuni[0]));
+    }
 }
 
 //[/MiscUserCode]
@@ -578,8 +629,8 @@ BEGIN_JUCER_METADATA
          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
          italic="0" justification="9"/>
   <LABEL name="lblInfo2" id="8d04887dd8380ed4" memberName="lblInfo2" virtualName=""
-         explicitFocusOrder="0" pos="448 248 152 72" edTextCol="ff000000"
-         edBkgCol="0" labelText="OEM: 0x0000 (__)&#10;ESTA: 0x4040 (AA)&#10;F/W: 0x0000&#10;Status: 0x00, 0x00"
+         explicitFocusOrder="0" pos="448 224 152 96" edTextCol="ff000000"
+         edBkgCol="0" labelText="OEM: 0x0000&#10;ESTA: 0x4040 (AA)&#10;F/W: 0x0000&#10;Status: 0x00, 0x00&#10;DMX Seq: 0x01"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
          italic="0" justification="33"/>

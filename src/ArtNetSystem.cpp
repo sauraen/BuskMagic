@@ -18,6 +18,8 @@
 
 #include "ArtNetSystem.h"
 
+#include <cstring>
+
 namespace ArtNetSystem {
 
     String ArtNetDevice::GetTableRow(){
@@ -77,31 +79,17 @@ namespace ArtNetSystem {
     }
     
     ArtNetDevice::ArtNetDevice() : mode(Mode::manual), style(Style::node),
-        inuni({0xFF, 0xFF, 0xFF, 0xFF}), outuni({0xFF, 0xFF, 0xFF, 0xFF}),
-        map(false), bindindex(0), 
+        inuni{0xFF, 0xFF, 0xFF, 0xFF}, outuni{0xFF, 0xFF, 0xFF, 0xFF},
+        map(false), bindindex(0), artdmx_sequence(1),
         shortname("<Device short name>"), 
         longname("<Device long name>"), 
         nodereport("<Device status/diagnostic message>") {}
-    
-    void Init(){
-        //TODO
-    }
-    void Finalize(){
-        //TODO
-    }
-    
-    void Load(ValueTree v){
-        //TODO
-    }
-    ValueTree Save(){
-        //TODO
-    }
     
     static bool polling;
     bool IsPolling() { return polling; }
     void EnablePolling(bool enabled) { polling = enabled; /*TODO timer*/ }
     
-    OwnedArray<ArtNetDevice> devices;
+    static OwnedArray<ArtNetDevice> devices;
     int NumDevices() { return devices.size(); }
     ArtNetDevice *GetDevice(int d) { return devices[d]; }
     
@@ -130,4 +118,93 @@ namespace ArtNetSystem {
         }
         return ret;
     }
+    String GetUniverseText(const uint8_t *uni){
+        String ret;
+        for(int i=0; i<4; ++i){
+            if(uni[i] == 0x7F){
+                ret += "-";
+            }else if(uni[i] <= 0x0F){
+                ret += hex(uni[i], 4);
+            }else{
+                ret += "E";
+            }
+            if(i != 3) ret += ",";
+        }
+        return ret;
+    }
+    
+    static void SendArtNet(IPAddress dest, uint16_t opcode, const uint8_t *data, size_t len){
+        uint8_t *buf = new uint8_t[12+len];
+        sprintf((char*)buf, "Art-Net");
+        buf[7] = 0;
+        *(uint16_t*)&buf[8] = opcode;
+        buf[10] = 0;
+        buf[11] = 14;
+        memcpy(&buf[12], data, len);
+        //TODO actually send
+        delete[] buf;
+    }
+    
+    void ChangeDeviceUniverses(int d, uint8_t net, uint8_t subnet, 
+        const uint8_t *inuni, const uint8_t *outuni){
+        ArtNetDevice *dev = devices[d];
+        if(dev == nullptr) return;
+        uint8_t *data = new uint8_t[95];
+        data[0] = 0x80 | net;
+        data[1] = dev->bindindex;
+        memset(&data[2], 0, 18+64); //Short name and long name
+        for(int i=0; i<4; ++i){
+            data[84+i] = 0x80 | inuni[i];
+            data[88+i] = 0x80 | outuni[i];
+        }
+        data[92] = 0x80 | subnet;
+        data[93] = 0; //SwVideo, reserved
+        data[94] = 0; //Command
+        SendArtNet(dev->ip, 0x6000, data, 95);
+    }
+    
+    void SendDMX512(uint16_t universe, const uint8_t *buf512){
+        for(int d=0; d<devices.size(); ++d){
+            ArtNetDevice *dev = devices[d];
+            uint8_t uni = universe & 0xF;
+            bool flag = false;
+            if(dev->map){
+                if(dev->map_net != universe >> 8) continue;
+                if(dev->map_subnet != (universe >> 4) & 0xF) continue;
+                for(int i=0; i<4; ++i) if(dev->map_outuni[i] == uni) flag = true;
+            }else{
+                if(dev->net != universe >> 8) continue;
+                if(dev->subnet != (universe >> 4) & 0xF) continue;
+                for(int i=0; i<4; ++i) if(dev->outuni[i] == uni) flag = true;
+            }
+            if(!flag) continue;
+            uint8_t *data = new uint8_t[518];
+            data[0] = dev->artdmx_sequence;
+            ++dev->artdmx_sequence;
+            if(dev->artdmx_sequence == 0) dev->artdmx_sequence = 1;
+            data[1] = 0; //Physical
+            data[2] = universe & 0xFF;
+            data[3] = universe >> 8;
+            data[4] = 0x02; //LengthHi, 512
+            data[5] = 0x00; //Length, 512
+            memcpy(&data[6], buf512, 512);
+            SendArtNet(dev->ip, 0x5000, data, 518);
+        }
+    }
+    
+    void Init(){
+        //TODO
+    }
+    void Finalize(){
+        //TODO
+    }
+    
+    void Load(ValueTree v){
+        //TODO
+    }
+    ValueTree Save(){
+        //TODO
+        return ValueTree();
+    }
+    
 }

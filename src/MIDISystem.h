@@ -18,6 +18,7 @@
 
 #pragma once
 #include "JuceHeader.h"
+#include "Common.h"
 
 namespace MIDISystem {
     void Init();

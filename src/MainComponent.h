@@ -19,6 +19,7 @@
 #pragma once
 
 #include "JuceHeader.h"
+#include "Common.h"
 
 class MainComponent : public Component {
 public:

@@ -48,7 +48,10 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    virtual void timerCallback();
+    void timerCallback() override;
+
+    void rowSelected(TextListModel *parent, int row) override;
+    void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
     //[/UserMethods]
 
     void paint (Graphics& g) override;
