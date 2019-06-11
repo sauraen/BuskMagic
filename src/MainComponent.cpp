@@ -18,10 +18,11 @@
 
 #include "MainComponent.h"
 #include "gui/MIDISetup.h"
+#include "gui/ArtNetSetup.h"
 
 MainComponent::MainComponent(){
-    addAndMakeVisible(new MIDISetup());
-    setSize (600, 400);
+    addAndMakeVisible(new ArtNetSetup());
+    setSize (600, 800);
 }
 
 MainComponent::~MainComponent(){

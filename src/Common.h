@@ -54,9 +54,9 @@ inline bool isHex(String str, bool allow0x = true){
 template<typename INT_TYPE> inline String hex(INT_TYPE i, int bits){
     String ret;
     while(bits > 0){
-        char nybble = i & 0xF;
-        if(nybble <= 9) ret = String((char)('0' + nybble)) + ret;
-        else ret = String((char)('A' + (nybble - 0xA))) + ret;
+        uint8_t nybble = i & 0xF;
+        if(nybble <= 9) ret = String::charToString('0' + nybble) + ret;
+        else ret = String::charToString('A' + nybble - 0xA) + ret;
         i >>= 4;
         bits -= 4;
     }
@@ -66,3 +66,8 @@ template<typename INT_TYPE> inline String hex(INT_TYPE i, int bits){
 inline String hex(uint8_t i) { return hex(i, 8); }
 inline String hex(uint16_t i) { return hex(i, 16); }
 inline String hex(uint32_t i) { return hex(i, 32); }
+
+inline String safeASCII(char c){
+    if(c >= ' ' && c <= '~') return String::charToString(c);
+    return "_";
+}

@@ -37,22 +37,22 @@ namespace ArtNetSystem {
         else if(style == Style::config)     ret += "C";
         else if(style == Style::visual)     ret += "V";
         else                                ret += "X";
-        ret += String::formatted(" %3d.%3d.%3d.%3d ", 
+        ret += String::formatted(" %03d.%03d.%03d.%03d ", 
             ip.address[0], ip.address[1], ip.address[2], ip.address[3]);
-        ret += String::toHexString(bindindex) + " ";
-        ret += String::toHexString(map ? map_net : net) + ".";
-        ret += String::toHexString(map ? map_subnet : subnet) + " ";
+        ret += hex(bindindex) + " ";
+        ret += hex(map ? map_net : net) + ".";
+        ret += hex(map ? map_subnet : subnet, 4) + " ";
         for(int i=0; i<4; ++i){
             uint8_t u = map ? map_inuni[i] : inuni[i];
             if(u > 0x0F) ret += "-";
-            else ret += String::toHexString(u);
+            else ret += hex(u, 4);
             if(i != 3) ret += ",";
         }
         ret += "/";
         for(int i=0; i<4; ++i){
             uint8_t u = map ? map_outuni[i] : outuni[i];
             if(u > 0x0F) ret += "-";
-            else ret += String::toHexString(u);
+            else ret += hex(u, 4);
             if(i != 3) ret += ",";
         }
         ret += " " + shortname;
@@ -79,15 +79,14 @@ namespace ArtNetSystem {
     }
     
     ArtNetDevice::ArtNetDevice() : mode(Mode::manual), style(Style::node),
-        inuni{0xFF, 0xFF, 0xFF, 0xFF}, outuni{0xFF, 0xFF, 0xFF, 0xFF},
-        map(false), bindindex(0), artdmx_sequence(1),
+        status{0xFF, 0xFF}, oem(0x0000), esta(0x4F4E), fw(0x0000),
+        net(0x00), subnet(0x0), map_net(0x00), map_subnet(0x0), map(false), 
+        inuni{0x7F, 0x7F, 0x7F, 0x7F}, outuni{0x7F, 0x7F, 0x7F, 0x7F},
+        map_inuni{0x7F, 0x7F, 0x7F, 0x7F}, map_outuni{0x7F, 0x7F, 0x7F, 0x7F},
+        bindindex(0), artdmx_sequence(1),
         shortname("<Device short name>"), 
         longname("<Device long name>"), 
-        nodereport("<Device status/diagnostic message>") {}
-    
-    static bool polling;
-    bool IsPolling() { return polling; }
-    void EnablePolling(bool enabled) { polling = enabled; /*TODO timer*/ }
+        nodereport("(Have not received ArtPollReply from this device)") {}
     
     static OwnedArray<ArtNetDevice> devices;
     int NumDevices() { return devices.size(); }
@@ -102,7 +101,7 @@ namespace ArtNetSystem {
     
     uint32_t ParseUniverseText(String unitxt){
         StringArray unis = StringArray::fromTokens(unitxt, ",", "");
-        if(unis.size() != 4) return 0xFFFFFFF;
+        if(unis.size() != 4) return 0xFFFFFFFF;
         uint32_t ret = 0, thisuni;
         for(int i=0; i<4; ++i){
             String str = unis[i].trim();
@@ -133,6 +132,37 @@ namespace ArtNetSystem {
         return ret;
     }
     
+    static DatagramSocket *sock = nullptr;
+    
+    class ArtNetReceiver : public Thread {
+    public:
+        ArtNetReceiver() : Thread("ArtNetReceiver") {}
+        virtual ~ArtNetReceiver() {}
+        virtual void run() override {
+            const size_t maxpacketsize = 1024;
+            uint8_t *packetbuf = new uint8_t[maxpacketsize];
+            while(!threadShouldExit()){
+                while(!threadShouldExit() && sock->waitUntilReady(true, 1) == 0);
+                IPAddress senderIP; int port;
+                int readbytes = sock->read(packetbuf, maxpacketsize, false, senderIP, port);
+                if(readbytes <= 0){
+                    std::cout << "ArtNetSystem receive error!\n";
+                    continue;
+                }
+                if(port != 0x1936){
+                    std::cout << "ArtNetSystem received data on wrong port!\n";
+                    continue;
+                }
+                //TODO
+            }
+        }
+    };
+    static ArtNetReceiver *receiver = nullptr;
+    
+    static bool polling;
+    bool IsPolling() { return polling; }
+    void EnablePolling(bool enabled) { polling = enabled; /*TODO timer*/ }
+    
     static void SendArtNet(IPAddress dest, uint16_t opcode, const uint8_t *data, size_t len){
         uint8_t *buf = new uint8_t[12+len];
         sprintf((char*)buf, "Art-Net");
@@ -141,7 +171,18 @@ namespace ArtNetSystem {
         buf[10] = 0;
         buf[11] = 14;
         memcpy(&buf[12], data, len);
-        //TODO actually send
+        assert(sock != nullptr);
+        int res = sock->waitUntilReady(false, 5);
+        if(res != 1){
+            std::cout << "Socket not ready to write!\n";
+        }else{
+            res = sock->write(dest, 0x1936, buf, 12+len);
+            if(res <= 0){
+                std::cout << "Error sending packet!\n";
+            }else if(res != 12+len){
+                std::cout << "Failed to send whole packet!\n";
+            }
+        }
         delete[] buf;
     }
     
@@ -157,7 +198,7 @@ namespace ArtNetSystem {
             data[84+i] = 0x80 | inuni[i];
             data[88+i] = 0x80 | outuni[i];
         }
-        data[92] = 0x80 | subnet;
+        data[92] = 0x80 | (subnet & 0xF);
         data[93] = 0; //SwVideo, reserved
         data[94] = 0; //Command
         SendArtNet(dev->ip, 0x6000, data, 95);
@@ -184,7 +225,7 @@ namespace ArtNetSystem {
             if(dev->artdmx_sequence == 0) dev->artdmx_sequence = 1;
             data[1] = 0; //Physical
             data[2] = universe & 0xFF;
-            data[3] = universe >> 8;
+            data[3] = (universe >> 8) & 0x7F;
             data[4] = 0x02; //LengthHi, 512
             data[5] = 0x00; //Length, 512
             memcpy(&data[6], buf512, 512);
@@ -193,10 +234,21 @@ namespace ArtNetSystem {
     }
     
     void Init(){
-        //TODO
+        if(sock != nullptr){
+            std::cout << "ArtNetSystem already initted!\n";
+            return;
+        }
+        sock = new DatagramSocket(true);
+        sock->bindToPort(0x1936);
+        sock->setEnablePortReuse(true);
+        receiver = new ArtNetReceiver();
+        receiver->startThread();
     }
     void Finalize(){
-        //TODO
+        receiver->stopThread(10);
+        delete receiver; receiver = nullptr;
+        sock->shutdown();
+        delete sock; sock = nullptr;
     }
     
     void Load(ValueTree v){

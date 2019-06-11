@@ -42,7 +42,7 @@ ArtNetSetup::ArtNetSetup ()
     chkPoll->setBounds (0, 0, 112, 24);
 
     lblHeader.reset (new Label ("lblHeader",
-                                TRANS("M S IP Address      BI NT S IN   OUT  NAME")));
+                                TRANS("M S IP Address     BI NT.S.  IN   /  OUT   NAME")));
     addAndMakeVisible (lblHeader.get());
     lblHeader->setFont (Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain));
     lblHeader->setJustificationType (Justification::centredLeft);
@@ -349,6 +349,10 @@ ArtNetSetup::ArtNetSetup ()
     lstDevices->setOutlineThickness(1);
     lstDevices->setColour(ListBox::outlineColourId, Colours::lightgrey);
 
+    txtUniNet->addListener(this);
+    txtUniSub->addListener(this);
+    txtUniInputs->addListener(this);
+    txtUniOutputs->addListener(this);
     txtMapNet->addListener(this);
     txtMapSub->addListener(this);
     txtMapInputs->addListener(this);
@@ -360,6 +364,8 @@ ArtNetSetup::ArtNetSetup ()
 
 
     //[Constructor] You can add your own custom stuff here..
+    ArtNetSystem::Init(); //TODO move this to main
+    
     chkPoll->setToggleState(ArtNetSystem::IsPolling(), dontSendNotification);
 
     startTimer(100);
@@ -404,6 +410,8 @@ ArtNetSetup::~ArtNetSetup()
     //[Destructor]. You can add your own custom destruction code here..
     lstDevices = nullptr;
     lsmDevices = nullptr;
+    
+    ArtNetSystem::Finalize();
     //[/Destructor]
 }
 
@@ -466,8 +474,14 @@ void ArtNetSetup::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_btnChangeUni] -- add your button handler code here..
         int d = lstDevices->getLastRowSelected();
         if(d < 0 || d >= ArtNetSystem::NumDevices()) return;
-        int net = txtUniNet->getText().getHexValue32();
-        int subnet = txtUniSub->getText().getHexValue32();
+        String str = txtUniNet->getText();
+        if(!isHex(str)) return;
+        int net = str.getHexValue32();
+        if(net < 0 || net >= 0x80) return;
+        str = txtUniSub->getText();
+        if(!isHex(str)) return;
+        int subnet = str.getHexValue32();
+        if(subnet < 0 || subnet >= 0x10) return;
         uint32_t inuni = ArtNetSystem::ParseUniverseText(txtUniInputs->getText());
         uint32_t outuni = ArtNetSystem::ParseUniverseText(txtUniOutputs->getText());
         if(inuni == 0xFFFFFFFF || outuni == 0xFFFFFFFF) return;
@@ -524,9 +538,10 @@ void ArtNetSetup::textEditorTextChanged(TextEditor &editorThatWasChanged){
     int val = text.getIntValue();
     bool ishex = isHex(text);
     int hexval = text.getHexValue32();
+    uint32_t unis = ArtNetSystem::ParseUniverseText(text);
     bool turnRed = false;
     if(&editorThatWasChanged == txtMapNet.get()){
-        if(!ishex || hexval < 0 || hexval >= 0x100){
+        if(!ishex || hexval < 0 || hexval >= 0x80){
             turnRed = true;
         }else{
             dev->map_net = hexval;
@@ -538,18 +553,32 @@ void ArtNetSetup::textEditorTextChanged(TextEditor &editorThatWasChanged){
             dev->map_subnet = hexval;
         }
     }else if(&editorThatWasChanged == txtMapInputs.get()){
-        uint32_t inputs = ArtNetSystem::ParseUniverseText(text);
-        if(inputs == 0xFFFFFFFF){
+        if(unis == 0xFFFFFFFF){
             turnRed = true;
         }else{
-            *(uint32_t*)&dev->map_inuni[0] = inputs;
+            *(uint32_t*)&dev->map_inuni[0] = unis;
         }
     }else if(&editorThatWasChanged == txtMapOutputs.get()){
-        uint32_t outputs = ArtNetSystem::ParseUniverseText(text);
-        if(outputs == 0xFFFFFFFF){
+        if(unis == 0xFFFFFFFF){
             turnRed = true;
         }else{
-            *(uint32_t*)&dev->map_outuni[0] = outputs;
+            *(uint32_t*)&dev->map_outuni[0] = unis;
+        }
+    }else if(&editorThatWasChanged == txtUniNet.get()){
+        if(!ishex || hexval < 0 || hexval >= 0x80){
+            turnRed = true;
+        }
+    }else if(&editorThatWasChanged == txtUniSub.get()){
+        if(!ishex || hexval < 0 || hexval >= 0x10){
+            turnRed = true;
+        }
+    }else if(&editorThatWasChanged == txtUniInputs.get()){
+        if(unis == 0xFFFFFFFF){
+            turnRed = true;
+        }
+    }else if(&editorThatWasChanged == txtUniOutputs.get()){
+        if(unis == 0xFFFFFFFF){
+            turnRed = true;
         }
     }
     if(turnRed){
@@ -580,7 +609,7 @@ void ArtNetSetup::timerCallback(){
     ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(d);
     lblInfo1->setText(dev->GetLongDescription() + "\n" + dev->nodereport, dontSendNotification);
     lblInfo2->setText("OEM: 0x" + hex(dev->oem) + "\n"
-                    + "ESTA: 0x" + hex(dev->esta) + " (" + String((char)(dev->esta & 0xFF)) + String((char)(dev->esta >> 8)) + ")\n"
+                    + "ESTA: 0x" + hex(dev->esta) + " (" + safeASCII(dev->esta & 0xFF) + safeASCII(dev->esta >> 8) + ")\n"
                     + "F/W: 0x" + hex(dev->fw) + "\n"
                     + "Status: 0x" + hex(dev->status[0]) + ", 0x" + hex(dev->status[1]) + "\n"
                     + "DMX Seq: 0x" + hex(dev->artdmx_sequence), dontSendNotification);
@@ -618,7 +647,7 @@ BEGIN_JUCER_METADATA
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="1"/>
   <LABEL name="lblHeader" id="7366d591fbb23722" memberName="lblHeader"
          virtualName="" explicitFocusOrder="0" pos="0 24 360 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="M S IP Address      BI NT S IN   OUT  NAME"
+         edBkgCol="0" labelText="M S IP Address     BI NT.S.  IN   /  OUT   NAME"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default monospaced font" fontsize="15.0" kerning="0.0"
          bold="0" italic="0" justification="33"/>
