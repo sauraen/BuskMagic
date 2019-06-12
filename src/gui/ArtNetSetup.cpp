@@ -33,14 +33,6 @@ ArtNetSetup::ArtNetSetup ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    chkPoll.reset (new ToggleButton ("chkPoll"));
-    addAndMakeVisible (chkPoll.get());
-    chkPoll->setButtonText (TRANS("Poll network"));
-    chkPoll->addListener (this);
-    chkPoll->setToggleState (true, dontSendNotification);
-
-    chkPoll->setBounds (0, 0, 112, 24);
-
     lblHeader.reset (new Label ("lblHeader",
                                 TRANS("M S IP Address     BI NT.S.  IN   /  OUT   NAME")));
     addAndMakeVisible (lblHeader.get());
@@ -336,6 +328,31 @@ ArtNetSetup::ArtNetSetup ()
 
     lblMAC->setBounds (176, 224, 168, 24);
 
+    optPollNo.reset (new ToggleButton ("optPollNo"));
+    addAndMakeVisible (optPollNo.get());
+    optPollNo->setButtonText (TRANS("Don\'t poll network"));
+    optPollNo->setRadioGroupId (1);
+    optPollNo->addListener (this);
+    optPollNo->setToggleState (true, dontSendNotification);
+
+    optPollNo->setBounds (0, 0, 144, 24);
+
+    optPollStatic.reset (new ToggleButton ("optPollStatic"));
+    addAndMakeVisible (optPollStatic.get());
+    optPollStatic->setButtonText (TRANS("Poll static (2.255.255.255)"));
+    optPollStatic->setRadioGroupId (1);
+    optPollStatic->addListener (this);
+
+    optPollStatic->setBounds (144, 0, 192, 24);
+
+    optPollDHCP.reset (new ToggleButton ("optPollDHCP"));
+    addAndMakeVisible (optPollDHCP.get());
+    optPollDHCP->setButtonText (TRANS("Poll DHCP (e.g. 192.168.0.255)"));
+    optPollDHCP->setRadioGroupId (1);
+    optPollDHCP->addListener (this);
+
+    optPollDHCP->setBounds (344, 0, 224, 24);
+
 
     //[UserPreSize]
 
@@ -365,8 +382,11 @@ ArtNetSetup::ArtNetSetup ()
 
     //[Constructor] You can add your own custom stuff here..
     ArtNetSystem::Init(); //TODO move this to main
-    
-    chkPoll->setToggleState(ArtNetSystem::IsPolling(), dontSendNotification);
+
+    optPollNo    ->setToggleState(ArtNetSystem::GetPollMode() == 0, dontSendNotification);
+    optPollStatic->setToggleState(ArtNetSystem::GetPollMode() == 1, dontSendNotification);
+    optPollDHCP  ->setToggleState(ArtNetSystem::GetPollMode() == 2, dontSendNotification);
+    optPollDHCP  ->setButtonText("Poll DHCP (" + ArtNetSystem::GetDHCPBroadcastAddress().toString() + ")");
 
     startTimer(100);
     //[/Constructor]
@@ -377,7 +397,6 @@ ArtNetSetup::~ArtNetSetup()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    chkPoll = nullptr;
     lblHeader = nullptr;
     lblInfo1 = nullptr;
     lblInfo2 = nullptr;
@@ -405,12 +424,15 @@ ArtNetSetup::~ArtNetSetup()
     btnAddDevice = nullptr;
     btnRemoveDevice = nullptr;
     lblMAC = nullptr;
+    optPollNo = nullptr;
+    optPollStatic = nullptr;
+    optPollDHCP = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
     lstDevices = nullptr;
     lsmDevices = nullptr;
-    
+
     ArtNetSystem::Finalize();
     //[/Destructor]
 }
@@ -442,13 +464,7 @@ void ArtNetSetup::buttonClicked (Button* buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == chkPoll.get())
-    {
-        //[UserButtonCode_chkPoll] -- add your button handler code here..
-        ArtNetSystem::EnablePolling(chkPoll->getToggleState());
-        //[/UserButtonCode_chkPoll]
-    }
-    else if (buttonThatWasClicked == btnIP.get())
+    if (buttonThatWasClicked == btnIP.get())
     {
         //[UserButtonCode_btnIP] -- add your button handler code here..
         ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(lstDevices->getLastRowSelected());
@@ -501,6 +517,24 @@ void ArtNetSetup::buttonClicked (Button* buttonThatWasClicked)
         if(d < 0 || d >= ArtNetSystem::NumDevices()) return;
         ArtNetSystem::RemoveDevice(d);
         //[/UserButtonCode_btnRemoveDevice]
+    }
+    else if (buttonThatWasClicked == optPollNo.get())
+    {
+        //[UserButtonCode_optPollNo] -- add your button handler code here..
+        ArtNetSystem::SetPollMode(0);
+        //[/UserButtonCode_optPollNo]
+    }
+    else if (buttonThatWasClicked == optPollStatic.get())
+    {
+        //[UserButtonCode_optPollStatic] -- add your button handler code here..
+        ArtNetSystem::SetPollMode(1);
+        //[/UserButtonCode_optPollStatic]
+    }
+    else if (buttonThatWasClicked == optPollDHCP.get())
+    {
+        //[UserButtonCode_optPollDHCP] -- add your button handler code here..
+        ArtNetSystem::SetPollMode(2);
+        //[/UserButtonCode_optPollDHCP]
     }
 
     //[UserbuttonClicked_Post]
@@ -642,9 +676,6 @@ BEGIN_JUCER_METADATA
                  snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="600"
                  initialHeight="322">
   <BACKGROUND backgroundColour="ff323e44"/>
-  <TOGGLEBUTTON name="chkPoll" id="7da47f7a98100feb" memberName="chkPoll" virtualName=""
-                explicitFocusOrder="0" pos="0 0 112 24" buttonText="Poll network"
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="1"/>
   <LABEL name="lblHeader" id="7366d591fbb23722" memberName="lblHeader"
          virtualName="" explicitFocusOrder="0" pos="0 24 360 24" edTextCol="ff000000"
          edBkgCol="0" labelText="M S IP Address     BI NT.S.  IN   /  OUT   NAME"
@@ -765,6 +796,15 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="MAC: 00:00:00:00:00:00" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+  <TOGGLEBUTTON name="optPollNo" id="4986d64c796f9a9c" memberName="optPollNo"
+                virtualName="" explicitFocusOrder="0" pos="0 0 144 24" buttonText="Don't poll network"
+                connectedEdges="0" needsCallback="1" radioGroupId="1" state="1"/>
+  <TOGGLEBUTTON name="optPollStatic" id="a13d783268b49e41" memberName="optPollStatic"
+                virtualName="" explicitFocusOrder="0" pos="144 0 192 24" buttonText="Poll static (2.255.255.255)"
+                connectedEdges="0" needsCallback="1" radioGroupId="1" state="0"/>
+  <TOGGLEBUTTON name="optPollDHCP" id="c2a3097ed3026cfd" memberName="optPollDHCP"
+                virtualName="" explicitFocusOrder="0" pos="344 0 224 24" buttonText="Poll DHCP (e.g. 192.168.0.255)"
+                connectedEdges="0" needsCallback="1" radioGroupId="1" state="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

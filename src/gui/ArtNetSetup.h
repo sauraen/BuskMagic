@@ -67,7 +67,6 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<ToggleButton> chkPoll;
     std::unique_ptr<Label> lblHeader;
     std::unique_ptr<Label> lblInfo1;
     std::unique_ptr<Label> lblInfo2;
@@ -95,6 +94,9 @@ private:
     std::unique_ptr<TextButton> btnAddDevice;
     std::unique_ptr<TextButton> btnRemoveDevice;
     std::unique_ptr<Label> lblMAC;
+    std::unique_ptr<ToggleButton> optPollNo;
+    std::unique_ptr<ToggleButton> optPollStatic;
+    std::unique_ptr<ToggleButton> optPollDHCP;
 
 
     //==============================================================================

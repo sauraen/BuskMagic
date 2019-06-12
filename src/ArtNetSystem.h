@@ -66,8 +66,9 @@ namespace ArtNetSystem {
     void Load(ValueTree v);
     ValueTree Save();
     
-    bool IsPolling();
-    void EnablePolling(bool enabled);
+    int GetPollMode();
+    void SetPollMode(int pmode);
+    IPAddress GetDHCPBroadcastAddress();
     
     int NumDevices();
     ArtNetDevice *GetDevice(int d);

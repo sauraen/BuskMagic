@@ -132,36 +132,7 @@ namespace ArtNetSystem {
         return ret;
     }
     
-    static DatagramSocket *sock = nullptr;
-    
-    class ArtNetReceiver : public Thread {
-    public:
-        ArtNetReceiver() : Thread("ArtNetReceiver") {}
-        virtual ~ArtNetReceiver() {}
-        virtual void run() override {
-            const size_t maxpacketsize = 1024;
-            uint8_t *packetbuf = new uint8_t[maxpacketsize];
-            while(!threadShouldExit()){
-                while(!threadShouldExit() && sock->waitUntilReady(true, 1) == 0);
-                IPAddress senderIP; int port;
-                int readbytes = sock->read(packetbuf, maxpacketsize, false, senderIP, port);
-                if(readbytes <= 0){
-                    std::cout << "ArtNetSystem receive error!\n";
-                    continue;
-                }
-                if(port != 0x1936){
-                    std::cout << "ArtNetSystem received data on wrong port!\n";
-                    continue;
-                }
-                //TODO
-            }
-        }
-    };
-    static ArtNetReceiver *receiver = nullptr;
-    
-    static bool polling;
-    bool IsPolling() { return polling; }
-    void EnablePolling(bool enabled) { polling = enabled; /*TODO timer*/ }
+    static DatagramSocket *sendsock = nullptr;
     
     static void SendArtNet(IPAddress dest, uint16_t opcode, const uint8_t *data, size_t len){
         uint8_t *buf = new uint8_t[12+len];
@@ -171,16 +142,20 @@ namespace ArtNetSystem {
         buf[10] = 0;
         buf[11] = 14;
         memcpy(&buf[12], data, len);
-        assert(sock != nullptr);
-        int res = sock->waitUntilReady(false, 5);
-        if(res != 1){
+        assert(sendsock != nullptr);
+        int res = sendsock->waitUntilReady(false, 5);
+        if(res < 0){
+            std::cout << "Socket state error!\n";
+        }else if(res == 0){
             std::cout << "Socket not ready to write!\n";
         }else{
-            res = sock->write(dest, 0x1936, buf, 12+len);
+            res = sendsock->write(dest.toString(), 0x1936, buf, 12+len);
             if(res <= 0){
                 std::cout << "Error sending packet!\n";
             }else if(res != 12+len){
                 std::cout << "Failed to send whole packet!\n";
+            }else{
+                std::cout << "Sent Art-Net packet with opcode 0x" << hex(opcode) << " length " << 12+len << "\n";
             }
         }
         delete[] buf;
@@ -205,6 +180,7 @@ namespace ArtNetSystem {
     }
     
     void SendDMX512(uint16_t universe, const uint8_t *buf512){
+        uint8_t *data = new uint8_t[518];
         for(int d=0; d<devices.size(); ++d){
             ArtNetDevice *dev = devices[d];
             uint8_t uni = universe & 0xF;
@@ -219,7 +195,6 @@ namespace ArtNetSystem {
                 for(int i=0; i<4; ++i) if(dev->outuni[i] == uni) flag = true;
             }
             if(!flag) continue;
-            uint8_t *data = new uint8_t[518];
             data[0] = dev->artdmx_sequence;
             ++dev->artdmx_sequence;
             if(dev->artdmx_sequence == 0) dev->artdmx_sequence = 1;
@@ -231,24 +206,99 @@ namespace ArtNetSystem {
             memcpy(&data[6], buf512, 512);
             SendArtNet(dev->ip, 0x5000, data, 518);
         }
+        delete[] data;
     }
     
+    static int pollmode = 2; //0: disabled 1: static 2: DHCP
+    int GetPollMode() { return pollmode; }
+    void SetPollMode(int pmode) { pollmode = pmode; }
+    
+    static IPAddress dhcpBroadcast;
+    IPAddress GetDHCPBroadcastAddress(){
+        if(dhcpBroadcast.isNull()){
+            IPAddress localIP = IPAddress::getLocalAddress();
+            dhcpBroadcast = IPAddress::getInterfaceBroadcastAddress(localIP);
+            std::cout << "Local IP: " << localIP.toString() << ", broadcast " << dhcpBroadcast.toString() << "\n";
+        }
+        return dhcpBroadcast;
+    }
+    
+    class Poller : public Timer {
+    public:
+        Poller() { startTimer(2500); }
+        virtual ~Poller() { stopTimer(); }
+        virtual void timerCallback() override {
+            if(pollmode == 0) return;
+            uint16_t data = 0;
+            SendArtNet(pollmode == 2 ? dhcpBroadcast : IPAddress(2, 255, 255, 255), 
+                0x2000, (uint8_t*)&data, 2);
+            //TODO Poll all registered devices--only if they're NOT in the 
+            //broadcast set above
+        }
+    };
+    static Poller *poller = nullptr;
+    
+    class ArtNetReceiver : public Thread {
+    public:
+        ArtNetReceiver() : Thread("ArtNetReceiver") {}
+        virtual ~ArtNetReceiver() {}
+        virtual void run() override {
+            const size_t maxpacketsize = 1024;
+            uint8_t *packetbuf = new uint8_t[maxpacketsize];
+            DatagramSocket recvsock(false);
+            recvsock.bindToPort(0x1936);
+            recvsock.setEnablePortReuse(true);
+            while(!threadShouldExit()){
+                while(!threadShouldExit() && recvsock.waitUntilReady(true, 1) == 0);
+                String senderIPstr; int port;
+                int readbytes = recvsock.read(packetbuf, maxpacketsize, false, senderIPstr, port);
+                if(readbytes <= 0){
+                    std::cout << "ArtNetSystem receive error!\n";
+                    continue;
+                }
+                if(port != 0x1936){
+                    std::cout << "ArtNetSystem receive: wrong port!\n";
+                    continue;
+                }
+                if(readbytes < 12){
+                    std::cout << "ArtNetSystem receive: packet too short!\n";
+                    continue;
+                }
+                if(strncmp((char*)packetbuf, "Art-Net", 7) != 0 || packetbuf[7] != 0){
+                    std::cout << "ArtNetSystem receive: bad Art-Net header!\n";
+                    continue;
+                }
+                if(packetbuf[10] != 0 || packetbuf[11] != 14){
+                    std::cout << "ArtNetSystem receive: bad protocol revision!\n";
+                    continue;
+                }
+                //TODO
+                std::cout << "Received Art-Net packet opcode 0x" << hex(*(uint16*)&packetbuf[8]) << "\n";
+            }
+            delete[] packetbuf;
+            recvsock.shutdown();
+        }
+    };
+    static ArtNetReceiver *receiver = nullptr;
+    
     void Init(){
-        if(sock != nullptr){
+        if(sendsock != nullptr){
             std::cout << "ArtNetSystem already initted!\n";
             return;
         }
-        sock = new DatagramSocket(true);
-        sock->bindToPort(0x1936);
-        sock->setEnablePortReuse(true);
+        sendsock = new DatagramSocket(true);
+        sendsock->bindToPort(0x1936);
+        sendsock->setEnablePortReuse(true);
         receiver = new ArtNetReceiver();
         receiver->startThread();
+        poller = new Poller();
     }
     void Finalize(){
+        delete poller; poller = nullptr;
         receiver->stopThread(10);
         delete receiver; receiver = nullptr;
-        sock->shutdown();
-        delete sock; sock = nullptr;
+        sendsock->shutdown();
+        delete sendsock; sendsock = nullptr;
     }
     
     void Load(ValueTree v){

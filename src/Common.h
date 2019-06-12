@@ -19,6 +19,7 @@
 #pragma once
 
 #include "JuceHeader.h"
+#include <cassert>
 
 inline bool isInt(String str, bool allowNegative = true){
     str = str.trim();
