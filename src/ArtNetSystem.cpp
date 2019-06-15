@@ -134,14 +134,17 @@ namespace ArtNetSystem {
     
     static DatagramSocket *sendsock = nullptr;
     
-    static void SendArtNet(IPAddress dest, uint16_t opcode, const uint8_t *data, size_t len){
-        uint8_t *buf = new uint8_t[12+len];
+    static void SendArtNet(IPAddress dest, uint16_t opcode, const uint8_t *data, size_t dlen, bool packetHasProtVer = true){
+        int hlen = packetHasProtVer ? 12 : 10;
+        uint8_t *buf = new uint8_t[hlen+dlen];
         sprintf((char*)buf, "Art-Net");
         buf[7] = 0;
         *(uint16_t*)&buf[8] = opcode;
-        buf[10] = 0;
-        buf[11] = 14;
-        memcpy(&buf[12], data, len);
+        if(packetHasProtVer){
+            buf[10] = 0;
+            buf[11] = 14;
+        }
+        memcpy(&buf[hlen], data, dlen);
         assert(sendsock != nullptr);
         int res = sendsock->waitUntilReady(false, 5);
         if(res < 0){
@@ -149,13 +152,13 @@ namespace ArtNetSystem {
         }else if(res == 0){
             std::cout << "Socket not ready to write!\n";
         }else{
-            res = sendsock->write(dest.toString(), 0x1936, buf, 12+len);
+            res = sendsock->write(dest.toString(), 0x1936, buf, hlen+dlen);
             if(res <= 0){
                 std::cout << "Error sending packet!\n";
-            }else if(res != 12+len){
+            }else if(res != hlen+dlen){
                 std::cout << "Failed to send whole packet!\n";
             }else{
-                std::cout << "Sent Art-Net packet with opcode 0x" << hex(opcode) << " length " << 12+len << "\n";
+                std::cout << "Sent Art-Net packet with opcode 0x" << hex(opcode) << " length " << hlen+dlen << "\n";
             }
         }
         delete[] buf;
@@ -213,6 +216,7 @@ namespace ArtNetSystem {
     int GetPollMode() { return pollmode; }
     void SetPollMode(int pmode) { pollmode = pmode; }
     
+    const static IPAddress staticBroadcast(2, 255, 255, 255);
     static IPAddress dhcpBroadcast;
     IPAddress GetDHCPBroadcastAddress(){
         if(dhcpBroadcast.isNull()){
@@ -223,6 +227,15 @@ namespace ArtNetSystem {
         return dhcpBroadcast;
     }
     
+    static bool isIPInSubnet(const IPAddress &target, const IPAddress &subnet){
+        bool snmode = true;
+        for(int i=3; i>=0; --i){
+            if(subnet.address[i] != 0xFF) snmode = false;
+            if(!snmode && subnet.address[i] != target.address[i]) return false;
+        }
+        return true;
+    }
+    
     class Poller : public Timer {
     public:
         Poller() { startTimer(2500); }
@@ -230,13 +243,120 @@ namespace ArtNetSystem {
         virtual void timerCallback() override {
             if(pollmode == 0) return;
             uint16_t data = 0;
-            SendArtNet(pollmode == 2 ? dhcpBroadcast : IPAddress(2, 255, 255, 255), 
-                0x2000, (uint8_t*)&data, 2);
-            //TODO Poll all registered devices--only if they're NOT in the 
-            //broadcast set above
+            IPAddress bcast = pollmode == 2 ? dhcpBroadcast : staticBroadcast;
+            SendArtNet(bcast, 0x2000, (uint8_t*)&data, 2);
+            for(int d=0; d<devices.size(); ++d){
+                const IPAddress &ip = devices[d]->ip;
+                if(!isIPInSubnet(ip, bcast)){
+                    SendArtNet(ip, 0x2000, (uint8_t*)&data, 2);
+                }
+            }
         }
     };
     static Poller *poller = nullptr;
+    
+    void SendArtPollReply(IPAddress senderIP){
+        IPAddress dest;
+        if(pollmode == 2){
+            dest = dhcpBroadcast;
+        }else if(pollmode == 1){
+            dest = staticBroadcast;
+        }else if(!senderIP.isNull()){
+            dest = senderIP;
+        }else{
+            return;
+        }
+        uint8_t *data = new uint8_t[229];
+        IPAddress localIP = IPAddress::getLocalAddress();
+        data[0] = localIP.address[0];
+        data[1] = localIP.address[1];
+        data[2] = localIP.address[2];
+        data[3] = localIP.address[3];
+        data[4] = 0x36; //Port LH
+        data[5] = 0x19;
+        data[6] = 0x00; //Firmware version HL
+        data[7] = 0x01;
+        data[8] = 0x00; //NetSwitch
+        data[9] = 0x00; //SubSwitch
+        data[10] = 0xFF; //OEM HL
+        data[11] = 0xFF; 
+        data[12] = 0; //UBEA
+        data[13] = 0b11010000; //Status1
+        data[14] = 0x00; //ESTA LH
+        data[15] = 0x00;
+        String ourname = "BuskMagic on " + SystemStats::getComputerName();
+        memset((char*)&data[16], 0, 18+64+64);
+        ourname.copyToUTF8((char*)&data[16], 18);
+        ourname.copyToUTF8((char*)&data[34], 64);
+        sprintf((char*)&data[98], "NodeReport not implemented yet");
+        memset((char*)&data[162], 0, 28); //NumPorts HL, PortTypes, GoodInput,
+        //GoodOutput, SwIn, SwOut, SwVideo, SwMacro, SwRemote, Spare(x3)
+        data[190] = 1; //Style
+        Array<MACAddress> macs = MACAddress::getAllAddresses();
+        jassert(macs.size() >= 1);
+        const uint8_t *ourmac = macs[0].getBytes();
+        memcpy(&data[191], ourmac, 6); //MAC H----L
+        data[197] = localIP.address[0]; //BindIP
+        data[198] = localIP.address[1];
+        data[199] = localIP.address[2];
+        data[200] = localIP.address[3];
+        data[201] = 0; //BindIndex
+        data[202] = 0b00001110; //Status2
+        memset(&data[203], 0, 26);
+        SendArtNet(dest, 0x2100, data, 229, false);
+        if(pollmode >= 1 && !senderIP.isNull() && !isIPInSubnet(senderIP, dest)){
+            SendArtNet(senderIP, 0x2100, data, 229, false);
+        }
+        delete[] data;
+    }
+    
+    void ReceivedArtPollReply(IPAddress senderIP, uint8_t *pkt, int len){
+        if(len < 213){
+            std::cout << "ReceivedArtPollReply: packet too short!\n";
+            return;
+        }
+        ArtNetDevice *dev = nullptr;
+        for(int i=0; i<devices.size(); ++i){
+            if(devices[i]->ip == senderIP){
+                dev = devices[i];
+                break;
+            }
+        }
+        if(dev == nullptr){
+            AddBlankDevice();
+            dev = devices[devices.size() - 1];
+            dev->mode == ArtNetDevice::Mode::discovered;
+            assert(static_cast<uint8_t>(dev->mode) == 1);
+            dev->ip = senderIP;
+        }
+        IPAddress pktsaysip(pkt[10], pkt[11], pkt[12], pkt[13]);
+        if(pktsaysip != dev->ip){
+            std::cout << "ReceivedArtPollReply: warning: from IP " << senderIP.toString()
+                << " but claims to be device with IP " << pktsaysip.toString() << "!\n";
+        }
+        dev->fw = ((uint16_t)pkt[16] << 8) | pkt[17];
+        dev->net = pkt[18];
+        dev->subnet = pkt[19];
+        dev->oem = ((uint16_t)pkt[20] << 8) | pkt[21];
+        //pkt[22] == UBEA
+        dev->status[0] = pkt[23];
+        dev->esta = pkt[24] | ((uint16_t)pkt[25] << 8);
+        dev->shortname = String((char*)&pkt[26], 18);
+        dev->longname = String((char*)&pkt[44], 64);
+        dev->nodereport = String((char*)&pkt[108], 64);
+        //pkt[172:173] == NumPorts HL
+        for(int p=0; p<4; ++p){
+            dev->inuni[p]  = (pkt[174+p] & 0x40) ? (pkt[186+p] & 0x0F) : 0x7F;
+            dev->outuni[p] = (pkt[174+p] & 0x80) ? (pkt[190+p] & 0x0F) : 0x7F;
+        }
+        //Ignoring PortTypes type information (other than I/O), GoodInput 178, GoodOutput 182
+        //pkt[194:199] == SwVideo, SwMacro, SwRemote, Spare(x3)
+        dev->style = static_cast<ArtNetDevice::Style>(pkt[200]);
+        dev->mac = MACAddress(&pkt[201]);
+        //pkt[207:210] == BindIp
+        dev->bindindex = pkt[211];
+        dev->status[1] = pkt[212];
+    }
     
     class ArtNetReceiver : public Thread {
     public:
@@ -252,6 +372,7 @@ namespace ArtNetSystem {
                 while(!threadShouldExit() && recvsock.waitUntilReady(true, 1) == 0);
                 String senderIPstr; int port;
                 int readbytes = recvsock.read(packetbuf, maxpacketsize, false, senderIPstr, port);
+                IPAddress senderIP(senderIPstr);
                 if(readbytes <= 0){
                     std::cout << "ArtNetSystem receive error!\n";
                     continue;
@@ -268,12 +389,17 @@ namespace ArtNetSystem {
                     std::cout << "ArtNetSystem receive: bad Art-Net header!\n";
                     continue;
                 }
-                if(packetbuf[10] != 0 || packetbuf[11] != 14){
+                uint16_t opcode = *(uint16*)&packetbuf[8];
+                if(opcode != 0x2100 && (packetbuf[10] != 0 || packetbuf[11] != 14)){
                     std::cout << "ArtNetSystem receive: bad protocol revision!\n";
                     continue;
                 }
-                //TODO
-                std::cout << "Received Art-Net packet opcode 0x" << hex(*(uint16*)&packetbuf[8]) << "\n";
+                std::cout << "Received Art-Net packet opcode 0x" << hex(opcode) << "\n";
+                if(opcode == 0x2000){
+                    SendArtPollReply(senderIP);
+                }else if(opcode == 0x2100){
+                    ReceivedArtPollReply(senderIP, packetbuf, readbytes);
+                }
             }
             delete[] packetbuf;
             recvsock.shutdown();
@@ -292,6 +418,7 @@ namespace ArtNetSystem {
         receiver = new ArtNetReceiver();
         receiver->startThread();
         poller = new Poller();
+        SendArtPollReply(IPAddress());
     }
     void Finalize(){
         delete poller; poller = nullptr;
