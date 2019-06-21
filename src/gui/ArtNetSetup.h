@@ -58,6 +58,9 @@ public:
     void resized() override;
     void buttonClicked (Button* buttonThatWasClicked) override;
 
+    // Binary resources:
+    static const char* artnet_logo_png;
+    static const int artnet_logo_pngSize;
 
 
 private:
@@ -68,8 +71,8 @@ private:
 
     //==============================================================================
     std::unique_ptr<Label> lblHeader;
-    std::unique_ptr<Label> lblInfo1;
-    std::unique_ptr<Label> lblInfo2;
+    std::unique_ptr<Label> lblDeviceType;
+    std::unique_ptr<Label> lblDeviceStatus;
     std::unique_ptr<Label> lblIP;
     std::unique_ptr<TextEditor> txtIP;
     std::unique_ptr<TextButton> btnIP;
@@ -97,6 +100,11 @@ private:
     std::unique_ptr<ToggleButton> optPollNo;
     std::unique_ptr<ToggleButton> optPollStatic;
     std::unique_ptr<ToggleButton> optPollDHCP;
+    std::unique_ptr<TextEditor> txtShortName;
+    std::unique_ptr<Label> lblNameSlash;
+    std::unique_ptr<TextEditor> txtLongName;
+    std::unique_ptr<Label> lblDeviceExtra;
+    Image cachedImage_artnet_logo_png_1;
 
 
     //==============================================================================

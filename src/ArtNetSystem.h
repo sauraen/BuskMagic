@@ -55,7 +55,7 @@ namespace ArtNetSystem {
         
         void UpdateFromArtPollReply(const uint8_t *data, size_t len);
         String GetTableRow();
-        String GetLongDescription();
+        String GetDescription();
         
         ArtNetDevice();
     };
@@ -77,6 +77,7 @@ namespace ArtNetSystem {
     
     uint32_t ParseUniverseText(String unitxt);
     String GetUniverseText(const uint8_t *uni);
+    IPAddress ParseIPAddress(String ipstr);
     
     void ChangeDeviceUniverses(int d, uint8_t net, uint8_t subnet, 
         const uint8_t *inuni, const uint8_t *outuni);

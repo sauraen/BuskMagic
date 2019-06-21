@@ -59,7 +59,7 @@ namespace ArtNetSystem {
         return ret;
     }
     
-    String ArtNetDevice::GetLongDescription(){
+    String ArtNetDevice::GetDescription(){
         String ret;
              if(mode == Mode::manual)       ret += "Manual";
         else if(mode == Mode::discovered)   ret += "Discovered";
@@ -74,7 +74,6 @@ namespace ArtNetSystem {
         else if(style == Style::config)     ret += "Configuration tool";
         else if(style == Style::visual)     ret += "Visualizer";
         else                                ret += "Error";
-        ret += ": " + longname;
         return ret;
     }
     
@@ -84,7 +83,7 @@ namespace ArtNetSystem {
         inuni{0x7F, 0x7F, 0x7F, 0x7F}, outuni{0x7F, 0x7F, 0x7F, 0x7F},
         map_inuni{0x7F, 0x7F, 0x7F, 0x7F}, map_outuni{0x7F, 0x7F, 0x7F, 0x7F},
         bindindex(0), artdmx_sequence(1),
-        shortname("<Device short name>"), 
+        shortname("<Short name>"), 
         longname("<Device long name>"), 
         nodereport("(Have not received ArtPollReply from this device)") {}
     
@@ -131,6 +130,19 @@ namespace ArtNetSystem {
         }
         return ret;
     }
+    IPAddress ParseIPAddress(String ipstr){
+        StringArray bytes = StringArray::fromTokens(ipstr, ".", "");
+        if(bytes.size() != 4) return IPAddress();
+        IPAddress ret;
+        for(int i=0; i<4; ++i){
+            String str = bytes[i].trim();
+            if(!isInt(str, false)) return IPAddress();
+            int b = str.getIntValue();
+            if(b < 0 || b > 255) return IPAddress();
+            ret.address[i] = b;
+        }
+        return ret;
+    }
     
     static DatagramSocket *sendsock = nullptr;
     
@@ -158,7 +170,7 @@ namespace ArtNetSystem {
             }else if(res != hlen+dlen){
                 std::cout << "Failed to send whole packet!\n";
             }else{
-                std::cout << "Sent Art-Net packet with opcode 0x" << hex(opcode) << " length " << hlen+dlen << "\n";
+                //std::cout << "Sent Art-Net packet with opcode 0x" << hex(opcode) << " length " << hlen+dlen << "\n";
             }
         }
         delete[] buf;
@@ -219,11 +231,6 @@ namespace ArtNetSystem {
     const static IPAddress staticBroadcast(2, 255, 255, 255);
     static IPAddress dhcpBroadcast;
     IPAddress GetDHCPBroadcastAddress(){
-        if(dhcpBroadcast.isNull()){
-            IPAddress localIP = IPAddress::getLocalAddress();
-            dhcpBroadcast = IPAddress::getInterfaceBroadcastAddress(localIP);
-            std::cout << "Local IP: " << localIP.toString() << ", broadcast " << dhcpBroadcast.toString() << "\n";
-        }
         return dhcpBroadcast;
     }
     
@@ -247,7 +254,7 @@ namespace ArtNetSystem {
             SendArtNet(bcast, 0x2000, (uint8_t*)&data, 2);
             for(int d=0; d<devices.size(); ++d){
                 const IPAddress &ip = devices[d]->ip;
-                if(!isIPInSubnet(ip, bcast)){
+                if(!ip.isNull() && !isIPInSubnet(ip, bcast)){
                     SendArtNet(ip, 0x2000, (uint8_t*)&data, 2);
                 }
             }
@@ -268,6 +275,9 @@ namespace ArtNetSystem {
         }
         uint8_t *data = new uint8_t[229];
         IPAddress localIP = IPAddress::getLocalAddress();
+        if(localIP == IPAddress(127, 0, 0, 1)){
+            std::cout << "Sending ArtPollReply to localhost\n";
+        }
         data[0] = localIP.address[0];
         data[1] = localIP.address[1];
         data[2] = localIP.address[2];
@@ -303,8 +313,10 @@ namespace ArtNetSystem {
         data[201] = 0; //BindIndex
         data[202] = 0b00001110; //Status2
         memset(&data[203], 0, 26);
+        //std::cout << "Sending ArtPollReply to " << dest.toString() << "\n";
         SendArtNet(dest, 0x2100, data, 229, false);
         if(pollmode >= 1 && !senderIP.isNull() && !isIPInSubnet(senderIP, dest)){
+            //std::cout << "Also sending ArtPollReply to " << senderIP.toString() << "\n";
             SendArtNet(senderIP, 0x2100, data, 229, false);
         }
         delete[] data;
@@ -325,8 +337,7 @@ namespace ArtNetSystem {
         if(dev == nullptr){
             AddBlankDevice();
             dev = devices[devices.size() - 1];
-            dev->mode == ArtNetDevice::Mode::discovered;
-            assert(static_cast<uint8_t>(dev->mode) == 1);
+            dev->mode = ArtNetDevice::Mode::discovered;
             dev->ip = senderIP;
         }
         IPAddress pktsaysip(pkt[10], pkt[11], pkt[12], pkt[13]);
@@ -412,6 +423,10 @@ namespace ArtNetSystem {
             std::cout << "ArtNetSystem already initted!\n";
             return;
         }
+        IPAddress localIP = IPAddress::getLocalAddress();
+        dhcpBroadcast = IPAddress::getInterfaceBroadcastAddress(localIP);
+        std::cout << "Local IP: " << localIP.toString() << ", broadcast " << dhcpBroadcast.toString() << "\n";
+        //
         sendsock = new DatagramSocket(true);
         sendsock->bindToPort(0x1936);
         sendsock->setEnablePortReuse(true);
