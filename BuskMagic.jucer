@@ -8,8 +8,25 @@
   <MAINGROUP id="nK6FP9" name="BuskMagic">
     <GROUP id="{10D6CFA7-0177-1248-18A7-BE991C404BD4}" name="src">
       <GROUP id="{E2D2E361-BE7B-6D4F-0D41-F7DB50F45452}" name="gui">
+        <GROUP id="{4CB0A50E-33FE-3C70-22DC-DD556346E829}" name="FixParamEd">
+          <GROUP id="{98B8B823-C6F0-66C8-ADE3-A5178A6019B3}" name="ColorMode">
+            <FILE id="EYjBpe" name="CMY.cpp" compile="1" resource="0" file="src/gui/FixParamEd/ColorMode/CMY.cpp"/>
+            <FILE id="GYib90" name="CMY.h" compile="0" resource="0" file="src/gui/FixParamEd/ColorMode/CMY.h"/>
+            <FILE id="J6WIa3" name="RGB.cpp" compile="1" resource="0" file="src/gui/FixParamEd/ColorMode/RGB.cpp"/>
+            <FILE id="aJsX8t" name="RGB.h" compile="0" resource="0" file="src/gui/FixParamEd/ColorMode/RGB.h"/>
+            <FILE id="scIaqV" name="RGBA.cpp" compile="1" resource="0" file="src/gui/FixParamEd/ColorMode/RGBA.cpp"/>
+            <FILE id="icvuV7" name="RGBA.h" compile="0" resource="0" file="src/gui/FixParamEd/ColorMode/RGBA.h"/>
+          </GROUP>
+          <FILE id="Bp1DpP" name="Color.cpp" compile="1" resource="0" file="src/gui/FixParamEd/Color.cpp"/>
+          <FILE id="r4qfMy" name="Color.h" compile="0" resource="0" file="src/gui/FixParamEd/Color.h"/>
+          <FILE id="aeYFt3" name="Generic.cpp" compile="1" resource="0" file="src/gui/FixParamEd/Generic.cpp"/>
+          <FILE id="HURtag" name="Generic.h" compile="0" resource="0" file="src/gui/FixParamEd/Generic.h"/>
+        </GROUP>
         <FILE id="nGOUXC" name="ArtNetSetup.cpp" compile="1" resource="0" file="src/gui/ArtNetSetup.cpp"/>
         <FILE id="PuyiPs" name="ArtNetSetup.h" compile="0" resource="0" file="src/gui/ArtNetSetup.h"/>
+        <FILE id="TbwUaF" name="FixtureEditor.cpp" compile="1" resource="0"
+              file="src/gui/FixtureEditor.cpp"/>
+        <FILE id="vS6c7t" name="FixtureEditor.h" compile="0" resource="0" file="src/gui/FixtureEditor.h"/>
         <FILE id="UvwTXt" name="MIDISetup.cpp" compile="1" resource="0" file="src/gui/MIDISetup.cpp"/>
         <FILE id="mYeBXE" name="MIDISetup.h" compile="0" resource="0" file="src/gui/MIDISetup.h"/>
         <FILE id="YywxUI" name="TextListModel.cpp" compile="1" resource="0"

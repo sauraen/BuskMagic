@@ -49,9 +49,33 @@
 			isa = PBXBuildFile;
 			fileRef = F32C4C6DA3B9375862D89018;
 		};
+		2BAFB1621A32991C31661EA7 = {
+			isa = PBXBuildFile;
+			fileRef = 02770169291CC96028A6A80D;
+		};
+		721DC1B30D75271A15160103 = {
+			isa = PBXBuildFile;
+			fileRef = D4AB491514C324C5E966E8A7;
+		};
+		385D9AA52F61E814428DC61F = {
+			isa = PBXBuildFile;
+			fileRef = 7CEE8785EA0060A68A8B3F67;
+		};
+		3CBF4BA86FE51207EDEE3D2F = {
+			isa = PBXBuildFile;
+			fileRef = 2EB33737E6A339CFF1B6777B;
+		};
+		02E84890133A491CEADBA122 = {
+			isa = PBXBuildFile;
+			fileRef = B89391872C00DA0C67D03860;
+		};
 		16FBF7251CA38AB7C3B2999F = {
 			isa = PBXBuildFile;
 			fileRef = 0931C17F4AB4A2340A912B7F;
+		};
+		182FF3B58EFBCAE6F9B7C7E7 = {
+			isa = PBXBuildFile;
+			fileRef = 94298B9627920B56EDAA4E0E;
 		};
 		373DBAE866ED8F17906C1266 = {
 			isa = PBXBuildFile;
@@ -109,6 +133,13 @@
 			isa = PBXBuildFile;
 			fileRef = 427353EBFDA1166B7D705B14;
 		};
+		02770169291CC96028A6A80D = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = CMY.cpp;
+			path = ../../src/gui/FixParamEd/ColorMode/CMY.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		0931C17F4AB4A2340A912B7F = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -158,6 +189,13 @@
 			path = "../../JuceLibraryCode/include_juce_gui_basics.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		2440AC7D85F98A153445E013 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = CMY.h;
+			path = ../../src/gui/FixParamEd/ColorMode/CMY.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		254D3EFBD36ECBAB9672E2B6 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -172,6 +210,13 @@
 			path = ../../JuceLibraryCode/AppConfig.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		2EB33737E6A339CFF1B6777B = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Color.cpp;
+			path = ../../src/gui/FixParamEd/Color.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		2FBFF8EE1333B830BF03EC5D = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -184,6 +229,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = ArtNetSystem.cpp;
 			path = ../../src/ArtNetSystem.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		3BB152227595126D71C989AA = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = Color.h;
+			path = ../../src/gui/FixParamEd/Color.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		427353EBFDA1166B7D705B14 = {
@@ -228,6 +280,20 @@
 			path = System/Library/Frameworks/CoreAudio.framework;
 			sourceTree = SDKROOT;
 		};
+		72B3ED996E04645A1B2627DD = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = Generic.h;
+			path = ../../src/gui/FixParamEd/Generic.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		7CEE8785EA0060A68A8B3F67 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = RGBA.cpp;
+			path = ../../src/gui/FixParamEd/ColorMode/RGBA.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		810798F71E6AE967F565B83C = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -263,6 +329,13 @@
 			path = ../../src/gui/MIDISetup.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		94298B9627920B56EDAA4E0E = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = FixtureEditor.cpp;
+			path = ../../src/gui/FixtureEditor.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		9640A05CA7D688309DF158E4 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -284,11 +357,25 @@
 			path = System/Library/Frameworks/CoreMIDI.framework;
 			sourceTree = SDKROOT;
 		};
+		A29FAEFC2AB37F81F3E85C0C = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = RGB.h;
+			path = ../../src/gui/FixParamEd/ColorMode/RGB.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		B00F8F87CA52FC56D0553BC0 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = MIDISetup.cpp;
 			path = ../../src/gui/MIDISetup.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		B0661EF0EE418B85855C1950 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = FixtureEditor.h;
+			path = ../../src/gui/FixtureEditor.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		B73E58229762B5845974E61D = {
@@ -303,6 +390,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = MIDISystem.h;
 			path = ../../src/MIDISystem.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		B89391872C00DA0C67D03860 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Generic.cpp;
+			path = ../../src/gui/FixParamEd/Generic.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		BBCCC6BAD44C410F93ED4E96 = {
@@ -333,11 +427,25 @@
 			path = System/Library/Frameworks/Carbon.framework;
 			sourceTree = SDKROOT;
 		};
+		D4AB491514C324C5E966E8A7 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = RGB.cpp;
+			path = ../../src/gui/FixParamEd/ColorMode/RGB.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		E27FBABA80566BB825BA8EEC = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = MainComponent.cpp;
 			path = ../../src/MainComponent.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		E8E1D6E0F37620FC9D2EE476 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = RGBA.h;
+			path = ../../src/gui/FixParamEd/ColorMode/RGBA.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		EC6ED210D4C280104F6EE723 = {
@@ -361,11 +469,39 @@
 			path = "../../JuceLibraryCode/include_juce_audio_devices.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		C9C3CBBB72ED2FF85CF7D94B = {
+			isa = PBXGroup;
+			children = (
+				02770169291CC96028A6A80D,
+				2440AC7D85F98A153445E013,
+				D4AB491514C324C5E966E8A7,
+				A29FAEFC2AB37F81F3E85C0C,
+				7CEE8785EA0060A68A8B3F67,
+				E8E1D6E0F37620FC9D2EE476,
+			);
+			name = ColorMode;
+			sourceTree = "<group>";
+		};
+		CA7558F638459772B8A88BEE = {
+			isa = PBXGroup;
+			children = (
+				C9C3CBBB72ED2FF85CF7D94B,
+				2EB33737E6A339CFF1B6777B,
+				3BB152227595126D71C989AA,
+				B89391872C00DA0C67D03860,
+				72B3ED996E04645A1B2627DD,
+			);
+			name = FixParamEd;
+			sourceTree = "<group>";
+		};
 		B7D6698B4B68121DBA2C5C7E = {
 			isa = PBXGroup;
 			children = (
+				CA7558F638459772B8A88BEE,
 				0931C17F4AB4A2340A912B7F,
 				702B51A655BAB27C38760312,
+				94298B9627920B56EDAA4E0E,
+				B0661EF0EE418B85855C1950,
 				B00F8F87CA52FC56D0553BC0,
 				8D1240203F285B28C57C55E2,
 				2FBFF8EE1333B830BF03EC5D,
@@ -673,7 +809,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BAFB1621A32991C31661EA7,
+				721DC1B30D75271A15160103,
+				385D9AA52F61E814428DC61F,
+				3CBF4BA86FE51207EDEE3D2F,
+				02E84890133A491CEADBA122,
 				16FBF7251CA38AB7C3B2999F,
+				182FF3B58EFBCAE6F9B7C7E7,
 				373DBAE866ED8F17906C1266,
 				C7EA9627119D6D6D886D6EB8,
 				1B790381B4E8DD68C64B60C6,

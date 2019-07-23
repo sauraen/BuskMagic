@@ -138,7 +138,13 @@
     <Lib/>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\gui\FixParamEd\ColorMode\CMY.cpp"/>
+    <ClCompile Include="..\..\src\gui\FixParamEd\ColorMode\RGB.cpp"/>
+    <ClCompile Include="..\..\src\gui\FixParamEd\ColorMode\RGBA.cpp"/>
+    <ClCompile Include="..\..\src\gui\FixParamEd\Color.cpp"/>
+    <ClCompile Include="..\..\src\gui\FixParamEd\Generic.cpp"/>
     <ClCompile Include="..\..\src\gui\ArtNetSetup.cpp"/>
+    <ClCompile Include="..\..\src\gui\FixtureEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\MIDISetup.cpp"/>
     <ClCompile Include="..\..\src\gui\TextListModel.cpp"/>
     <ClCompile Include="..\..\src\ArtNetSystem.cpp"/>
@@ -155,7 +161,13 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\CMY.h"/>
+    <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\RGB.h"/>
+    <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\RGBA.h"/>
+    <ClInclude Include="..\..\src\gui\FixParamEd\Color.h"/>
+    <ClInclude Include="..\..\src\gui\FixParamEd\Generic.h"/>
     <ClInclude Include="..\..\src\gui\ArtNetSetup.h"/>
+    <ClInclude Include="..\..\src\gui\FixtureEditor.h"/>
     <ClInclude Include="..\..\src\gui\MIDISetup.h"/>
     <ClInclude Include="..\..\src\gui\TextListModel.h"/>
     <ClInclude Include="..\..\src\ArtNetSystem.h"/>

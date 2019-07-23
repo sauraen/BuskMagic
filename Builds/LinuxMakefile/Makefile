@@ -68,7 +68,13 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS_APP := \
+  $(JUCE_OBJDIR)/CMY_3f3eb7e2.o \
+  $(JUCE_OBJDIR)/RGB_4d3b0060.o \
+  $(JUCE_OBJDIR)/RGBA_5b18822b.o \
+  $(JUCE_OBJDIR)/Color_368bd47f.o \
+  $(JUCE_OBJDIR)/Generic_9e9f733.o \
   $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o \
+  $(JUCE_OBJDIR)/FixtureEditor_fac650c.o \
   $(JUCE_OBJDIR)/MIDISetup_7c6b09b2.o \
   $(JUCE_OBJDIR)/TextListModel_35ca1eb4.o \
   $(JUCE_OBJDIR)/ArtNetSystem_e2a73c9.o \
@@ -97,9 +103,39 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(JUCE_LDFLAGS_APP) $(RESOURCES) $(TARGET_ARCH)
 
+$(JUCE_OBJDIR)/CMY_3f3eb7e2.o: ../../src/gui/FixParamEd/ColorMode/CMY.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling CMY.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/RGB_4d3b0060.o: ../../src/gui/FixParamEd/ColorMode/RGB.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling RGB.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/RGBA_5b18822b.o: ../../src/gui/FixParamEd/ColorMode/RGBA.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling RGBA.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/Color_368bd47f.o: ../../src/gui/FixParamEd/Color.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling Color.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/Generic_9e9f733.o: ../../src/gui/FixParamEd/Generic.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling Generic.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
 $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o: ../../src/gui/ArtNetSetup.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling ArtNetSetup.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/FixtureEditor_fac650c.o: ../../src/gui/FixtureEditor.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling FixtureEditor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/MIDISetup_7c6b09b2.o: ../../src/gui/MIDISetup.cpp
