@@ -37,16 +37,20 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "FixtureSystem.h"
 //[/Headers]
 
 #include "RGBA.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
+
+namespace FixParamEd { namespace ColorMode {
 //[/MiscUserDefs]
 
 //==============================================================================
-RGBA::RGBA ()
+RGBA::RGBA (ValueTree prm)
+    : param(prm)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -296,12 +300,40 @@ RGBA::RGBA ()
 
 
     //[UserPreSize]
+
+    txtDMXR->addListener(this);
+    txtDMXA->addListener(this);
+    txtDMXG->addListener(this);
+    txtDMXB->addListener(this);
+    txtHueR->addListener(this);
+    txtHueRA->addListener(this);
+    txtHueA->addListener(this);
+    txtHueAG->addListener(this);
+    txtHueG->addListener(this);
+    txtHueGB->addListener(this);
+    txtHueB->addListener(this);
+    txtHueBR->addListener(this);
+
     //[/UserPreSize]
 
     setSize (160, 216);
 
 
     //[Constructor] You can add your own custom stuff here..
+
+    txtDMXR->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("red"), nullptr)));
+    txtDMXA->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("amber"), nullptr)));
+    txtDMXG->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("green"), nullptr)));
+    txtDMXB->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("blue"), nullptr)));
+    txtHueR->setText(String((float)VT_GetChildProperty(param, "red", "hue", 0.0f), 3));
+    txtHueRA->setText(String((float)VT_GetChildProperty(param, "red", "huemix", 0.1f), 3));
+    txtHueA->setText(String((float)VT_GetChildProperty(param, "amber", "hue", 0.2f), 3));
+    txtHueAG->setText(String((float)VT_GetChildProperty(param, "amber", "huemix", 0.32f), 3));
+    txtHueG->setText(String((float)VT_GetChildProperty(param, "green", "hue", 0.50f), 3));
+    txtHueGB->setText(String((float)VT_GetChildProperty(param, "green", "huemix", 0.625f), 3));
+    txtHueB->setText(String((float)VT_GetChildProperty(param, "blue", "hue", 0.75f), 3));
+    txtHueBR->setText(String((float)VT_GetChildProperty(param, "blue", "huemix", 0.875f), 3));
+
     //[/Constructor]
 }
 
@@ -361,6 +393,55 @@ void RGBA::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void RGBA::textEditorTextChanged(TextEditor &editorThatWasChanged)
+{
+    TEXTCHANGEDHANDLER_PRE;
+    DMXTEXTCHANGEDHANDLER;
+    if(&editorThatWasChanged == txtDMXR.get()){
+        if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
+            param.getOrCreateChildWithName(Identifier("red"), nullptr),
+            dmx_normal, dmx_fine, dmx_ultra);
+    }else if(&editorThatWasChanged == txtDMXA.get()){
+        if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
+            param.getOrCreateChildWithName(Identifier("amber"), nullptr),
+            dmx_normal, dmx_fine, dmx_ultra);
+    }else if(&editorThatWasChanged == txtDMXG.get()){
+        if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
+            param.getOrCreateChildWithName(Identifier("green"), nullptr),
+            dmx_normal, dmx_fine, dmx_ultra);
+    }else if(&editorThatWasChanged == txtDMXB.get()){
+        if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
+            param.getOrCreateChildWithName(Identifier("blue"), nullptr),
+            dmx_normal, dmx_fine, dmx_ultra);
+    }else if(&editorThatWasChanged == txtHueR.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "red", "hue", decval);
+    }else if(&editorThatWasChanged == txtHueRA.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "red", "huemix", decval);
+    }else if(&editorThatWasChanged == txtHueA.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "amber", "hue", decval);
+    }else if(&editorThatWasChanged == txtHueAG.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "amber", "huemix", decval);
+    }else if(&editorThatWasChanged == txtHueG.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "green", "hue", decval);
+    }else if(&editorThatWasChanged == txtHueGB.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "green", "huemix", decval);
+    }else if(&editorThatWasChanged == txtHueB.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "blue", "hue", decval);
+    }else if(&editorThatWasChanged == txtHueBR.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "blue", "huemix", decval);
+    }
+    TEXTCHANGEDHANDLER_POST;
+}
+
 //[/MiscUserCode]
 
 
@@ -374,9 +455,9 @@ void RGBA::resized()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="RGBA" componentName="" parentClasses="public Component, public TextEditor::Listener"
-                 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
-                 snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="160"
-                 initialHeight="216">
+                 constructorParams="ValueTree prm" variableInitialisers="param(prm)"
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="160" initialHeight="216">
   <BACKGROUND backgroundColour="ff323e44"/>
   <LABEL name="lblR" id="38f1aaac5d95b0ca" memberName="lblR" virtualName=""
          explicitFocusOrder="0" pos="0 24 23 24" edTextCol="ff000000"
@@ -475,5 +556,7 @@ END_JUCER_METADATA
 
 
 //[EndFile] You can add extra defines here...
+}}
+
 //[/EndFile]
 

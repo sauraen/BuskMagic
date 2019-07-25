@@ -166,7 +166,7 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
     lblAddParam->setColour (TextEditor::textColourId, Colours::black);
     lblAddParam->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblAddParam->setBounds (0, 360, 39, 24);
+    lblAddParam->setBounds (0, 384, 39, 24);
 
     cbxAddParam.reset (new ComboBox ("cbxAddParam"));
     addAndMakeVisible (cbxAddParam.get());
@@ -178,7 +178,7 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
     cbxAddParam->addItem (TRANS("Color"), 2);
     cbxAddParam->addListener (this);
 
-    cbxAddParam->setBounds (40, 360, 120, 24);
+    cbxAddParam->setBounds (40, 384, 120, 24);
 
     btnAddParam.reset (new TextButton ("btnAddParam"));
     addAndMakeVisible (btnAddParam.get());
@@ -186,7 +186,7 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
     btnAddParam->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnTop);
     btnAddParam->addListener (this);
 
-    btnAddParam->setBounds (160, 360, 23, 24);
+    btnAddParam->setBounds (160, 384, 23, 24);
 
     btnRemoveParam.reset (new TextButton ("btnRemoveParam"));
     addAndMakeVisible (btnRemoveParam.get());
@@ -263,7 +263,7 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
 
     TextListModel::Initialize(lsmParams, lstParams, this, this, "Params");
 
-    lstParams->setBounds(0, 120, 184, 240);
+    lstParams->setBounds(0, 120, 184, 264);
 
     txtManufacturer->addListener(this);
     txtFixtureName->addListener(this);
@@ -274,13 +274,13 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
 
     //[/UserPreSize]
 
-    setSize (344, 384);
+    setSize (344, 408);
 
 
     //[Constructor] You can add your own custom stuff here..
-    
+
     cbxAddParam->setSelectedItemIndex(0, dontSendNotification);
-    
+
     txtManufacturer->setText(fixture.getProperty(Identifier("manufacturer"), "[not specified]"));
     txtFixtureName->setText(fixture.getProperty(Identifier("name"), "[no name]"));
     txtProfileName->setText(fixture.getProperty(Identifier("profile"), "[not specified]"));
@@ -288,7 +288,7 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
     txtPName->setText("");
     txtPLetters->setText("");
     fillParamsBox();
-    
+
     //[/Constructor]
 }
 
@@ -516,7 +516,7 @@ void FixtureEditor::refreshParamControls()
     }
     if(parameditor != nullptr){
         addAndMakeVisible(parameditor.get());
-        parameditor->setBounds(184, 144, 160, 240);
+        parameditor->setBounds(184, 144, 160, 264);
     }
 }
 
@@ -544,7 +544,7 @@ BEGIN_JUCER_METADATA
                  parentClasses="public Component, public TextListModel::Listener, public TextEditor::Listener"
                  constructorParams="ValueTree fxt" variableInitialisers="fixture(fxt)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="344" initialHeight="384">
+                 fixedSize="1" initialWidth="344" initialHeight="408">
   <BACKGROUND backgroundColour="ff323e44"/>
   <LABEL name="lblManufacturer" id="4f03172ce75ed418" memberName="lblManufacturer"
          virtualName="" explicitFocusOrder="0" pos="0 0 96 24" edTextCol="ff000000"
@@ -587,16 +587,16 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="lblAddParam" id="be324afea060f313" memberName="lblAddParam"
-         virtualName="" explicitFocusOrder="0" pos="0 360 39 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="0 384 39 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Add:" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="cbxAddParam" id="e40645e8dd385269" memberName="cbxAddParam"
-            virtualName="" explicitFocusOrder="0" pos="40 360 120 24" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="40 384 120 24" editable="0"
             layout="33" items="Generic&#10;Color" textWhenNonSelected="Generic"
             textWhenNoItems="Error"/>
   <TEXTBUTTON name="btnAddParam" id="7ceb28d89a1747a0" memberName="btnAddParam"
-              virtualName="" explicitFocusOrder="0" pos="160 360 23 24" buttonText="+"
+              virtualName="" explicitFocusOrder="0" pos="160 384 23 24" buttonText="+"
               connectedEdges="5" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnRemoveParam" id="506bcac0d99da01e" memberName="btnRemoveParam"
               virtualName="" explicitFocusOrder="0" pos="112 96 23 24" buttonText="&#8722;"

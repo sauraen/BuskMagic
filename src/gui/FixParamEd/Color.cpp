@@ -37,6 +37,10 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "FixtureSystem.h"
+#include "gui/FixParamEd/ColorMode/CMY.h"
+#include "gui/FixParamEd/ColorMode/RGB.h"
+#include "gui/FixParamEd/ColorMode/RGBA.h"
 //[/Headers]
 
 #include "Color.h"
@@ -80,14 +84,43 @@ Color::Color (ValueTree prm)
 
     cbxMode->setBounds (56, 0, 104, 24);
 
+    lblW.reset (new Label ("lblW",
+                           TRANS("W:")));
+    addAndMakeVisible (lblW.get());
+    lblW->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lblW->setJustificationType (Justification::centredLeft);
+    lblW->setEditable (false, false, false);
+    lblW->setColour (TextEditor::textColourId, Colours::black);
+    lblW->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    lblW->setBounds (0, 240, 24, 24);
+
+    txtDMXW.reset (new TextEditor ("txtDMXW"));
+    addAndMakeVisible (txtDMXW.get());
+    txtDMXW->setMultiLine (false);
+    txtDMXW->setReturnKeyStartsNewLine (false);
+    txtDMXW->setReadOnly (false);
+    txtDMXW->setScrollbarsShown (true);
+    txtDMXW->setCaretVisible (true);
+    txtDMXW->setPopupMenuEnabled (true);
+    txtDMXW->setText (String());
+
+    txtDMXW->setBounds (24, 240, 72, 24);
+
 
     //[UserPreSize]
+    txtDMXW->addListener(this);
+
     //[/UserPreSize]
 
-    setSize (160, 240);
+    setSize (160, 264);
 
 
     //[Constructor] You can add your own custom stuff here..
+
+    cbxMode->setText(param.getProperty(Identifier("colormode"), "RGB").toString());
+    fillModeControls();
+
     //[/Constructor]
 }
 
@@ -98,6 +131,8 @@ Color::~Color()
 
     lblMode = nullptr;
     cbxMode = nullptr;
+    lblW = nullptr;
+    txtDMXW = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -142,6 +177,8 @@ void Color::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == cbxMode.get())
     {
         //[UserComboBoxCode_cbxMode] -- add your combo box handling code here..
+        param.setProperty(Identifier("colormode"), cbxMode->getText(), nullptr);
+        fillModeControls();
         //[/UserComboBoxCode_cbxMode]
     }
 
@@ -152,6 +189,47 @@ void Color::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void Color::textEditorTextChanged(TextEditor &editorThatWasChanged)
+{
+    TEXTCHANGEDHANDLER_PRE;
+    DMXTEXTCHANGEDHANDLER;
+    if(&editorThatWasChanged == txtDMXW.get()){
+        if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
+            param.getOrCreateChildWithName(Identifier("white"), nullptr),
+            dmx_normal, dmx_fine, dmx_ultra);
+    }
+    TEXTCHANGEDHANDLER_POST;
+}
+
+void Color::fillModeControls()
+{
+    String mode = param.getProperty(Identifier("colormode"), "RGB").toString();
+    bool white = (mode == "RGBW" || mode == "RGBAW");
+    lblW->setVisible(white);
+    txtDMXW->setVisible(white);
+    if(white){
+        txtDMXW->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName("white", nullptr)));
+    }else{
+        if(param.getChildWithName(Identifier("white")).isValid()){
+            param.removeChild(param.getChildWithName(Identifier("white")), nullptr);
+        }
+    }
+    if(mode == "RGB" || mode == "RGBW"){
+        coloreditor.reset(new FixParamEd::ColorMode::RGB(param));
+    }else if(mode == "RGBA" || mode == "RGBAW"){
+        coloreditor.reset(new FixParamEd::ColorMode::RGBA(param));
+    }else if(mode == "CMY"){
+        coloreditor.reset(new FixParamEd::ColorMode::CMY(param));
+    }else{
+        coloreditor = nullptr;
+    }
+    if(coloreditor != nullptr){
+        addAndMakeVisible(coloreditor.get());
+        coloreditor->setBounds(0, 24, 160, 216);
+    }
+}
+
 //[/MiscUserCode]
 
 
@@ -164,10 +242,10 @@ void Color::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="Color" componentName="" parentClasses="public Component"
+<JUCER_COMPONENT documentType="Component" className="Color" componentName="" parentClasses="public Component, public TextEditor::Listener"
                  constructorParams="ValueTree prm" variableInitialisers="param(prm)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="160" initialHeight="240">
+                 fixedSize="1" initialWidth="160" initialHeight="264">
   <BACKGROUND backgroundColour="ff323e44">
     <RECT pos="0 24 160 216" fill="solid: ff2e2aa5" hasStroke="0"/>
   </BACKGROUND>
@@ -180,6 +258,14 @@ BEGIN_JUCER_METADATA
             explicitFocusOrder="0" pos="56 0 104 24" editable="0" layout="33"
             items="RGB&#10;RGBW&#10;RGBA&#10;RGBAW&#10;CMY" textWhenNonSelected=""
             textWhenNoItems="(no choices)"/>
+  <LABEL name="lblW" id="25cff9e153e75d21" memberName="lblW" virtualName=""
+         explicitFocusOrder="0" pos="0 240 24 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="W:" editableSingleClick="0" editableDoubleClick="0"
+         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
+         kerning="0.0" bold="0" italic="0" justification="33"/>
+  <TEXTEDITOR name="txtDMXW" id="9f7ee9c7e89d53ab" memberName="txtDMXW" virtualName=""
+              explicitFocusOrder="0" pos="24 240 72 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

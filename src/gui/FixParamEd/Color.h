@@ -56,6 +56,7 @@ namespace FixParamEd {
                                                                     //[/Comments]
 */
 class Color  : public Component,
+               public TextEditor::Listener,
                public ComboBox::Listener
 {
 public:
@@ -65,6 +66,9 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
+
+    void fillModeControls();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -76,11 +80,15 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     ValueTree param;
+
+    std::unique_ptr<Component> coloreditor;
     //[/UserVariables]
 
     //==============================================================================
     std::unique_ptr<Label> lblMode;
     std::unique_ptr<ComboBox> cbxMode;
+    std::unique_ptr<Label> lblW;
+    std::unique_ptr<TextEditor> txtDMXW;
 
 
     //==============================================================================

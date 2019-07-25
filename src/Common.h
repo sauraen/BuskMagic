@@ -28,6 +28,7 @@ inline bool isInt(String str, bool allowNegative = true){
     for(int i=0; i<s.length(); ++s){
         if(s[i] == '-'){
             if(i != 0 || !allowNegative) return false;
+            continue;
         }else if(s[i] >= '0' && s[i] <= '9'){
             continue;
         }else{
@@ -44,6 +45,28 @@ inline bool isHex(String str, bool allow0x = true){
     CharPointer_UTF32 s = str.toUTF32();
     for(int i=0; i<s.length(); ++s){
         if((s[i] >= '0' && s[i] <= '9') || (s[i] >= 'a' && s[i] <= 'f')){
+            continue;
+        }else{
+            return false;
+        }
+    }
+    return true;
+}
+
+inline bool isDec(String str, bool allowNegative = true){
+    str = str.trim();
+    if(str.isEmpty()) return false;
+    CharPointer_UTF32 s = str.toUTF32();
+    bool decimalpoint = false;
+    for(int i=0; i<s.length(); ++s){
+        if(s[i] == '-'){
+            if(i != 0 || !allowNegative) return false;
+            continue;
+        }else if(s[i] == '.'){
+            if(decimalpoint) return false;
+            decimalpoint = true;
+            continue;
+        }else if(s[i] >= '0' && s[i] <= '9'){
             continue;
         }else{
             return false;
@@ -83,10 +106,27 @@ inline String safeASCII(char c){
     int val = text.getIntValue(); \
     bool ishex = isHex(text); \
     int hexval = text.getHexValue32(); \
+    bool isdec = isDec(text); \
+    float decval = text.getFloatValue(); \
     REQUIRESEMICOLON
 
 #define TEXTCHANGEDHANDLER_POST \
     editorThatWasChanged.setColour(TextEditor::backgroundColourId, \
         turnRed ? Colours::red : Colours::darkgrey); \
     REQUIRESEMICOLON
+
+inline var VT_GetChildProperty(ValueTree v, String cname, String pname, const var &defval = ""){
+    return v.getOrCreateChildWithName(Identifier(cname), nullptr).getProperty(Identifier(pname), defval);
+}
+inline void VT_SetChildProperty(ValueTree v, String cname, String pname, const var &value){
+    v.getOrCreateChildWithName(Identifier(cname), nullptr).setProperty(Identifier(pname), value, nullptr);
+}
+inline void VT_RemoveChildWithName(ValueTree v, String name){
+    ValueTree c = v.getChildWithName(Identifier(name));
+    if(c.isValid()){
+        v.removeChild(c, nullptr);
+    }
+}
+    
+    
     

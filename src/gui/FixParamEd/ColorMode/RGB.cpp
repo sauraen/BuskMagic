@@ -37,16 +37,20 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "FixtureSystem.h"
 //[/Headers]
 
 #include "RGB.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
+
+namespace FixParamEd { namespace ColorMode {
 //[/MiscUserDefs]
 
 //==============================================================================
-RGB::RGB ()
+RGB::RGB (ValueTree prm)
+    : param(prm)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -238,12 +242,34 @@ RGB::RGB ()
 
 
     //[UserPreSize]
+
+    txtDMXR->addListener(this);
+    txtDMXG->addListener(this);
+    txtDMXB->addListener(this);
+    txtHueR->addListener(this);
+    txtHueRG->addListener(this);
+    txtHueG->addListener(this);
+    txtHueGB->addListener(this);
+    txtHueB->addListener(this);
+    txtHueBR->addListener(this);
+
     //[/UserPreSize]
 
     setSize (160, 216);
 
 
     //[Constructor] You can add your own custom stuff here..
+
+    txtDMXR->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("red"), nullptr)));
+    txtDMXG->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("green"), nullptr)));
+    txtDMXB->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("blue"), nullptr)));
+    txtHueR->setText(String((float)VT_GetChildProperty(param, "red", "hue", 0.0f), 3));
+    txtHueRG->setText(String((float)VT_GetChildProperty(param, "red", "huemix", 0.25f), 3));
+    txtHueG->setText(String((float)VT_GetChildProperty(param, "green", "hue", 0.50f), 3));
+    txtHueGB->setText(String((float)VT_GetChildProperty(param, "green", "huemix", 0.625f), 3));
+    txtHueB->setText(String((float)VT_GetChildProperty(param, "blue", "hue", 0.75f), 3));
+    txtHueBR->setText(String((float)VT_GetChildProperty(param, "blue", "huemix", 0.875f), 3));
+
     //[/Constructor]
 }
 
@@ -298,6 +324,45 @@ void RGB::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void RGB::textEditorTextChanged(TextEditor &editorThatWasChanged)
+{
+    TEXTCHANGEDHANDLER_PRE;
+    DMXTEXTCHANGEDHANDLER;
+    if(&editorThatWasChanged == txtDMXR.get()){
+        if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
+            param.getOrCreateChildWithName(Identifier("red"), nullptr),
+            dmx_normal, dmx_fine, dmx_ultra);
+    }else if(&editorThatWasChanged == txtDMXG.get()){
+        if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
+            param.getOrCreateChildWithName(Identifier("green"), nullptr),
+            dmx_normal, dmx_fine, dmx_ultra);
+    }else if(&editorThatWasChanged == txtDMXB.get()){
+        if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
+            param.getOrCreateChildWithName(Identifier("blue"), nullptr),
+            dmx_normal, dmx_fine, dmx_ultra);
+    }else if(&editorThatWasChanged == txtHueR.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "red", "hue", decval);
+    }else if(&editorThatWasChanged == txtHueRG.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "red", "huemix", decval);
+    }else if(&editorThatWasChanged == txtHueG.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "green", "hue", decval);
+    }else if(&editorThatWasChanged == txtHueGB.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "green", "huemix", decval);
+    }else if(&editorThatWasChanged == txtHueB.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "blue", "hue", decval);
+    }else if(&editorThatWasChanged == txtHueBR.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "blue", "huemix", decval);
+    }
+    TEXTCHANGEDHANDLER_POST;
+}
+
 //[/MiscUserCode]
 
 
@@ -311,9 +376,9 @@ void RGB::resized()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="RGB" componentName="" parentClasses="public Component, public TextEditor::Listener"
-                 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
-                 snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="160"
-                 initialHeight="216">
+                 constructorParams="ValueTree prm" variableInitialisers="param(prm)"
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="160" initialHeight="216">
   <BACKGROUND backgroundColour="ff323e44"/>
   <LABEL name="lblR" id="38f1aaac5d95b0ca" memberName="lblR" virtualName=""
          explicitFocusOrder="0" pos="0 24 23 24" edTextCol="ff000000"
@@ -391,5 +456,7 @@ END_JUCER_METADATA
 
 
 //[EndFile] You can add extra defines here...
+}}
+
 //[/EndFile]
 

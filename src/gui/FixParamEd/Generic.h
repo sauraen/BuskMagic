@@ -65,6 +65,8 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+
+    void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -79,7 +81,7 @@ private:
 
     //==============================================================================
     std::unique_ptr<Label> lblValue;
-    std::unique_ptr<TextEditor> textEditor;
+    std::unique_ptr<TextEditor> txtDMX;
     std::unique_ptr<Label> lblHelp;
 
 

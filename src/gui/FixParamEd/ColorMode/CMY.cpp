@@ -37,16 +37,20 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "FixtureSystem.h"
 //[/Headers]
 
 #include "CMY.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
+
+namespace FixParamEd { namespace ColorMode {
 //[/MiscUserDefs]
 
 //==============================================================================
-CMY::CMY ()
+CMY::CMY (ValueTree prm)
+    : param(prm)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -238,12 +242,34 @@ CMY::CMY ()
 
 
     //[UserPreSize]
+
+    txtDMXC->addListener(this);
+    txtDMXM->addListener(this);
+    txtDMXY->addListener(this);
+    txtHueC->addListener(this);
+    txtHueCM->addListener(this);
+    txtHueM->addListener(this);
+    txtHueMY->addListener(this);
+    txtHueY->addListener(this);
+    txtHueYC->addListener(this);
+
     //[/UserPreSize]
 
     setSize (160, 216);
 
 
     //[Constructor] You can add your own custom stuff here..
+
+    txtDMXC->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("cyan"), nullptr)));
+    txtDMXM->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("magenta"), nullptr)));
+    txtDMXY->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("yellow"), nullptr)));
+    txtHueC->setText(String((float)VT_GetChildProperty(param, "cyan", "hue", 0.625f), 3));
+    txtHueCM->setText(String((float)VT_GetChildProperty(param, "cyan", "huemix", 0.75f), 3));
+    txtHueM->setText(String((float)VT_GetChildProperty(param, "magenta", "hue", 0.875f), 3));
+    txtHueMY->setText(String((float)VT_GetChildProperty(param, "magenta", "huemix", 0.0f), 3));
+    txtHueY->setText(String((float)VT_GetChildProperty(param, "yellow", "hue", 0.25f), 3));
+    txtHueYC->setText(String((float)VT_GetChildProperty(param, "yellow", "huemix", 0.5f), 3));
+
     //[/Constructor]
 }
 
@@ -298,6 +324,45 @@ void CMY::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void CMY::textEditorTextChanged(TextEditor &editorThatWasChanged)
+{
+    TEXTCHANGEDHANDLER_PRE;
+    DMXTEXTCHANGEDHANDLER;
+    if(&editorThatWasChanged == txtDMXC.get()){
+        if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
+            param.getOrCreateChildWithName(Identifier("cyan"), nullptr),
+            dmx_normal, dmx_fine, dmx_ultra);
+    }else if(&editorThatWasChanged == txtDMXM.get()){
+        if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
+            param.getOrCreateChildWithName(Identifier("magenta"), nullptr),
+            dmx_normal, dmx_fine, dmx_ultra);
+    }else if(&editorThatWasChanged == txtDMXY.get()){
+        if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
+            param.getOrCreateChildWithName(Identifier("yellow"), nullptr),
+            dmx_normal, dmx_fine, dmx_ultra);
+    }else if(&editorThatWasChanged == txtHueC.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "cyan", "hue", decval);
+    }else if(&editorThatWasChanged == txtHueCM.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "cyan", "huemix", decval);
+    }else if(&editorThatWasChanged == txtHueM.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "magenta", "hue", decval);
+    }else if(&editorThatWasChanged == txtHueMY.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "magenta", "huemix", decval);
+    }else if(&editorThatWasChanged == txtHueY.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "yellow", "hue", decval);
+    }else if(&editorThatWasChanged == txtHueYC.get()){
+        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, "yellow", "huemix", decval);
+    }
+    TEXTCHANGEDHANDLER_POST;
+}
+
 //[/MiscUserCode]
 
 
@@ -311,9 +376,9 @@ void CMY::resized()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="CMY" componentName="" parentClasses="public Component, public TextEditor::Listener"
-                 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
-                 snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="160"
-                 initialHeight="216">
+                 constructorParams="ValueTree prm" variableInitialisers="param(prm)"
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="160" initialHeight="216">
   <BACKGROUND backgroundColour="ff323e44"/>
   <LABEL name="lblM" id="38f1aaac5d95b0ca" memberName="lblM" virtualName=""
          explicitFocusOrder="0" pos="0 144 23 24" edTextCol="ff000000"
@@ -391,5 +456,7 @@ END_JUCER_METADATA
 
 
 //[EndFile] You can add extra defines here...
+}}
+
 //[/EndFile]
 

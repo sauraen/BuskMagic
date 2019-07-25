@@ -37,6 +37,7 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "FixtureSystem.h"
 //[/Headers]
 
 #include "Generic.h"
@@ -54,7 +55,7 @@ Generic::Generic (ValueTree prm)
     //[/Constructor_pre]
 
     lblValue.reset (new Label ("lblValue",
-                               TRANS("Value:")));
+                               TRANS("Generic:")));
     addAndMakeVisible (lblValue.get());
     lblValue->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lblValue->setJustificationType (Justification::centredLeft);
@@ -64,17 +65,17 @@ Generic::Generic (ValueTree prm)
 
     lblValue->setBounds (0, 0, 64, 24);
 
-    textEditor.reset (new TextEditor ("new text editor"));
-    addAndMakeVisible (textEditor.get());
-    textEditor->setMultiLine (false);
-    textEditor->setReturnKeyStartsNewLine (false);
-    textEditor->setReadOnly (false);
-    textEditor->setScrollbarsShown (true);
-    textEditor->setCaretVisible (true);
-    textEditor->setPopupMenuEnabled (true);
-    textEditor->setText (String());
+    txtDMX.reset (new TextEditor ("txtDMX"));
+    addAndMakeVisible (txtDMX.get());
+    txtDMX->setMultiLine (false);
+    txtDMX->setReturnKeyStartsNewLine (false);
+    txtDMX->setReadOnly (false);
+    txtDMX->setScrollbarsShown (true);
+    txtDMX->setCaretVisible (true);
+    txtDMX->setPopupMenuEnabled (true);
+    txtDMX->setText (String());
 
-    textEditor->setBounds (64, 0, 72, 24);
+    txtDMX->setBounds (64, 0, 72, 24);
 
     lblHelp.reset (new Label ("lblHelp",
                               TRANS("(Enter DMX channel number, 1-indexed. All parameter boxes also accept XX,YY or XX,YY,ZZ for normal,fine,ultra.)\n"
@@ -92,12 +93,18 @@ Generic::Generic (ValueTree prm)
 
 
     //[UserPreSize]
+
+    txtDMX->addListener(this);
+
     //[/UserPreSize]
 
-    setSize (160, 240);
+    setSize (160, 264);
 
 
     //[Constructor] You can add your own custom stuff here..
+
+    txtDMX->setText(FixtureSystem::GetDMXText(param));
+
     //[/Constructor]
 }
 
@@ -107,7 +114,7 @@ Generic::~Generic()
     //[/Destructor_pre]
 
     lblValue = nullptr;
-    textEditor = nullptr;
+    txtDMX = nullptr;
     lblHelp = nullptr;
 
 
@@ -139,6 +146,17 @@ void Generic::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void Generic::textEditorTextChanged(TextEditor &editorThatWasChanged)
+{
+    TEXTCHANGEDHANDLER_PRE;
+    DMXTEXTCHANGEDHANDLER;
+    if(&editorThatWasChanged == txtDMX.get()){
+        if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(param, dmx_normal, dmx_fine, dmx_ultra);
+    }
+    TEXTCHANGEDHANDLER_POST;
+}
+
 //[/MiscUserCode]
 
 
@@ -155,17 +173,16 @@ BEGIN_JUCER_METADATA
                  parentClasses="public Component, public TextEditor::Listener"
                  constructorParams="ValueTree prm" variableInitialisers="param(prm)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="160" initialHeight="240">
+                 fixedSize="1" initialWidth="160" initialHeight="264">
   <BACKGROUND backgroundColour="ff323e44"/>
   <LABEL name="lblValue" id="fb7fb6fce39bf2d2" memberName="lblValue" virtualName=""
          explicitFocusOrder="0" pos="0 0 64 24" edTextCol="ff000000" edBkgCol="0"
-         labelText="Value:" editableSingleClick="0" editableDoubleClick="0"
+         labelText="Generic:" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="new text editor" id="7193b68ebf01b042" memberName="textEditor"
-              virtualName="" explicitFocusOrder="0" pos="64 0 72 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+  <TEXTEDITOR name="txtDMX" id="7193b68ebf01b042" memberName="txtDMX" virtualName=""
+              explicitFocusOrder="0" pos="64 0 72 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblHelp" id="cc2c30a1dc5fb8ad" memberName="lblHelp" virtualName=""
          explicitFocusOrder="0" pos="0 32 150 200" textCol="ffcdcdcd"
          edTextCol="ff000000" edBkgCol="0" labelText="(Enter DMX channel number, 1-indexed. All parameter boxes also accept XX,YY or XX,YY,ZZ for normal,fine,ultra.)&#10;&#10;(Use Generic parameter type for dimmer, zoom, focus, or any other single continuous parameter.)"

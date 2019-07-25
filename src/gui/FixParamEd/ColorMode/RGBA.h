@@ -41,6 +41,8 @@
 
 #include "JuceHeader.h"
 #include "Common.h"
+
+namespace FixParamEd { namespace ColorMode {
 //[/Headers]
 
 
@@ -58,11 +60,12 @@ class RGBA  : public Component,
 {
 public:
     //==============================================================================
-    RGBA ();
+    RGBA (ValueTree prm);
     ~RGBA();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -72,6 +75,7 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+    ValueTree param;
     //[/UserVariables]
 
     //==============================================================================
@@ -103,5 +107,7 @@ private:
 };
 
 //[EndFile] You can add extra defines here...
+}}
+
 //[/EndFile]
 

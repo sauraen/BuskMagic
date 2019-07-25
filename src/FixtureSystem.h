@@ -17,3 +17,18 @@
 */
 
 #pragma once
+#include "JuceHeader.h"
+#include "Common.h"
+
+#define DMXTEXTCHANGEDHANDLER \
+    int dmx_normal, dmx_fine, dmx_ultra; \
+    bool dmx_ok = FixtureSystem::ParseDMXText(text, \
+            (int)param.getParent().getProperty(Identifier("footprint"), 1), \
+            dmx_normal, dmx_fine, dmx_ultra); \
+    REQUIRESEMICOLON
+
+namespace FixtureSystem {
+    bool ParseDMXText(String text, int footprint, int &normal, int &fine, int &ultra);
+    String GetDMXText(ValueTree parent);
+    void SetDMXChannels(ValueTree parent, int dmx_normal, int dmx_fine, int dmx_ultra);
+}
