@@ -22,7 +22,7 @@
 #include "Common.h"
 
 class TextListModel : public ListBoxModel {
-    public:
+public:
     class Listener{
         public:
         virtual void rowSelected(TextListModel* parent, int row)=0;
@@ -48,7 +48,10 @@ class TextListModel : public ListBoxModel {
     void selectedRowsChanged(int lastRowSelected) override;
     void listBoxItemDoubleClicked(int row, const MouseEvent& e) override;
     
-    private:
+    static void Initialize(std::unique_ptr<TextListModel> &lsm, 
+        std::unique_ptr<ListBox> &lst, Component *parent, Listener *listener, String name);
+    
+private:
     StringArray strings;
     Listener* listener;
     Font font;

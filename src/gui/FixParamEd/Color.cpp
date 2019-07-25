@@ -18,16 +18,38 @@
 */
 
 //[Headers] You can add your own extra header files here...
+
+/*
+* BuskMagic - Live lighting control system
+* Copyright (C) 2019 Sauraen
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 //[/Headers]
 
 #include "Color.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
+
+namespace FixParamEd {
 //[/MiscUserDefs]
 
 //==============================================================================
-Color::Color ()
+Color::Color (ValueTree prm)
+    : param(prm)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -143,9 +165,9 @@ void Color::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Color" componentName="" parentClasses="public Component"
-                 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
-                 snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="160"
-                 initialHeight="240">
+                 constructorParams="ValueTree prm" variableInitialisers="param(prm)"
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="160" initialHeight="240">
   <BACKGROUND backgroundColour="ff323e44">
     <RECT pos="0 24 160 216" fill="solid: ff2e2aa5" hasStroke="0"/>
   </BACKGROUND>
@@ -166,5 +188,7 @@ END_JUCER_METADATA
 
 
 //[EndFile] You can add extra defines here...
+}
+
 //[/EndFile]
 

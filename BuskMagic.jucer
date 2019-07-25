@@ -37,10 +37,13 @@
             file="src/ArtNetSystem.cpp"/>
       <FILE id="ofkb2X" name="ArtNetSystem.h" compile="0" resource="0" file="src/ArtNetSystem.h"/>
       <FILE id="LqBOIb" name="Common.h" compile="0" resource="0" file="src/Common.h"/>
-      <FILE id="k7pcwg" name="MainComponent.h" compile="0" resource="0" file="src/MainComponent.h"/>
+      <FILE id="TlotCJ" name="FixtureSystem.cpp" compile="1" resource="0"
+            file="src/FixtureSystem.cpp"/>
+      <FILE id="G7rn3d" name="FixtureSystem.h" compile="0" resource="0" file="src/FixtureSystem.h"/>
+      <FILE id="phqWng" name="Main.cpp" compile="1" resource="0" file="src/Main.cpp"/>
       <FILE id="lAhqSj" name="MainComponent.cpp" compile="1" resource="0"
             file="src/MainComponent.cpp"/>
-      <FILE id="phqWng" name="Main.cpp" compile="1" resource="0" file="src/Main.cpp"/>
+      <FILE id="k7pcwg" name="MainComponent.h" compile="0" resource="0" file="src/MainComponent.h"/>
       <FILE id="titMmb" name="MIDISystem.cpp" compile="1" resource="0" file="src/MIDISystem.cpp"/>
       <FILE id="Hmf3m6" name="MIDISystem.h" compile="0" resource="0" file="src/MIDISystem.h"/>
     </GROUP>

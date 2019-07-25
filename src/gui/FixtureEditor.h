@@ -20,7 +20,28 @@
 #pragma once
 
 //[Headers]     -- You can add your own extra header files here --
-#include "../../JuceLibraryCode/JuceHeader.h"
+
+/*
+* BuskMagic - Live lighting control system
+* Copyright (C) 2019 Sauraen
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#include "JuceHeader.h"
+#include "Common.h"
+#include "gui/TextListModel.h"
 //[/Headers]
 
 
@@ -41,11 +62,17 @@ class FixtureEditor  : public Component,
 {
 public:
     //==============================================================================
-    FixtureEditor ();
+    FixtureEditor (ValueTree fxt);
     ~FixtureEditor();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    void rowSelected(TextListModel *parent, int row) override;
+    void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
+
+    void fillParamsBox();
+    void refreshParamControls();
+    static String getParamDesc(ValueTree prm);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -57,6 +84,12 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+    ValueTree fixture, param;
+
+    std::unique_ptr<TextListModel> lsmParams;
+    std::unique_ptr<ListBox> lstParams;
+
+    std::unique_ptr<Component> parameditor;
     //[/UserVariables]
 
     //==============================================================================
@@ -76,9 +109,9 @@ private:
     std::unique_ptr<TextButton> btnParamUp;
     std::unique_ptr<TextButton> btnParamDown;
     std::unique_ptr<Label> lblPName;
-    std::unique_ptr<TextEditor> textEditor;
-    std::unique_ptr<Label> label;
-    std::unique_ptr<TextEditor> textEditor2;
+    std::unique_ptr<TextEditor> txtPName;
+    std::unique_ptr<Label> lblPLetters;
+    std::unique_ptr<TextEditor> txtPLetters;
 
 
     //==============================================================================

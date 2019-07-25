@@ -77,4 +77,16 @@ void TextListModel::setListener(Listener* l){
 void TextListModel::setFont(Font newfont){
     font = newfont;
 }
+
+void TextListModel::Initialize(std::unique_ptr<TextListModel> &lsm, 
+        std::unique_ptr<ListBox> &lst, Component *parent, Listener *listener, String name){
+    lsm.reset(new TextListModel());
+    lsm->setListener(listener);
+    lst.reset(new ListBox(name, lsm.get()));
+    parent->addAndMakeVisible(lst.get());
+    lst->setMultipleSelectionEnabled(false);
+    lst->setRowHeight(16);
+    lst->setOutlineThickness(1);
+    lst->setColour(ListBox::outlineColourId, Colours::lightgrey);
+}
     

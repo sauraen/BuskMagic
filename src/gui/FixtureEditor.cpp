@@ -18,6 +18,27 @@
 */
 
 //[Headers] You can add your own extra header files here...
+
+/*
+* BuskMagic - Live lighting control system
+* Copyright (C) 2019 Sauraen
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#include "gui/FixParamEd/Generic.h"
+#include "gui/FixParamEd/Color.h"
 //[/Headers]
 
 #include "FixtureEditor.h"
@@ -27,7 +48,8 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-FixtureEditor::FixtureEditor ()
+FixtureEditor::FixtureEditor (ValueTree fxt)
+    : fixture(fxt)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -150,23 +172,10 @@ FixtureEditor::FixtureEditor ()
     addAndMakeVisible (cbxAddParam.get());
     cbxAddParam->setEditableText (false);
     cbxAddParam->setJustificationType (Justification::centredLeft);
-    cbxAddParam->setTextWhenNothingSelected (TRANS("Dimmer"));
+    cbxAddParam->setTextWhenNothingSelected (TRANS("Generic"));
     cbxAddParam->setTextWhenNoChoicesAvailable (TRANS("Error"));
-    cbxAddParam->addItem (TRANS("Dimmer"), 1);
+    cbxAddParam->addItem (TRANS("Generic"), 1);
     cbxAddParam->addItem (TRANS("Color"), 2);
-    cbxAddParam->addItem (TRANS("Colorwheel"), 3);
-    cbxAddParam->addItem (TRANS("Pan"), 4);
-    cbxAddParam->addItem (TRANS("Tilt"), 5);
-    cbxAddParam->addItem (TRANS("Zoom"), 6);
-    cbxAddParam->addItem (TRANS("Focus"), 7);
-    cbxAddParam->addItem (TRANS("Frost"), 8);
-    cbxAddParam->addItem (TRANS("Iris"), 9);
-    cbxAddParam->addItem (TRANS("Shutter"), 10);
-    cbxAddParam->addItem (TRANS("Prism"), 11);
-    cbxAddParam->addItem (TRANS("Gobo"), 12);
-    cbxAddParam->addItem (TRANS("Effect"), 13);
-    cbxAddParam->addItem (TRANS("Control"), 14);
-    cbxAddParam->addItem (TRANS("Misc"), 15);
     cbxAddParam->addListener (this);
 
     cbxAddParam->setBounds (40, 360, 120, 24);
@@ -214,49 +223,72 @@ FixtureEditor::FixtureEditor ()
 
     lblPName->setBounds (184, 96, 56, 24);
 
-    textEditor.reset (new TextEditor ("new text editor"));
-    addAndMakeVisible (textEditor.get());
-    textEditor->setMultiLine (false);
-    textEditor->setReturnKeyStartsNewLine (false);
-    textEditor->setReadOnly (false);
-    textEditor->setScrollbarsShown (true);
-    textEditor->setCaretVisible (true);
-    textEditor->setPopupMenuEnabled (true);
-    textEditor->setText (String());
+    txtPName.reset (new TextEditor ("txtPName"));
+    addAndMakeVisible (txtPName.get());
+    txtPName->setMultiLine (false);
+    txtPName->setReturnKeyStartsNewLine (false);
+    txtPName->setReadOnly (false);
+    txtPName->setScrollbarsShown (true);
+    txtPName->setCaretVisible (true);
+    txtPName->setPopupMenuEnabled (true);
+    txtPName->setText (String());
 
-    textEditor->setBounds (240, 96, 104, 24);
+    txtPName->setBounds (240, 96, 104, 24);
 
-    label.reset (new Label ("new label",
-                            TRANS("Short name (1-2 ltrs):")));
-    addAndMakeVisible (label.get());
-    label->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    label->setJustificationType (Justification::centredLeft);
-    label->setEditable (false, false, false);
-    label->setColour (TextEditor::textColourId, Colours::black);
-    label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    lblPLetters.reset (new Label ("lblPLetters",
+                                  TRANS("Short name (1-2 ltrs):")));
+    addAndMakeVisible (lblPLetters.get());
+    lblPLetters->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lblPLetters->setJustificationType (Justification::centredLeft);
+    lblPLetters->setEditable (false, false, false);
+    lblPLetters->setColour (TextEditor::textColourId, Colours::black);
+    lblPLetters->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    label->setBounds (184, 120, 136, 24);
+    lblPLetters->setBounds (184, 120, 136, 24);
 
-    textEditor2.reset (new TextEditor ("new text editor"));
-    addAndMakeVisible (textEditor2.get());
-    textEditor2->setMultiLine (false);
-    textEditor2->setReturnKeyStartsNewLine (false);
-    textEditor2->setReadOnly (false);
-    textEditor2->setScrollbarsShown (true);
-    textEditor2->setCaretVisible (true);
-    textEditor2->setPopupMenuEnabled (true);
-    textEditor2->setText (String());
+    txtPLetters.reset (new TextEditor ("txtPLetters"));
+    addAndMakeVisible (txtPLetters.get());
+    txtPLetters->setMultiLine (false);
+    txtPLetters->setReturnKeyStartsNewLine (false);
+    txtPLetters->setReadOnly (false);
+    txtPLetters->setScrollbarsShown (true);
+    txtPLetters->setCaretVisible (true);
+    txtPLetters->setPopupMenuEnabled (true);
+    txtPLetters->setText (String());
 
-    textEditor2->setBounds (320, 120, 24, 24);
+    txtPLetters->setBounds (320, 120, 24, 24);
 
 
     //[UserPreSize]
+
+    TextListModel::Initialize(lsmParams, lstParams, this, this, "Params");
+
+    lstParams->setBounds(0, 120, 184, 240);
+
+    txtManufacturer->addListener(this);
+    txtFixtureName->addListener(this);
+    txtProfileName->addListener(this);
+    txtDMX->addListener(this);
+    txtPName->addListener(this);
+    txtPLetters->addListener(this);
+
     //[/UserPreSize]
 
     setSize (344, 384);
 
 
     //[Constructor] You can add your own custom stuff here..
+    
+    cbxAddParam->setSelectedItemIndex(0, dontSendNotification);
+    
+    txtManufacturer->setText(fixture.getProperty(Identifier("manufacturer"), "[not specified]"));
+    txtFixtureName->setText(fixture.getProperty(Identifier("name"), "[no name]"));
+    txtProfileName->setText(fixture.getProperty(Identifier("profile"), "[not specified]"));
+    txtDMX->setText(fixture.getProperty(Identifier("footprint"), 0));
+    txtPName->setText("");
+    txtPLetters->setText("");
+    fillParamsBox();
+    
     //[/Constructor]
 }
 
@@ -281,12 +313,14 @@ FixtureEditor::~FixtureEditor()
     btnParamUp = nullptr;
     btnParamDown = nullptr;
     lblPName = nullptr;
-    textEditor = nullptr;
-    label = nullptr;
-    textEditor2 = nullptr;
+    txtPName = nullptr;
+    lblPLetters = nullptr;
+    txtPLetters = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
+    lstParams = nullptr;
+    lsmParams = nullptr;
     //[/Destructor]
 }
 
@@ -297,24 +331,6 @@ void FixtureEditor::paint (Graphics& g)
     //[/UserPrePaint]
 
     g.fillAll (Colour (0xff323e44));
-
-    {
-        int x = 0, y = 120, width = 184, height = 240;
-        Colour fillColour = Colour (0xffa5412a);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 184, y = 144, width = 160, height = 240;
-        Colour fillColour = Colour (0xffa52a4d);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -352,21 +368,77 @@ void FixtureEditor::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == btnAddParam.get())
     {
         //[UserButtonCode_btnAddParam] -- add your button handler code here..
+        if((bool)fixture.getProperty(Identifier("inuse"), false)){
+            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic",
+                "Cannot add parameters to fixtures which are in use.");
+            return;
+        }
+        param = ValueTree(Identifier("param"));
+        String t = cbxAddParam->getText();
+        int typecount = 1;
+        for(int i=0; i<fixture.getNumChildren(); ++i){
+            if(fixture.getChild(i).getProperty(Identifier("type"), "error").toString() == t) ++typecount;
+        }
+        String typecountstr = (typecount >= 2 ? String(typecount) : "");
+        param.setProperty(Identifier("type"), t, nullptr);
+        param.setProperty(Identifier("name"), t + typecountstr, nullptr);
+        param.setProperty(Identifier("letters"), t.substring(0, 1) + typecountstr, nullptr);
+        fixture.addChild(param, -1, nullptr);
+        lsmParams->add(getParamDesc(param));
+        lstParams->updateContent();
+        lstParams->selectRow(fixture.indexOf(param));
         //[/UserButtonCode_btnAddParam]
     }
     else if (buttonThatWasClicked == btnRemoveParam.get())
     {
         //[UserButtonCode_btnRemoveParam] -- add your button handler code here..
+        if(!param.isValid()) return;
+        if((bool)fixture.getProperty(Identifier("inuse"), false)){
+            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic",
+                "Cannot remove parameters from fixtures which are in use.");
+            return;
+        }
+        fixture.removeChild(param, nullptr);
+        param = ValueTree();
+        fillParamsBox();
+        lstParams->deselectAllRows();
+        refreshParamControls();
         //[/UserButtonCode_btnRemoveParam]
     }
     else if (buttonThatWasClicked == btnParamUp.get())
     {
         //[UserButtonCode_btnParamUp] -- add your button handler code here..
+        if(!param.isValid()) return;
+        if((bool)fixture.getProperty(Identifier("inuse"), false)){
+            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic",
+                "Cannot reorder parameters in fixtures which are in use.");
+            return;
+        }
+        int i = fixture.indexOf(param);
+        if(i == 0) return;
+        fixture.moveChild(i, i-1, nullptr);
+        lsmParams->set(i-1, getParamDesc(param));
+        lsmParams->set(i, getParamDesc(fixture.getChild(i)));
+        lstParams->updateContent();
+        lstParams->selectRow(fixture.indexOf(param));
         //[/UserButtonCode_btnParamUp]
     }
     else if (buttonThatWasClicked == btnParamDown.get())
     {
         //[UserButtonCode_btnParamDown] -- add your button handler code here..
+        if(!param.isValid()) return;
+        if((bool)fixture.getProperty(Identifier("inuse"), false)){
+            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic",
+                "Cannot reorder parameters from fixtures which are in use.");
+            return;
+        }
+        int i = fixture.indexOf(param);
+        if(i == fixture.getNumChildren() - 1) return;
+        fixture.moveChild(i, i+1, nullptr);
+        lsmParams->set(i+1, getParamDesc(param));
+        lsmParams->set(i, getParamDesc(fixture.getChild(i)));
+        lstParams->updateContent();
+        lstParams->selectRow(fixture.indexOf(param));
         //[/UserButtonCode_btnParamDown]
     }
 
@@ -377,6 +449,85 @@ void FixtureEditor::buttonClicked (Button* buttonThatWasClicked)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void FixtureEditor::rowSelected(TextListModel *parent, int row)
+{
+    if(parent == lsmParams.get()){
+        param = fixture.getChild(row);
+        refreshParamControls();
+    }
+}
+void FixtureEditor::textEditorTextChanged(TextEditor &editorThatWasChanged)
+{
+    TEXTCHANGEDHANDLER_PRE;
+    if(&editorThatWasChanged == txtManufacturer.get()){
+        fixture.setProperty(Identifier("manufacturer"), text, nullptr);
+    }else if(&editorThatWasChanged == txtFixtureName.get()){
+        fixture.setProperty(Identifier("name"), text, nullptr);
+    }else if(&editorThatWasChanged == txtProfileName.get()){
+        fixture.setProperty(Identifier("profile"), text, nullptr);
+    }else if(&editorThatWasChanged == txtDMX.get()){
+        if(!isint || val < 0){
+            turnRed = true;
+        }else{
+            fixture.setProperty(Identifier("footprint"), val, nullptr);
+        }
+    }else if(&editorThatWasChanged == txtPName.get()){
+        if(!param.isValid()) return;
+        if(text.length() == 0) turnRed = true;
+        param.setProperty(Identifier("name"), text, nullptr);
+        int i = fixture.indexOf(param);
+        lsmParams->set(i, getParamDesc(param));
+        lstParams->repaintRow(i);
+    }else if(&editorThatWasChanged == txtPLetters.get()){
+        if(!param.isValid()) return;
+        if(text.length() == 0 || text.length() > 2) turnRed = true;
+        param.setProperty(Identifier("letters"), text, nullptr);
+        int i = fixture.indexOf(param);
+        lsmParams->set(i, getParamDesc(param));
+        lstParams->repaintRow(i);
+    }
+    TEXTCHANGEDHANDLER_POST;
+}
+
+void FixtureEditor::fillParamsBox()
+{
+    lsmParams->clear();
+    lstParams->updateContent();
+    for(int i=0; i<fixture.getNumChildren(); ++i){
+        lsmParams->add(getParamDesc(fixture.getChild(i)));
+    }
+    lstParams->updateContent();
+}
+
+void FixtureEditor::refreshParamControls()
+{
+    txtPName->setText(param.isValid() ? param.getProperty(Identifier("name"), "") : "");
+    txtPName->setEnabled(param.isValid());
+    txtPLetters->setText(param.isValid() ? param.getProperty(Identifier("letters"), "") : "");
+    txtPLetters->setEnabled(param.isValid());
+    String type = param.isValid() ? param.getProperty(Identifier("type"), "") : "";
+    if(type == "Generic"){
+        parameditor.reset(new FixParamEd::Generic(param));
+    }else if(type == "Color"){
+        parameditor.reset(new FixParamEd::Color(param));
+    }else{
+        parameditor = nullptr;
+    }
+    if(parameditor != nullptr){
+        addAndMakeVisible(parameditor.get());
+        parameditor->setBounds(184, 144, 160, 240);
+    }
+}
+
+String FixtureEditor::getParamDesc(ValueTree prm)
+{
+    String ret = prm.getProperty(Identifier("letters"), "XX");
+    ret += ": " + prm.getProperty(Identifier("name"), "(Error)").toString();
+    ret += " (" + prm.getProperty(Identifier("type"), "<Error>").toString() + ")";
+    return ret;
+}
+
 //[/MiscUserCode]
 
 
@@ -391,13 +542,10 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="FixtureEditor" componentName=""
                  parentClasses="public Component, public TextListModel::Listener, public TextEditor::Listener"
-                 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
-                 snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="344"
-                 initialHeight="384">
-  <BACKGROUND backgroundColour="ff323e44">
-    <RECT pos="0 120 184 240" fill="solid: ffa5412a" hasStroke="0"/>
-    <RECT pos="184 144 160 240" fill="solid: ffa52a4d" hasStroke="0"/>
-  </BACKGROUND>
+                 constructorParams="ValueTree fxt" variableInitialisers="fixture(fxt)"
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="344" initialHeight="384">
+  <BACKGROUND backgroundColour="ff323e44"/>
   <LABEL name="lblManufacturer" id="4f03172ce75ed418" memberName="lblManufacturer"
          virtualName="" explicitFocusOrder="0" pos="0 0 96 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Manufacturer:" editableSingleClick="0"
@@ -445,8 +593,8 @@ BEGIN_JUCER_METADATA
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="cbxAddParam" id="e40645e8dd385269" memberName="cbxAddParam"
             virtualName="" explicitFocusOrder="0" pos="40 360 120 24" editable="0"
-            layout="33" items="Dimmer&#10;Color&#10;Colorwheel&#10;Pan&#10;Tilt&#10;Zoom&#10;Focus&#10;Frost&#10;Iris&#10;Shutter&#10;Prism&#10;Gobo&#10;Effect&#10;Control&#10;Misc"
-            textWhenNonSelected="Dimmer" textWhenNoItems="Error"/>
+            layout="33" items="Generic&#10;Color" textWhenNonSelected="Generic"
+            textWhenNoItems="Error"/>
   <TEXTBUTTON name="btnAddParam" id="7ceb28d89a1747a0" memberName="btnAddParam"
               virtualName="" explicitFocusOrder="0" pos="160 360 23 24" buttonText="+"
               connectedEdges="5" needsCallback="1" radioGroupId="0"/>
@@ -464,16 +612,15 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="Name:" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="new text editor" id="1f724a66d24c5ca3" memberName="textEditor"
-              virtualName="" explicitFocusOrder="0" pos="240 96 104 24" initialText=""
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
-  <LABEL name="new label" id="70d37e528f64ad4d" memberName="label" virtualName=""
-         explicitFocusOrder="0" pos="184 120 136 24" edTextCol="ff000000"
+  <TEXTEDITOR name="txtPName" id="1f724a66d24c5ca3" memberName="txtPName" virtualName=""
+              explicitFocusOrder="0" pos="240 96 104 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
+  <LABEL name="lblPLetters" id="70d37e528f64ad4d" memberName="lblPLetters"
+         virtualName="" explicitFocusOrder="0" pos="184 120 136 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Short name (1-2 ltrs):" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="new text editor" id="3345abdfa53cef46" memberName="textEditor2"
+  <TEXTEDITOR name="txtPLetters" id="3345abdfa53cef46" memberName="txtPLetters"
               virtualName="" explicitFocusOrder="0" pos="320 120 24 24" initialText=""
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>

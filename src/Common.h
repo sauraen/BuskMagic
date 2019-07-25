@@ -72,3 +72,21 @@ inline String safeASCII(char c){
     if(c >= ' ' && c <= '~') return String::charToString(c);
     return "_";
 }
+
+#define NULLSTATEMENT ((void)0)
+#define REQUIRESEMICOLON do{NULLSTATEMENT;} while(false)
+
+#define TEXTCHANGEDHANDLER_PRE \
+    bool turnRed = false; \
+    String text = editorThatWasChanged.getText(); \
+    bool isint = isInt(text); \
+    int val = text.getIntValue(); \
+    bool ishex = isHex(text); \
+    int hexval = text.getHexValue32(); \
+    REQUIRESEMICOLON
+
+#define TEXTCHANGEDHANDLER_POST \
+    editorThatWasChanged.setColour(TextEditor::backgroundColourId, \
+        turnRed ? Colours::red : Colours::darkgrey); \
+    REQUIRESEMICOLON
+    

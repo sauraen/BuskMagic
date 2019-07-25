@@ -89,13 +89,17 @@
 			isa = PBXBuildFile;
 			fileRef = 363442D52A030D802F0667D7;
 		};
-		B565100F8B2B765F45847885 = {
+		E23EEB6E9C02ABEBBC879A52 = {
 			isa = PBXBuildFile;
-			fileRef = E27FBABA80566BB825BA8EEC;
+			fileRef = 0C0E0CECE0AC5AD88BBE8242;
 		};
 		7EE2E61A8CB78EE8ACEB013C = {
 			isa = PBXBuildFile;
 			fileRef = 12708D3BB00C4E063550ED8A;
+		};
+		B565100F8B2B765F45847885 = {
+			isa = PBXBuildFile;
+			fileRef = E27FBABA80566BB825BA8EEC;
 		};
 		7B1D415BADF2C14F9097CA68 = {
 			isa = PBXBuildFile;
@@ -159,6 +163,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = TextListModel.h;
 			path = ../../src/gui/TextListModel.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		0C0E0CECE0AC5AD88BBE8242 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = FixtureSystem.cpp;
+			path = ../../src/FixtureSystem.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		12708D3BB00C4E063550ED8A = {
@@ -306,6 +317,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = JuceHeader.h;
 			path = ../../JuceLibraryCode/JuceHeader.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		880D8A0D96D59826EAFB7539 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = FixtureSystem.h;
+			path = ../../src/FixtureSystem.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		89CDB3028D7A3780F7B4DFC9 = {
@@ -517,9 +535,11 @@
 				363442D52A030D802F0667D7,
 				09D8B0FDE7FDB19885A49874,
 				9640A05CA7D688309DF158E4,
-				89CDB3028D7A3780F7B4DFC9,
-				E27FBABA80566BB825BA8EEC,
+				0C0E0CECE0AC5AD88BBE8242,
+				880D8A0D96D59826EAFB7539,
 				12708D3BB00C4E063550ED8A,
+				E27FBABA80566BB825BA8EEC,
+				89CDB3028D7A3780F7B4DFC9,
 				B73E58229762B5845974E61D,
 				B788B4A4E695A23D87F4790D,
 			);
@@ -819,8 +839,9 @@
 				373DBAE866ED8F17906C1266,
 				C7EA9627119D6D6D886D6EB8,
 				1B790381B4E8DD68C64B60C6,
-				B565100F8B2B765F45847885,
+				E23EEB6E9C02ABEBBC879A52,
 				7EE2E61A8CB78EE8ACEB013C,
+				B565100F8B2B765F45847885,
 				7B1D415BADF2C14F9097CA68,
 				46383F447C575EB6A5F75FF5,
 				2182685E7A92EF7A0146F1FB,

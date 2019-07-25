@@ -148,8 +148,9 @@
     <ClCompile Include="..\..\src\gui\MIDISetup.cpp"/>
     <ClCompile Include="..\..\src\gui\TextListModel.cpp"/>
     <ClCompile Include="..\..\src\ArtNetSystem.cpp"/>
-    <ClCompile Include="..\..\src\MainComponent.cpp"/>
+    <ClCompile Include="..\..\src\FixtureSystem.cpp"/>
     <ClCompile Include="..\..\src\Main.cpp"/>
+    <ClCompile Include="..\..\src\MainComponent.cpp"/>
     <ClCompile Include="..\..\src\MIDISystem.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_devices.cpp"/>
@@ -172,6 +173,7 @@
     <ClInclude Include="..\..\src\gui\TextListModel.h"/>
     <ClInclude Include="..\..\src\ArtNetSystem.h"/>
     <ClInclude Include="..\..\src\Common.h"/>
+    <ClInclude Include="..\..\src\FixtureSystem.h"/>
     <ClInclude Include="..\..\src\MainComponent.h"/>
     <ClInclude Include="..\..\src\MIDISystem.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h"/>

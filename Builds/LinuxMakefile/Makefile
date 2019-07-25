@@ -78,8 +78,9 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/MIDISetup_7c6b09b2.o \
   $(JUCE_OBJDIR)/TextListModel_35ca1eb4.o \
   $(JUCE_OBJDIR)/ArtNetSystem_e2a73c9.o \
-  $(JUCE_OBJDIR)/MainComponent_dd9a9ece.o \
+  $(JUCE_OBJDIR)/FixtureSystem_7998ab22.o \
   $(JUCE_OBJDIR)/Main_36be1979.o \
+  $(JUCE_OBJDIR)/MainComponent_dd9a9ece.o \
   $(JUCE_OBJDIR)/MIDISystem_f9013c90.o \
   $(JUCE_OBJDIR)/include_juce_audio_basics_8a4e984a.o \
   $(JUCE_OBJDIR)/include_juce_audio_devices_63111d02.o \
@@ -153,14 +154,19 @@ $(JUCE_OBJDIR)/ArtNetSystem_e2a73c9.o: ../../src/ArtNetSystem.cpp
 	@echo "Compiling ArtNetSystem.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
-$(JUCE_OBJDIR)/MainComponent_dd9a9ece.o: ../../src/MainComponent.cpp
+$(JUCE_OBJDIR)/FixtureSystem_7998ab22.o: ../../src/FixtureSystem.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling MainComponent.cpp"
+	@echo "Compiling FixtureSystem.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/Main_36be1979.o: ../../src/Main.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling Main.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/MainComponent_dd9a9ece.o: ../../src/MainComponent.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling MainComponent.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/MIDISystem_f9013c90.o: ../../src/MIDISystem.cpp

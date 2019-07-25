@@ -18,6 +18,25 @@
 */
 
 //[Headers] You can add your own extra header files here...
+
+/*
+* BuskMagic - Live lighting control system
+* Copyright (C) 2019 Sauraen
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include "ArtNetSystem.h"
 //[/Headers]
 
@@ -398,15 +417,9 @@ ArtNetSetup::ArtNetSetup ()
 
     //[UserPreSize]
 
-    lsmDevices.reset(new TextListModel());
-    lsmDevices->setListener(this);
-    lsmDevices->setFont(Font(Font::getDefaultMonospacedFontName(), 14.00f, Font::plain));
-    lstDevices.reset(new ListBox("Devices", lsmDevices.get()));
-    addAndMakeVisible(lstDevices.get());
-    lstDevices->setMultipleSelectionEnabled(false);
-    lstDevices->setRowHeight(16);
-    lstDevices->setOutlineThickness(1);
-    lstDevices->setColour(ListBox::outlineColourId, Colours::lightgrey);
+    TextListModel::Initialize(lsmDevices, lstDevices, this, this, "Devices");
+
+    lstDevices->setBounds(0, 48, 600, 136);
 
     txtShortName->addListener(this);
     txtLongName->addListener(this);
@@ -515,7 +528,6 @@ void ArtNetSetup::resized()
     //[/UserPreResize]
 
     //[UserResized] Add your own custom resize handling here..
-    lstDevices->setBounds(0, 48, 600, 136);
     //[/UserResized]
 }
 
@@ -629,13 +641,8 @@ void ArtNetSetup::rowSelected(TextListModel *parent, int row){
 void ArtNetSetup::textEditorTextChanged(TextEditor &editorThatWasChanged){
     ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(lstDevices->getLastRowSelected());
     if(dev == nullptr) return;
-    String text = editorThatWasChanged.getText();
-    bool isint = isInt(text);
-    int val = text.getIntValue();
-    bool ishex = isHex(text);
-    int hexval = text.getHexValue32();
+    TEXTCHANGEDHANDLER_PRE;
     uint32_t unis = ArtNetSystem::ParseUniverseText(text);
-    bool turnRed = false;
     if(&editorThatWasChanged == txtShortName.get()){
         dev->shortname = text;
     }else if(&editorThatWasChanged == txtLongName.get()){
@@ -684,11 +691,7 @@ void ArtNetSetup::textEditorTextChanged(TextEditor &editorThatWasChanged){
             turnRed = true;
         }
     }
-    if(turnRed){
-        editorThatWasChanged.setColour(TextEditor::backgroundColourId, Colours::red);
-    }else{
-        editorThatWasChanged.setColour(TextEditor::backgroundColourId, Colours::darkgrey);
-    }
+    TEXTCHANGEDHANDLER_POST;
 }
 
 void ArtNetSetup::timerCallback(){

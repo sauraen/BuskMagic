@@ -163,41 +163,15 @@ MIDISetup::MIDISetup ()
 
     //[UserPreSize]
 
-    lsmInDevices.reset(new TextListModel());
-    lsmInDevices->setListener(this);
-    lstInDevices.reset(new ListBox("InDevices", lsmInDevices.get()));
-    addAndMakeVisible(lstInDevices.get());
-    lstInDevices->setMultipleSelectionEnabled(false);
-    lstInDevices->setRowHeight(16);
-    lstInDevices->setOutlineThickness(1);
-    lstInDevices->setColour(ListBox::outlineColourId, Colours::lightgrey);
+    TextListModel::Initialize(lsmInDevices, lstInDevices, this, this, "InDevices");
+    TextListModel::Initialize(lsmInPorts, lstInPorts, this, this, "InPorts");
+    TextListModel::Initialize(lsmOutDevices, lstOutDevices, this, this, "OutDevices");
+    TextListModel::Initialize(lsmOutPorts, lstOutPorts, this, this, "OutPorts");
 
-    lsmInPorts.reset(new TextListModel());
-    lsmInPorts->setListener(this);
-    lstInPorts.reset(new ListBox("InPorts", lsmInPorts.get()));
-    addAndMakeVisible(lstInPorts.get());
-    lstInPorts->setMultipleSelectionEnabled(false);
-    lstInPorts->setRowHeight(16);
-    lstInPorts->setOutlineThickness(1);
-    lstInPorts->setColour(ListBox::outlineColourId, Colours::lightgrey);
-
-    lsmOutDevices.reset(new TextListModel());
-    lsmOutDevices->setListener(this);
-    lstOutDevices.reset(new ListBox("OutDevices", lsmOutDevices.get()));
-    addAndMakeVisible(lstOutDevices.get());
-    lstOutDevices->setMultipleSelectionEnabled(false);
-    lstOutDevices->setRowHeight(16);
-    lstOutDevices->setOutlineThickness(1);
-    lstOutDevices->setColour(ListBox::outlineColourId, Colours::lightgrey);
-
-    lsmOutPorts.reset(new TextListModel());
-    lsmOutPorts->setListener(this);
-    lstOutPorts.reset(new ListBox("InPorts", lsmOutPorts.get()));
-    addAndMakeVisible(lstOutPorts.get());
-    lstOutPorts->setMultipleSelectionEnabled(false);
-    lstOutPorts->setRowHeight(16);
-    lstOutPorts->setOutlineThickness(1);
-    lstOutPorts->setColour(ListBox::outlineColourId, Colours::lightgrey);
+    lstInDevices->setBounds(0, 24, 176, 152);
+    lstInPorts->setBounds(224, 24, 176, 152);
+    lstOutDevices->setBounds(0, 208, 176, 152);
+    lstOutPorts->setBounds(224, 208, 176, 152);
 
     //[/UserPreSize]
 
@@ -258,10 +232,6 @@ void MIDISetup::resized()
     //[/UserPreResize]
 
     //[UserResized] Add your own custom resize handling here..
-    lstInDevices->setBounds(0, 24, 176, 152);
-    lstInPorts->setBounds(224, 24, 176, 152);
-    lstOutDevices->setBounds(0, 208, 176, 152);
-    lstOutPorts->setBounds(224, 208, 176, 152);
     //[/UserResized]
 }
 
