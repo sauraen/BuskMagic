@@ -29,6 +29,8 @@
         <FILE id="vS6c7t" name="FixtureEditor.h" compile="0" resource="0" file="src/gui/FixtureEditor.h"/>
         <FILE id="UvwTXt" name="MIDISetup.cpp" compile="1" resource="0" file="src/gui/MIDISetup.cpp"/>
         <FILE id="mYeBXE" name="MIDISetup.h" compile="0" resource="0" file="src/gui/MIDISetup.h"/>
+        <FILE id="owp8Tw" name="Patcher.cpp" compile="1" resource="0" file="src/gui/Patcher.cpp"/>
+        <FILE id="TN16vv" name="Patcher.h" compile="0" resource="0" file="src/gui/Patcher.h"/>
         <FILE id="YywxUI" name="TextListModel.cpp" compile="1" resource="0"
               file="src/gui/TextListModel.cpp"/>
         <FILE id="hPHz1t" name="TextListModel.h" compile="0" resource="0" file="src/gui/TextListModel.h"/>

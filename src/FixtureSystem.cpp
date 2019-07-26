@@ -65,4 +65,8 @@ namespace FixtureSystem {
             VT_RemoveChildWithName(parent, "ultra");
         }
     }
+    
+    File fixdir;
+    File GetFixtureDirectory() { return fixdir; }
+    void SetFixtureDirectory(File d) { fixdir = d; }
 }

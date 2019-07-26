@@ -20,11 +20,11 @@
 #include "gui/MIDISetup.h"
 #include "gui/ArtNetSetup.h"
 #include "gui/FixtureEditor.h"
+#include "gui/Patcher.h"
 
 MainComponent::MainComponent(){
-    ValueTree v(Identifier("fixture"));
-    addAndMakeVisible(new FixtureEditor(v));
-    setSize (600, 800);
+    addAndMakeVisible(new Patcher());
+    setSize (1000, 800);
 }
 
 MainComponent::~MainComponent(){

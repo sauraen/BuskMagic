@@ -127,6 +127,27 @@ inline void VT_RemoveChildWithName(ValueTree v, String name){
         v.removeChild(c, nullptr);
     }
 }
-    
+
+inline ValueTree VT_Load(File f, String topleveltype){
+    if(!f.existsAsFile()){
+        std::cout << "File " << f.getFullPathName() << " does not exist\n";
+        return ValueTree();
+    }
+    std::unique_ptr<XmlElement> fix_xml = parseXML(f);
+    if(fix_xml == nullptr){
+        std::cout << "File " << f.getFullPathName() << " is not valid XML\n";
+        return ValueTree();
+    }
+    ValueTree v = ValueTree::fromXml(*fix_xml);
+    if(!v.isValid()){
+        std::cout << "File " << f.getFullPathName() << " is not a valid Juce ValueTree\n";
+        return ValueTree();
+    }
+    if(!v.hasType(Identifier(topleveltype))){
+        std::cout << "File " << f.getFullPathName() << " is not the correct type of ValueTree (" << topleveltype << ")\n";
+        return ValueTree();
+    }
+    return v;
+}
     
     

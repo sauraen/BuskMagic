@@ -81,6 +81,10 @@
 			isa = PBXBuildFile;
 			fileRef = B00F8F87CA52FC56D0553BC0;
 		};
+		5CBD7F35C97B5078FD17F046 = {
+			isa = PBXBuildFile;
+			fileRef = 7FA3B0461695560468F96C5E;
+		};
 		C7EA9627119D6D6D886D6EB8 = {
 			isa = PBXBuildFile;
 			fileRef = 2FBFF8EE1333B830BF03EC5D;
@@ -170,6 +174,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = FixtureSystem.cpp;
 			path = ../../src/FixtureSystem.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		0EDBA19AEB539032826F1829 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = Patcher.h;
+			path = ../../src/gui/Patcher.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		12708D3BB00C4E063550ED8A = {
@@ -303,6 +314,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = RGBA.cpp;
 			path = ../../src/gui/FixParamEd/ColorMode/RGBA.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		7FA3B0461695560468F96C5E = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = Patcher.cpp;
+			path = ../../src/gui/Patcher.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		810798F71E6AE967F565B83C = {
@@ -522,6 +540,8 @@
 				B0661EF0EE418B85855C1950,
 				B00F8F87CA52FC56D0553BC0,
 				8D1240203F285B28C57C55E2,
+				7FA3B0461695560468F96C5E,
+				0EDBA19AEB539032826F1829,
 				2FBFF8EE1333B830BF03EC5D,
 				0A70ABDFE06DC9DAF9636F1A,
 			);
@@ -837,6 +857,7 @@
 				16FBF7251CA38AB7C3B2999F,
 				182FF3B58EFBCAE6F9B7C7E7,
 				373DBAE866ED8F17906C1266,
+				5CBD7F35C97B5078FD17F046,
 				C7EA9627119D6D6D886D6EB8,
 				1B790381B4E8DD68C64B60C6,
 				E23EEB6E9C02ABEBBC879A52,
