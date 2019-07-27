@@ -252,7 +252,7 @@ void MIDISetup::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_btnRemoveInPort] -- add your button handler code here..
         int r = lstInPorts->getLastRowSelected();
         if(r < 0 || r >= MIDISystem::NumInPorts()){
-            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic", "Please select a valid input port to remove.");
+            WarningBox("Please select a valid input port to remove.");
             return;
         }
         MIDISystem::RemoveInPort(r);
@@ -264,12 +264,12 @@ void MIDISetup::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_btnAssignInPort] -- add your button handler code here..
         int p = lstInPorts->getLastRowSelected();
         if(p < 0 || p >= MIDISystem::NumInPorts()){
-            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic", "Please select a valid input port to assign to.");
+            WarningBox("Please select a valid input port to assign to.");
             return;
         }
         int d = lstInDevices->getLastRowSelected();
         if(d < 0 || d >= lsmInDevices->getNumRows()){
-            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic", "Please select a valid input device to assign.");
+            WarningBox("Please select a valid input device to assign.");
             return;
         }
         if(MIDISystem::InPortDeviceNumber(p) >= 0){
@@ -289,11 +289,11 @@ void MIDISetup::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_btnUnassignInPort] -- add your button handler code here..
         int p = lstInPorts->getLastRowSelected();
         if(p < 0 || p >= MIDISystem::NumInPorts()){
-            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic", "Please select a valid input port to unassign a device from.");
+            WarningBox("Please select a valid input port to unassign a device from.");
             return;
         }
         if(MIDISystem::InPortDeviceNumber(p) < 0){
-            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic", "There's already no device assigned to this port.");
+            WarningBox("There's already no device assigned to this port.");
             return;
         }
         MIDISystem::UnassignInPort(p);
@@ -312,7 +312,7 @@ void MIDISetup::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_btnRemoveOutPort] -- add your button handler code here..
         int r = lstOutPorts->getLastRowSelected();
         if(r < 0 || r >= MIDISystem::NumOutPorts()){
-            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic", "Please select a valid output port to remove.");
+            WarningBox("Please select a valid output port to remove.");
             return;
         }
         MIDISystem::RemoveOutPort(r);
@@ -324,12 +324,12 @@ void MIDISetup::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_btnAssignOutPort] -- add your button handler code here..
         int p = lstOutPorts->getLastRowSelected();
         if(p < 0 || p >= MIDISystem::NumOutPorts()){
-            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic", "Please select a valid output port to assign to.");
+            WarningBox("Please select a valid output port to assign to.");
             return;
         }
         int d = lstOutDevices->getLastRowSelected();
         if(d < 0 || d >= lsmOutDevices->getNumRows()){
-            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic", "Please select a valid output device to assign.");
+            WarningBox("Please select a valid output device to assign.");
             return;
         }
         if(MIDISystem::OutPortDeviceNumber(p) >= 0){
@@ -349,11 +349,11 @@ void MIDISetup::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_btnUnassignOutPort] -- add your button handler code here..
         int p = lstOutPorts->getLastRowSelected();
         if(p < 0 || p >= MIDISystem::NumOutPorts()){
-            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic", "Please select a valid output port to unassign a device from.");
+            WarningBox("Please select a valid output port to unassign a device from.");
             return;
         }
         if(MIDISystem::OutPortDeviceNumber(p) < 0){
-            NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic", "There's already no device assigned to this port.");
+            WarningBox("There's already no device assigned to this port.");
             return;
         }
         MIDISystem::UnassignOutPort(p);

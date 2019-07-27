@@ -38,6 +38,7 @@
 */
 
 #include "FixtureSystem.h"
+#include "FixtureEditor.h"
 //[/Headers]
 
 #include "Patcher.h"
@@ -65,7 +66,7 @@ Patcher::Patcher ()
     grpAdd->setBounds (264, 448, 242, 96);
 
     lblDisk.reset (new Label ("lblDisk",
-                              TRANS("Fixtures on disk:")));
+                              TRANS("Fixture definitions on disk:")));
     addAndMakeVisible (lblDisk.get());
     lblDisk->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lblDisk->setJustificationType (Justification::centredLeft);
@@ -73,18 +74,18 @@ Patcher::Patcher ()
     lblDisk->setColour (TextEditor::textColourId, Colours::black);
     lblDisk->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblDisk->setBounds (0, 0, 120, 24);
+    lblDisk->setBounds (0, 0, 168, 24);
 
     btnDirectory.reset (new TextButton ("btnDirectory"));
     addAndMakeVisible (btnDirectory.get());
-    btnDirectory->setButtonText (TRANS("Directory..."));
+    btnDirectory->setButtonText (TRANS("Dir..."));
     btnDirectory->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnBottom);
     btnDirectory->addListener (this);
 
-    btnDirectory->setBounds (152, 0, 88, 24);
+    btnDirectory->setBounds (200, 0, 40, 24);
 
     lblShowfile.reset (new Label ("lblShowfile",
-                                  TRANS("Fixtures in showfile:")));
+                                  TRANS("Fixture definitions in showfile:")));
     addAndMakeVisible (lblShowfile.get());
     lblShowfile->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lblShowfile->setJustificationType (Justification::centredLeft);
@@ -110,40 +111,40 @@ Patcher::Patcher ()
 
     btnSave->setBounds (240, 232, 24, 24);
 
-    btnNewFixture.reset (new TextButton ("btnNewFixture"));
-    addAndMakeVisible (btnNewFixture.get());
-    btnNewFixture->setButtonText (TRANS("+"));
-    btnNewFixture->setConnectedEdges (Button::ConnectedOnRight | Button::ConnectedOnBottom);
-    btnNewFixture->addListener (this);
+    btnNewDef.reset (new TextButton ("btnNewDef"));
+    addAndMakeVisible (btnNewDef.get());
+    btnNewDef->setButtonText (TRANS("+"));
+    btnNewDef->setConnectedEdges (Button::ConnectedOnRight | Button::ConnectedOnBottom);
+    btnNewDef->addListener (this);
 
-    btnNewFixture->setBounds (456, 0, 23, 24);
+    btnNewDef->setBounds (456, 0, 23, 24);
+
+    btnDeleteDef.reset (new TextButton ("btnDeleteDef"));
+    addAndMakeVisible (btnDeleteDef.get());
+    btnDeleteDef->setButtonText (CharPointer_UTF8 ("\xe2\x88\x92"));
+    btnDeleteDef->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnBottom);
+    btnDeleteDef->addListener (this);
+
+    btnDeleteDef->setBounds (480, 0, 23, 24);
 
     btnDeleteFixture.reset (new TextButton ("btnDeleteFixture"));
     addAndMakeVisible (btnDeleteFixture.get());
     btnDeleteFixture->setButtonText (CharPointer_UTF8 ("\xe2\x88\x92"));
-    btnDeleteFixture->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnBottom);
+    btnDeleteFixture->setConnectedEdges (Button::ConnectedOnBottom);
     btnDeleteFixture->addListener (this);
 
-    btnDeleteFixture->setBounds (480, 0, 23, 24);
+    btnDeleteFixture->setBounds (744, 0, 23, 24);
 
-    btnDeletePatched.reset (new TextButton ("btnDeletePatched"));
-    addAndMakeVisible (btnDeletePatched.get());
-    btnDeletePatched->setButtonText (CharPointer_UTF8 ("\xe2\x88\x92"));
-    btnDeletePatched->setConnectedEdges (Button::ConnectedOnBottom);
-    btnDeletePatched->addListener (this);
+    lblFixtures.reset (new Label ("lblFixtures",
+                                  TRANS("Fixtures in show:")));
+    addAndMakeVisible (lblFixtures.get());
+    lblFixtures->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lblFixtures->setJustificationType (Justification::centredLeft);
+    lblFixtures->setEditable (false, false, false);
+    lblFixtures->setColour (TextEditor::textColourId, Colours::black);
+    lblFixtures->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    btnDeletePatched->setBounds (744, 0, 23, 24);
-
-    lblPatched.reset (new Label ("lblPatched",
-                                 TRANS("Patched fixtures:")));
-    addAndMakeVisible (lblPatched.get());
-    lblPatched->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblPatched->setJustificationType (Justification::centredLeft);
-    lblPatched->setEditable (false, false, false);
-    lblPatched->setColour (TextEditor::textColourId, Colours::black);
-    lblPatched->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    lblPatched->setBounds (528, 0, 216, 24);
+    lblFixtures->setBounds (528, 0, 216, 24);
 
     lblAddQty.reset (new Label ("lblAddQty",
                                 TRANS("Qty:")));
@@ -371,7 +372,7 @@ Patcher::Patcher ()
     lblFixInfo.reset (new Label ("lblFixInfo",
                                  TRANS("Manufacturer: XXX\n"
                                  "Fixture: XXX\n"
-                                 "Profile: XXX")));
+                                 "Profile: XXX (XX)")));
     addAndMakeVisible (lblFixInfo.get());
     lblFixInfo->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lblFixInfo->setJustificationType (Justification::centredLeft);
@@ -411,18 +412,18 @@ Patcher::Patcher ()
     btnRefresh->setConnectedEdges (Button::ConnectedOnRight | Button::ConnectedOnBottom);
     btnRefresh->addListener (this);
 
-    btnRefresh->setBounds (120, 0, 31, 24);
+    btnRefresh->setBounds (168, 0, 31, 24);
 
 
     //[UserPreSize]
 
     TextListModel::Initialize(lsmDir, lstDir, this, this, "Directory");
+    TextListModel::Initialize(lsmDefs, lstDefs, this, this, "Definitions");
     TextListModel::Initialize(lsmFixtures, lstFixtures, this, this, "Fixtures");
-    TextListModel::Initialize(lsmPatched, lstPatched, this, this, "Patched");
 
     lstDir->setBounds(0, 24, 240, 520);
-    lstFixtures->setBounds(264, 24, 240, 416);
-    lstPatched->setBounds(528, 24, 240, 344);
+    lstDefs->setBounds(264, 24, 240, 416);
+    lstFixtures->setBounds(528, 24, 240, 344);
 
     //[/UserPreSize]
 
@@ -432,6 +433,8 @@ Patcher::Patcher ()
     //[Constructor] You can add your own custom stuff here..
 
     fillDirBox();
+    fillDefsBox();
+    fillFixturesBox();
 
     //[/Constructor]
 }
@@ -448,10 +451,10 @@ Patcher::~Patcher()
     lblShowfile = nullptr;
     btnLoad = nullptr;
     btnSave = nullptr;
-    btnNewFixture = nullptr;
+    btnNewDef = nullptr;
+    btnDeleteDef = nullptr;
     btnDeleteFixture = nullptr;
-    btnDeletePatched = nullptr;
-    lblPatched = nullptr;
+    lblFixtures = nullptr;
     lblAddQty = nullptr;
     txtAddQty = nullptr;
     lblAddFixID = nullptr;
@@ -483,10 +486,10 @@ Patcher::~Patcher()
 
     lstDir = nullptr;
     lsmDir = nullptr;
+    lstDefs = nullptr;
+    lsmDefs = nullptr;
     lstFixtures = nullptr;
     lsmFixtures = nullptr;
-    lstPatched = nullptr;
-    lsmPatched = nullptr;
 
     //[/Destructor]
 }
@@ -531,27 +534,74 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == btnLoad.get())
     {
         //[UserButtonCode_btnLoad] -- add your button handler code here..
+        int r = lstDir->getLastRowSelected();
+        if(r < 0) return;
+        File fxf = FixtureSystem::GetFixtureDirectory().getChildFile(lsmDir->get(r) + ".xml");
+        if(!fxf.existsAsFile()){
+            WarningBox("This file no longer exists.");
+            fillDirBox();
+            return;
+        }
+        ValueTree v = VT_Load(fxf, "fixturedef");
+        if(!v.isValid()){
+            WarningBox("This is not a valid fixture file.");
+            fillDirBox();
+            return;
+        }
+        FixtureSystem::GetFixtureDefs().addChild(v, -1, nullptr);
+        fillDefsBox();
         //[/UserButtonCode_btnLoad]
     }
     else if (buttonThatWasClicked == btnSave.get())
     {
         //[UserButtonCode_btnSave] -- add your button handler code here..
+        int r = lstDefs->getLastRowSelected();
+        if(r < 0) return;
+        ValueTree v = FixtureSystem::GetFixtureDefs().getChild(r);
+        if(!v.isValid()) return;
+        File dir = FixtureSystem::GetFixtureDirectory();
+        FileChooser fc("Save fixture as...",
+                dir.isDirectory() ? dir : File::getSpecialLocation(File::userHomeDirectory), "*.xml");
+        if(!fc.browseForFileToSave(true)) return;
+        std::unique_ptr<XmlElement> xml(v.createXml());
+        if(!xml->writeToFile(fc.getResult(), "<!-- BuskMagic Fixture File -->", "UTF-8", 80)){
+            WarningBox("Could not save fixture file.");
+        }else{
+            fillDefsBox();
+        }
         //[/UserButtonCode_btnSave]
     }
-    else if (buttonThatWasClicked == btnNewFixture.get())
+    else if (buttonThatWasClicked == btnNewDef.get())
     {
-        //[UserButtonCode_btnNewFixture] -- add your button handler code here..
-        //[/UserButtonCode_btnNewFixture]
+        //[UserButtonCode_btnNewDef] -- add your button handler code here..
+        ValueTree v("fixturedef");
+        v.setProperty(Identifier("manufacturer"), "(Manufacturer)", nullptr);
+        v.setProperty(Identifier("name"), "(New fixture)", nullptr);
+        v.setProperty(Identifier("profile"), "1-channel mode", nullptr);
+        v.setProperty(Identifier("footprint"), 1, nullptr);
+        FixtureSystem::GetFixtureDefs().addChild(v, -1, nullptr);
+        fillDefsBox();
+        //[/UserButtonCode_btnNewDef]
+    }
+    else if (buttonThatWasClicked == btnDeleteDef.get())
+    {
+        //[UserButtonCode_btnDeleteDef] -- add your button handler code here..
+        int r = lstDefs->getLastRowSelected();
+        if(r < 0) return;
+        ValueTree v = FixtureSystem::GetFixtureDefs().getChild(r);
+        if(!v.isValid()) return;
+        if((bool)v.getProperty("inuse", false)){
+            WarningBox("Cannot delete a fixture definition which is in use.");
+            return;
+        }
+        FixtureSystem::GetFixtureDefs().removeChild(v, nullptr);
+        fillDefsBox();
+        //[/UserButtonCode_btnDeleteDef]
     }
     else if (buttonThatWasClicked == btnDeleteFixture.get())
     {
         //[UserButtonCode_btnDeleteFixture] -- add your button handler code here..
         //[/UserButtonCode_btnDeleteFixture]
-    }
-    else if (buttonThatWasClicked == btnDeletePatched.get())
-    {
-        //[UserButtonCode_btnDeletePatched] -- add your button handler code here..
-        //[/UserButtonCode_btnDeletePatched]
     }
     else if (buttonThatWasClicked == btnAdd.get())
     {
@@ -597,9 +647,9 @@ void Patcher::rowSelected(TextListModel *parent, int row)
 {
     if(parent == lsmDir.get()){
         //
-    }else if(parent == lsmFixtures.get()){
+    }else if(parent == lsmDefs.get()){
         //
-    }else if(parent == lsmPatched.get()){
+    }else if(parent == lsmFixtures.get()){
         //
     }
 }
@@ -608,9 +658,18 @@ void Patcher::rowDoubleClicked(TextListModel* parent, int row)
 {
     if(parent == lsmDir.get()){
         //
+    }else if(parent == lsmDefs.get()){
+        if(row < 0) return;
+        ValueTree v = FixtureSystem::GetFixtureDefs().getChild(row);
+        if(!v.isValid()) return;
+        DialogWindow::LaunchOptions opts;
+        opts.dialogTitle = "BuskMagic - Fixture Editor";
+        opts.content.set(new FixtureEditor(v), true);
+        opts.componentToCentreAround = lstDefs.get();
+        opts.resizable = false;
+        opts.runModal();
+        fillDefsBox();
     }else if(parent == lsmFixtures.get()){
-        //
-    }else if(parent == lsmPatched.get()){
         //
     }
 }
@@ -624,11 +683,27 @@ void Patcher::fillDirBox()
     Array<File> fixs = dir.findChildFiles(File::findFiles, false, "*.xml");
     if(fixs.size() == 0) return;
     for(int i=0; i<fixs.size(); ++i){
-        ValueTree v = VT_Load(fixs[i], "fixture");
+        ValueTree v = VT_Load(fixs[i], "fixturedef");
         if(!v.isValid()) continue;
         lsmDir->add(fixs[i].getFileNameWithoutExtension());
     }
     lstDir->updateContent();
+}
+
+void Patcher::fillDefsBox()
+{
+    lsmDefs->clear();
+    lstDefs->updateContent();
+    ValueTree defs = FixtureSystem::GetFixtureDefs();
+    for(int i=0; i<defs.getNumChildren(); ++i){
+        lsmDefs->add(FixtureSystem::GetFixDefName(defs.getChild(i)));
+    }
+    lstDefs->updateContent();
+}
+
+void Patcher::fillFixturesBox()
+{
+
 }
 
 //[/MiscUserCode]
@@ -654,16 +729,16 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="grpAdd" id="656fe626e2a1c50d" memberName="grpAdd" virtualName=""
                   explicitFocusOrder="0" pos="264 448 242 96" title="Add Fixture"/>
   <LABEL name="lblDisk" id="8608433261170576" memberName="lblDisk" virtualName=""
-         explicitFocusOrder="0" pos="0 0 120 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Fixtures on disk:" editableSingleClick="0"
+         explicitFocusOrder="0" pos="0 0 168 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="Fixture definitions on disk:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="btnDirectory" id="2d8c73536d69bea" memberName="btnDirectory"
-              virtualName="" explicitFocusOrder="0" pos="152 0 88 24" buttonText="Directory..."
+              virtualName="" explicitFocusOrder="0" pos="200 0 40 24" buttonText="Dir..."
               connectedEdges="9" needsCallback="1" radioGroupId="0"/>
   <LABEL name="lblShowfile" id="643b6c08c0eb71d4" memberName="lblShowfile"
          virtualName="" explicitFocusOrder="0" pos="264 0 192 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Fixtures in showfile:" editableSingleClick="0"
+         edBkgCol="0" labelText="Fixture definitions in showfile:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="btnLoad" id="8c8b9eb262b05176" memberName="btnLoad" virtualName=""
@@ -672,18 +747,18 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="btnSave" id="5e180f9927cda3f0" memberName="btnSave" virtualName=""
               explicitFocusOrder="0" pos="240 232 24 24" buttonText="&#8592;"
               connectedEdges="7" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="btnNewFixture" id="7ceb28d89a1747a0" memberName="btnNewFixture"
+  <TEXTBUTTON name="btnNewDef" id="7ceb28d89a1747a0" memberName="btnNewDef"
               virtualName="" explicitFocusOrder="0" pos="456 0 23 24" buttonText="+"
               connectedEdges="10" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="btnDeleteFixture" id="506bcac0d99da01e" memberName="btnDeleteFixture"
+  <TEXTBUTTON name="btnDeleteDef" id="506bcac0d99da01e" memberName="btnDeleteDef"
               virtualName="" explicitFocusOrder="0" pos="480 0 23 24" buttonText="&#8722;"
               connectedEdges="9" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="btnDeletePatched" id="a20ed334392c9c49" memberName="btnDeletePatched"
+  <TEXTBUTTON name="btnDeleteFixture" id="a20ed334392c9c49" memberName="btnDeleteFixture"
               virtualName="" explicitFocusOrder="0" pos="744 0 23 24" buttonText="&#8722;"
               connectedEdges="8" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="lblPatched" id="244c2d7cad8d2638" memberName="lblPatched"
+  <LABEL name="lblFixtures" id="244c2d7cad8d2638" memberName="lblFixtures"
          virtualName="" explicitFocusOrder="0" pos="528 0 216 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Patched fixtures:" editableSingleClick="0"
+         edBkgCol="0" labelText="Fixtures in show:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="lblAddQty" id="fd17579f84d8bd06" memberName="lblAddQty"
@@ -774,7 +849,7 @@ BEGIN_JUCER_METADATA
               connectedEdges="1" needsCallback="1" radioGroupId="0"/>
   <LABEL name="lblFixInfo" id="949056db2a25e42e" memberName="lblFixInfo"
          virtualName="" explicitFocusOrder="0" pos="536 392 224 48" edTextCol="ff000000"
-         edBkgCol="0" labelText="Manufacturer: XXX&#10;Fixture: XXX&#10;Profile: XXX"
+         edBkgCol="0" labelText="Manufacturer: XXX&#10;Fixture: XXX&#10;Profile: XXX (XX)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
          italic="0" justification="33"/>
@@ -788,7 +863,7 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="648 512 72 24" buttonText="Set From"
               connectedEdges="1" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnRefresh" id="d6d09ddfd9cd75fa" memberName="btnRefresh"
-              virtualName="" explicitFocusOrder="0" pos="120 0 31 24" buttonText="Rfr."
+              virtualName="" explicitFocusOrder="0" pos="168 0 31 24" buttonText="Rfr."
               connectedEdges="10" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 

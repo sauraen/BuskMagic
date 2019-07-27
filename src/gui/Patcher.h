@@ -69,6 +69,8 @@ public:
     void rowDoubleClicked(TextListModel* parent, int row) override;
 
     void fillDirBox();
+    void fillDefsBox();
+    void fillFixturesBox();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -81,10 +83,10 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     std::unique_ptr<TextListModel> lsmDir;
     std::unique_ptr<ListBox> lstDir;
+    std::unique_ptr<TextListModel> lsmDefs;
+    std::unique_ptr<ListBox> lstDefs;
     std::unique_ptr<TextListModel> lsmFixtures;
     std::unique_ptr<ListBox> lstFixtures;
-    std::unique_ptr<TextListModel> lsmPatched;
-    std::unique_ptr<ListBox> lstPatched;
     //[/UserVariables]
 
     //==============================================================================
@@ -95,10 +97,10 @@ private:
     std::unique_ptr<Label> lblShowfile;
     std::unique_ptr<TextButton> btnLoad;
     std::unique_ptr<TextButton> btnSave;
-    std::unique_ptr<TextButton> btnNewFixture;
+    std::unique_ptr<TextButton> btnNewDef;
+    std::unique_ptr<TextButton> btnDeleteDef;
     std::unique_ptr<TextButton> btnDeleteFixture;
-    std::unique_ptr<TextButton> btnDeletePatched;
-    std::unique_ptr<Label> lblPatched;
+    std::unique_ptr<Label> lblFixtures;
     std::unique_ptr<Label> lblAddQty;
     std::unique_ptr<TextEditor> txtAddQty;
     std::unique_ptr<Label> lblAddFixID;

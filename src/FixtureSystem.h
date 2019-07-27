@@ -34,4 +34,7 @@ namespace FixtureSystem {
     
     File GetFixtureDirectory();
     void SetFixtureDirectory(File d);
+    
+    ValueTree GetFixtureDefs();
+    String GetFixDefName(ValueTree def);
 }

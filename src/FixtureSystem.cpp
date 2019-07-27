@@ -69,4 +69,14 @@ namespace FixtureSystem {
     File fixdir;
     File GetFixtureDirectory() { return fixdir; }
     void SetFixtureDirectory(File d) { fixdir = d; }
+    
+    ValueTree fixdefs(Identifier("fixdefs"));
+    ValueTree GetFixtureDefs() { return fixdefs; }
+    String GetFixDefName(ValueTree def){
+        String ret = def.getProperty(Identifier("manufacturer"), "(Manu)").toString() + " ";
+        ret += def.getProperty(Identifier("name"), "(Name)").toString() + ": ";
+        ret += def.getProperty(Identifier("profile"), "(Profile)").toString() + " (";
+        ret += def.getProperty(Identifier("footprint"), "(XX)").toString() + ")";
+        return ret;
+    }
 }

@@ -124,7 +124,7 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
     txtProfileName->setBounds (96, 48, 248, 24);
 
     lblDMX.reset (new Label ("lblDMX",
-                             TRANS("DMX Channels:")));
+                             TRANS("DMX Footprint:")));
     addAndMakeVisible (lblDMX.get());
     lblDMX->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lblDMX->setJustificationType (Justification::centredLeft);
@@ -575,7 +575,7 @@ BEGIN_JUCER_METADATA
               caret="1" popupmenu="1"/>
   <LABEL name="lblDMX" id="f72cd4a6867a395a" memberName="lblDMX" virtualName=""
          explicitFocusOrder="0" pos="0 72 104 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="DMX Channels:" editableSingleClick="0"
+         edBkgCol="0" labelText="DMX Footprint:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtDMX" id="860e67035d42db35" memberName="txtDMX" virtualName=""

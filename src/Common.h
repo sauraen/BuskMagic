@@ -96,6 +96,10 @@ inline String safeASCII(char c){
     return "_";
 }
 
+inline void WarningBox(String text){
+    NativeMessageBox::showMessageBoxAsync(AlertWindow::WarningIcon, "BuskMagic", text);
+}
+
 #define NULLSTATEMENT ((void)0)
 #define REQUIRESEMICOLON do{NULLSTATEMENT;} while(false)
 
