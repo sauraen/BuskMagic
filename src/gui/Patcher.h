@@ -126,6 +126,7 @@ private:
     std::unique_ptr<TextButton> btnSetChn;
     std::unique_ptr<TextButton> btnSetFixID;
     std::unique_ptr<TextButton> btnRefresh;
+    std::unique_ptr<TextButton> btnSort;
 
 
     //==============================================================================

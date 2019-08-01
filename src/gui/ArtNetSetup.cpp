@@ -321,7 +321,7 @@ ArtNetSetup::ArtNetSetup ()
     btnAddDevice->setConnectedEdges (Button::ConnectedOnRight | Button::ConnectedOnBottom);
     btnAddDevice->addListener (this);
 
-    btnAddDevice->setBounds (552, 24, 23, 24);
+    btnAddDevice->setBounds (552, 24, 24, 24);
 
     btnRemoveDevice.reset (new TextButton ("btnRemoveDevice"));
     addAndMakeVisible (btnRemoveDevice.get());
@@ -329,7 +329,7 @@ ArtNetSetup::ArtNetSetup ()
     btnRemoveDevice->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnBottom);
     btnRemoveDevice->addListener (this);
 
-    btnRemoveDevice->setBounds (576, 24, 23, 24);
+    btnRemoveDevice->setBounds (576, 24, 24, 24);
 
     lblMAC.reset (new Label ("lblMAC",
                              TRANS("MAC: 00:00:00:00:00:00 / OEM: 0x0000 / ESTA: 0x4040 (AA)")));
@@ -866,10 +866,10 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="320 280 104 24" buttonText="Ask to Change"
               connectedEdges="1" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnAddDevice" id="7ceb28d89a1747a0" memberName="btnAddDevice"
-              virtualName="" explicitFocusOrder="0" pos="552 24 23 24" buttonText="+"
+              virtualName="" explicitFocusOrder="0" pos="552 24 24 24" buttonText="+"
               connectedEdges="10" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnRemoveDevice" id="506bcac0d99da01e" memberName="btnRemoveDevice"
-              virtualName="" explicitFocusOrder="0" pos="576 24 23 24" buttonText="&#8722;"
+              virtualName="" explicitFocusOrder="0" pos="576 24 24 24" buttonText="&#8722;"
               connectedEdges="9" needsCallback="1" radioGroupId="0"/>
   <LABEL name="lblMAC" id="6a5bac3590aa317b" memberName="lblMAC" virtualName=""
          explicitFocusOrder="0" pos="176 232 424 24" edTextCol="ff000000"

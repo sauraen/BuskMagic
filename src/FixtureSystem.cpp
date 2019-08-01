@@ -73,10 +73,71 @@ namespace FixtureSystem {
     ValueTree fixdefs(Identifier("fixdefs"));
     ValueTree GetFixtureDefs() { return fixdefs; }
     String GetFixDefName(ValueTree def){
-        String ret = def.getProperty(Identifier("manufacturer"), "(Manu)").toString() + " ";
+        String ret = "(";
+        if((bool)def.getProperty(Identifier("inuse"), false)){
+            ret += "*) (";
+        }
+        ret += def.getProperty(Identifier("footprint"), "XX").toString() + ")";
+        ret += def.getProperty(Identifier("manufacturer"), "(Manu)").toString() + " ";
         ret += def.getProperty(Identifier("name"), "(Name)").toString() + ": ";
-        ret += def.getProperty(Identifier("profile"), "(Profile)").toString() + " (";
-        ret += def.getProperty(Identifier("footprint"), "(XX)").toString() + ")";
+        ret += def.getProperty(Identifier("profile"), "(Profile)").toString();
         return ret;
     }
+    
+    Fixture::Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16_t chn_)
+        : def(def_), name(name_), fixid(fixid_), uni(uni_), chn(chn_) {
+        def.setProperty(Identifier("inuse"), true, nullptr);
+    }
+    Fixture::~Fixture() {}
+    
+    void Fixture::SetName(String newname){
+        name = newname;
+    }
+    void Fixture::SetFixID(int newfixid){
+        fixid = newfixid;
+    }
+    void Fixture::SetPatch(uint16_t newuni, uint16_t newchn){
+        uni = newuni;
+        chn = newchn;
+    }
+    
+    OwnedArray<Fixture> fixtures;
+    void AddFixture(ValueTree def, String name, int fixid, uint16_t uni, uint16_t chn){
+        fixtures.add(new Fixture(def, name, fixid, uni, chn));
+    }
+    void RemoveFixture(int i){
+        if(i >= fixtures.size()) return;
+        ValueTree def = fixtures[i]->GetDef();
+        fixtures.remove(i);
+        bool useddef = false;
+        for(int j=0; j<fixtures.size(); ++j){
+            if(fixtures[j]->GetDef() == def){
+                useddef = true;
+                break;
+            }
+        }
+        if(!useddef){
+            def.setProperty(Identifier("inuse"), false, nullptr);
+        }
+    }
+    int NumFixtures() { return fixtures.size(); }
+    Fixture *Fix(int i) { return fixtures[i]; }
+    
+    class FixtureComparator {
+    public:
+        static int compareElements(Fixture *first, Fixture *second) const;
+    };
+    static int FixtureComparator::compareElements(Fixture *first, Fixture *second) const{
+        if(first->GetFixID() == second->GetFixID()){
+            uint32_t first_unichn = (uint32_t)first->GetUniverse() << 16 | first->GetChannel();
+            uint32_t second_unichn = (uint32_t)second->GetUniverse() << 16 | second->GetChannel();
+            return first_unichn < second_unichn ? -1 : first_unichn == second_unichn ? 0 : 1;
+        }
+        return first->GetFixID() < second->GetFixID ? -1 : 1;
+    }
+    void SortFixtures(){
+        FixtureComparator fc;
+        fixtures.sort(fc, false);
+    }
+    
 }

@@ -186,7 +186,7 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
     btnAddParam->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnTop);
     btnAddParam->addListener (this);
 
-    btnAddParam->setBounds (160, 384, 23, 24);
+    btnAddParam->setBounds (160, 384, 24, 24);
 
     btnRemoveParam.reset (new TextButton ("btnRemoveParam"));
     addAndMakeVisible (btnRemoveParam.get());
@@ -194,7 +194,7 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
     btnRemoveParam->setConnectedEdges (Button::ConnectedOnRight | Button::ConnectedOnBottom);
     btnRemoveParam->addListener (this);
 
-    btnRemoveParam->setBounds (112, 96, 23, 24);
+    btnRemoveParam->setBounds (112, 96, 24, 24);
 
     btnParamUp.reset (new TextButton ("btnParamUp"));
     addAndMakeVisible (btnParamUp.get());
@@ -202,7 +202,7 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
     btnParamUp->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnBottom);
     btnParamUp->addListener (this);
 
-    btnParamUp->setBounds (136, 96, 23, 24);
+    btnParamUp->setBounds (136, 96, 24, 24);
 
     btnParamDown.reset (new TextButton ("btnParamDown"));
     addAndMakeVisible (btnParamDown.get());
@@ -210,7 +210,7 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
     btnParamDown->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnBottom);
     btnParamDown->addListener (this);
 
-    btnParamDown->setBounds (160, 96, 23, 24);
+    btnParamDown->setBounds (160, 96, 24, 24);
 
     lblPName.reset (new Label ("lblPName",
                                TRANS("Name:")));
@@ -596,16 +596,16 @@ BEGIN_JUCER_METADATA
             layout="33" items="Generic&#10;Color" textWhenNonSelected="Generic"
             textWhenNoItems="Error"/>
   <TEXTBUTTON name="btnAddParam" id="7ceb28d89a1747a0" memberName="btnAddParam"
-              virtualName="" explicitFocusOrder="0" pos="160 384 23 24" buttonText="+"
+              virtualName="" explicitFocusOrder="0" pos="160 384 24 24" buttonText="+"
               connectedEdges="5" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnRemoveParam" id="506bcac0d99da01e" memberName="btnRemoveParam"
-              virtualName="" explicitFocusOrder="0" pos="112 96 23 24" buttonText="&#8722;"
+              virtualName="" explicitFocusOrder="0" pos="112 96 24 24" buttonText="&#8722;"
               connectedEdges="10" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnParamUp" id="c0e4ec84cb12c95b" memberName="btnParamUp"
-              virtualName="" explicitFocusOrder="0" pos="136 96 23 24" buttonText="&#8593;"
+              virtualName="" explicitFocusOrder="0" pos="136 96 24 24" buttonText="&#8593;"
               connectedEdges="11" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnParamDown" id="83e3f14852852c5b" memberName="btnParamDown"
-              virtualName="" explicitFocusOrder="0" pos="160 96 23 24" buttonText="&#8595;"
+              virtualName="" explicitFocusOrder="0" pos="160 96 24 24" buttonText="&#8595;"
               connectedEdges="9" needsCallback="1" radioGroupId="0"/>
   <LABEL name="lblPName" id="2c6c6437b4fb9d3f" memberName="lblPName" virtualName=""
          explicitFocusOrder="0" pos="184 96 56 24" edTextCol="ff000000"

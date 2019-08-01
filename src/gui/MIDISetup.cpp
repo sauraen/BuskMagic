@@ -80,7 +80,7 @@ MIDISetup::MIDISetup ()
     btnAddInPort->setConnectedEdges (Button::ConnectedOnRight | Button::ConnectedOnBottom);
     btnAddInPort->addListener (this);
 
-    btnAddInPort->setBounds (352, 0, 23, 24);
+    btnAddInPort->setBounds (352, 0, 24, 24);
 
     btnRemoveInPort.reset (new TextButton ("btnRemoveInPort"));
     addAndMakeVisible (btnRemoveInPort.get());
@@ -88,7 +88,7 @@ MIDISetup::MIDISetup ()
     btnRemoveInPort->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnBottom);
     btnRemoveInPort->addListener (this);
 
-    btnRemoveInPort->setBounds (376, 0, 23, 24);
+    btnRemoveInPort->setBounds (376, 0, 24, 24);
 
     btnAssignInPort.reset (new TextButton ("btnAssignInPort"));
     addAndMakeVisible (btnAssignInPort.get());
@@ -134,7 +134,7 @@ MIDISetup::MIDISetup ()
     btnAddOutPort->setConnectedEdges (Button::ConnectedOnRight | Button::ConnectedOnBottom);
     btnAddOutPort->addListener (this);
 
-    btnAddOutPort->setBounds (352, 184, 23, 24);
+    btnAddOutPort->setBounds (352, 184, 24, 24);
 
     btnRemoveOutPort.reset (new TextButton ("btnRemoveOutPort"));
     addAndMakeVisible (btnRemoveOutPort.get());
@@ -142,7 +142,7 @@ MIDISetup::MIDISetup ()
     btnRemoveOutPort->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnBottom);
     btnRemoveOutPort->addListener (this);
 
-    btnRemoveOutPort->setBounds (376, 184, 23, 24);
+    btnRemoveOutPort->setBounds (376, 184, 24, 24);
 
     btnAssignOutPort.reset (new TextButton ("btnAssignOutPort"));
     addAndMakeVisible (btnAssignOutPort.get());
@@ -454,10 +454,10 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="btnAddInPort" id="7ceb28d89a1747a0" memberName="btnAddInPort"
-              virtualName="" explicitFocusOrder="0" pos="352 0 23 24" buttonText="+"
+              virtualName="" explicitFocusOrder="0" pos="352 0 24 24" buttonText="+"
               connectedEdges="10" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnRemoveInPort" id="506bcac0d99da01e" memberName="btnRemoveInPort"
-              virtualName="" explicitFocusOrder="0" pos="376 0 23 24" buttonText="&#8722;"
+              virtualName="" explicitFocusOrder="0" pos="376 0 24 24" buttonText="&#8722;"
               connectedEdges="9" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnAssignInPort" id="8c8b9eb262b05176" memberName="btnAssignInPort"
               virtualName="" explicitFocusOrder="0" pos="184 72 32 24" buttonText="&#8594;"
@@ -476,10 +476,10 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="btnAddOutPort" id="32be3ccac2a3d38" memberName="btnAddOutPort"
-              virtualName="" explicitFocusOrder="0" pos="352 184 23 24" buttonText="+"
+              virtualName="" explicitFocusOrder="0" pos="352 184 24 24" buttonText="+"
               connectedEdges="10" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnRemoveOutPort" id="d26a010a439d0900" memberName="btnRemoveOutPort"
-              virtualName="" explicitFocusOrder="0" pos="376 184 23 24" buttonText="&#8722;"
+              virtualName="" explicitFocusOrder="0" pos="376 184 24 24" buttonText="&#8722;"
               connectedEdges="9" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnAssignOutPort" id="61e8989500b683d3" memberName="btnAssignOutPort"
               virtualName="" explicitFocusOrder="0" pos="184 256 32 24" buttonText="&#8594;"

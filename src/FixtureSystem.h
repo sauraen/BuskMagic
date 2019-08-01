@@ -37,4 +37,33 @@ namespace FixtureSystem {
     
     ValueTree GetFixtureDefs();
     String GetFixDefName(ValueTree def);
+    
+    class Fixture {
+    public:
+        Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16_t chn_);
+        ~Fixture();
+        
+        inline ValueTree GetDef() { return def; }
+        
+        inline String GetName() { return name; }
+        void SetName(String newname);
+        
+        inline int GetFixID() { return fixid; }
+        void SetFixID(int newfixid);
+        
+        inline uint16_t GetUniverse() { return uni; }
+        inline uint16_t GetChannel() { return chn; }
+        void SetPatch(uint16_t newuni, uint16_t newchn);
+    private:
+        ValueTree def;
+        String name;
+        int fixid;
+        uint16_t uni, chn;
+    };
+    
+    void AddFixture(ValueTree def, String name, int fixid, uint16_t uni, uint16_t chn);
+    void RemoveFixture(int i);
+    int NumFixtures();
+    Fixture *Fix(int i);
+    void SortFixtures();
 }
