@@ -115,9 +115,18 @@ inline void WarningBox(String text){
     REQUIRESEMICOLON
 
 #define TEXTCHANGEDHANDLER_POST \
-    editorThatWasChanged.setColour(TextEditor::backgroundColourId, \
-        turnRed ? Colours::red : Colours::darkgrey); \
+    TurnRed(&editorThatWasChanged, turnRed); \
     REQUIRESEMICOLON
+    
+inline void TurnRed(TextEditor *ed, bool turnRed = true){
+    ed->setColour(TextEditor::backgroundColourId,
+        turnRed ? Colours::red : LookAndFeel_V4::getDarkColourScheme()
+        .getUIColour(LookAndFeel_V4::ColourScheme::widgetBackground));
+    ed->repaint();
+}
+inline void TurnRed(const std::unique_ptr<TextEditor> &ed, bool turnRed = true){
+    TurnRed(ed.get(), turnRed);
+}
 
 inline var VT_GetChildProperty(ValueTree v, String cname, String pname, const var &defval = ""){
     return v.getOrCreateChildWithName(Identifier(cname), nullptr).getProperty(Identifier(pname), defval);

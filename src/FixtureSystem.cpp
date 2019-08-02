@@ -77,7 +77,7 @@ namespace FixtureSystem {
         if((bool)def.getProperty(Identifier("inuse"), false)){
             ret += "*) (";
         }
-        ret += def.getProperty(Identifier("footprint"), "XX").toString() + ")";
+        ret += def.getProperty(Identifier("footprint"), "XX").toString() + ") ";
         ret += def.getProperty(Identifier("manufacturer"), "(Manu)").toString() + " ";
         ret += def.getProperty(Identifier("name"), "(Name)").toString() + ": ";
         ret += def.getProperty(Identifier("profile"), "(Profile)").toString();
@@ -89,6 +89,12 @@ namespace FixtureSystem {
         def.setProperty(Identifier("inuse"), true, nullptr);
     }
     Fixture::~Fixture() {}
+    
+    String Fixture::GetDescription() const {
+        return String(fixid) + ": " + hex(uni) + "." + String(chn) + ": " + name + " (" 
+            + def.getProperty(Identifier("manufacturer"), "(Manu)").toString() + " "
+            + def.getProperty(Identifier("name"), "(Name)").toString() + ")";
+    }
     
     void Fixture::SetName(String newname){
         name = newname;
@@ -125,15 +131,15 @@ namespace FixtureSystem {
     
     class FixtureComparator {
     public:
-        static int compareElements(Fixture *first, Fixture *second) const;
+        static int compareElements(Fixture *first, Fixture *second);
     };
-    static int FixtureComparator::compareElements(Fixture *first, Fixture *second) const{
+    int FixtureComparator::compareElements(Fixture *first, Fixture *second){
         if(first->GetFixID() == second->GetFixID()){
             uint32_t first_unichn = (uint32_t)first->GetUniverse() << 16 | first->GetChannel();
             uint32_t second_unichn = (uint32_t)second->GetUniverse() << 16 | second->GetChannel();
             return first_unichn < second_unichn ? -1 : first_unichn == second_unichn ? 0 : 1;
         }
-        return first->GetFixID() < second->GetFixID ? -1 : 1;
+        return first->GetFixID() < second->GetFixID() ? -1 : 1;
     }
     void SortFixtures(){
         FixtureComparator fc;

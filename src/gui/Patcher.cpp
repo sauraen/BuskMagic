@@ -280,17 +280,17 @@ Patcher::Patcher ()
 
     lblName->setBounds (656, 464, 56, 24);
 
-    txtAddName2.reset (new TextEditor ("txtAddName"));
-    addAndMakeVisible (txtAddName2.get());
-    txtAddName2->setMultiLine (false);
-    txtAddName2->setReturnKeyStartsNewLine (false);
-    txtAddName2->setReadOnly (false);
-    txtAddName2->setScrollbarsShown (true);
-    txtAddName2->setCaretVisible (true);
-    txtAddName2->setPopupMenuEnabled (true);
-    txtAddName2->setText (TRANS("Downstage Wash"));
+    txtName.reset (new TextEditor ("txtName"));
+    addAndMakeVisible (txtName.get());
+    txtName->setMultiLine (false);
+    txtName->setReturnKeyStartsNewLine (false);
+    txtName->setReadOnly (false);
+    txtName->setScrollbarsShown (true);
+    txtName->setCaretVisible (true);
+    txtName->setPopupMenuEnabled (true);
+    txtName->setText (TRANS("Downstage Wash"));
 
-    txtAddName2->setBounds (712, 464, 208, 24);
+    txtName->setBounds (712, 464, 208, 24);
 
     lblUni.reset (new Label ("lblUni",
                              TRANS("Uni: 0x")));
@@ -428,6 +428,7 @@ Patcher::Patcher ()
     TextListModel::Initialize(lsmDir, lstDir, this, this, "Directory");
     TextListModel::Initialize(lsmDefs, lstDefs, this, this, "Definitions");
     TextListModel::Initialize(lsmFixtures, lstFixtures, this, this, "Fixtures");
+    lstFixtures->setMultipleSelectionEnabled(true);
 
     lstDir->setBounds(0, 24, 288, 520);
     lstDefs->setBounds(312, 24, 312, 416);
@@ -443,6 +444,7 @@ Patcher::Patcher ()
     fillDirBox();
     fillDefsBox();
     fillFixturesBox();
+    refreshFixtureEditControls();
 
     //[/Constructor]
 }
@@ -475,7 +477,7 @@ Patcher::~Patcher()
     lblAddName = nullptr;
     txtAddName = nullptr;
     lblName = nullptr;
-    txtAddName2 = nullptr;
+    txtName = nullptr;
     lblUni = nullptr;
     txtUni = nullptr;
     lblChn = nullptr;
@@ -573,7 +575,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
                 dir.isDirectory() ? dir : File::getSpecialLocation(File::userHomeDirectory), "*.xml");
         if(!fc.browseForFileToSave(true)) return;
         std::unique_ptr<XmlElement> xml(v.createXml());
-        if(!xml->writeToFile(fc.getResult(), "<!-- BuskMagic Fixture File -->", "UTF-8", 80)){
+        if(!xml->writeToFile(fc.getResult().withFileExtension("xml"), "<!-- BuskMagic Fixture File -->", "UTF-8", 80)){
             WarningBox("Could not save fixture file.");
         }else{
             fillDefsBox();
@@ -610,6 +612,11 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == btnDeleteFixture.get())
     {
         //[UserButtonCode_btnDeleteFixture] -- add your button handler code here..
+        for(int i=lstFixtures->getNumSelectedRows() - 1; i>=0; --i){
+            int r = lstFixtures->getSelectedRow(i);
+            FixtureSystem::RemoveFixture(r);
+        }
+        fillFixturesBox();
         //[/UserButtonCode_btnDeleteFixture]
     }
     else if (buttonThatWasClicked == btnAdd.get())
@@ -618,23 +625,43 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
         int r = lstDefs->getLastRowSelected();
         if(r < 0) return;
         ValueTree def = FixtureSystem::GetFixtureDefs().getChild(r);
-        String name = txtAddName.getText();
+        bool error = false;
         //
-        String text = txtAddQty.getText();
+        String name = txtAddName->getText().trim();
+        if(name.isEmpty()){
+            error = true;
+            TurnRed(txtAddName);
+        }else TurnRed(txtAddName, false);
+        //
+        String text = txtAddQty->getText();
         int qty = text.getIntValue();
-        if(!isint(text, false) || qty <= 0) return;
+        if(!isInt(text, false) || qty <= 0){
+            error = true;
+            TurnRed(txtAddQty);
+        }else TurnRed(txtAddQty, false);
         //
-        text = txtAddUni.getText();
+        text = txtAddUni->getText();
         int uni = text.getHexValue32();
-        if(!ishex(text) || uni < 0 || uni >= 0x8000) return;
+        if(!isHex(text) || uni < 0 || uni >= 0x8000){
+            error = true;
+            TurnRed(txtAddUni);
+        }else TurnRed(txtAddUni, false);
         //
-        text = txtAddChn.getText();
+        text = txtAddChn->getText();
         int chn = text.getIntValue();
-        if(!isint(text, false) || chn < 1 || chn > 512) return;
+        if(!isInt(text, false) || chn < 1 || chn > 512){
+            error = true;
+            TurnRed(txtAddChn);
+        }else TurnRed(txtAddChn, false);
         //
-        text = txtAddFixID.getText();
+        text = txtAddFixID->getText();
         int fixid = text.getIntValue();
-        if(!isint(text, true)) return;
+        if(!isInt(text, true)){
+            error = true;
+            TurnRed(txtAddFixID);
+        }else TurnRed(txtAddFixID, false);
+        //
+        if(error) return;
         //
         int footprint = def.getProperty(Identifier("footprint"), 1);
         if(qty * footprint + chn > 513){
@@ -647,26 +674,90 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
             chn += footprint;
             fixid += 1;
         }
+        lsmDefs->set(r, FixtureSystem::GetFixDefName(def)); //In case first use, put (*)
+        lstDefs->repaintRow(r);
+        fillFixturesBox();
         //[/UserButtonCode_btnAdd]
     }
     else if (buttonThatWasClicked == btnSetName.get())
     {
         //[UserButtonCode_btnSetName] -- add your button handler code here..
+        String name = txtName->getText().trim();
+        if(name.isEmpty()){
+            TurnRed(txtName);
+            return;
+        }
+        TurnRed(txtName, false);
+        for(int i=0; i<lstFixtures->getNumSelectedRows(); ++i){
+            int r = lstFixtures->getSelectedRow(i);
+            FixtureSystem::Fixture *fix = FixtureSystem::Fix(r);
+            fix->SetName(name);
+            lsmFixtures->set(r, fix->GetDescription());
+            lstFixtures->repaintRow(r);
+        }
         //[/UserButtonCode_btnSetName]
     }
     else if (buttonThatWasClicked == btnSetUni.get())
     {
         //[UserButtonCode_btnSetUni] -- add your button handler code here..
+        String text = txtUni->getText();
+        int uni = text.getHexValue32();
+        if(!isHex(text) || uni < 0 || uni >= 0x8000){
+            TurnRed(txtUni);
+            return;
+        }
+        TurnRed(txtUni, false);
+        for(int i=0; i<lstFixtures->getNumSelectedRows(); ++i){
+            int r = lstFixtures->getSelectedRow(i);
+            FixtureSystem::Fixture *fix = FixtureSystem::Fix(r);
+            fix->SetPatch(uni, fix->GetChannel());
+            lsmFixtures->set(r, fix->GetDescription());
+            lstFixtures->repaintRow(r);
+        }
         //[/UserButtonCode_btnSetUni]
     }
     else if (buttonThatWasClicked == btnSetChn.get())
     {
         //[UserButtonCode_btnSetChn] -- add your button handler code here..
+        String text = txtChn->getText();
+        int chn = text.getIntValue();
+        if(!isInt(text, false) || chn < 1 || chn > 512){
+            TurnRed(txtChn);
+            return;
+        }
+        TurnRed(txtChn, false);
+        for(int i=0; i<lstFixtures->getNumSelectedRows(); ++i){
+            int r = lstFixtures->getSelectedRow(i);
+            FixtureSystem::Fixture *fix = FixtureSystem::Fix(r);
+            int footprint = (int)fix->GetDef().getProperty(Identifier("footprint"), 1);
+            if(chn + footprint > 513){
+                WarningBox("Could not fit one or more fixtures in universe, aborted.");
+                return;
+            }
+            fix->SetPatch(fix->GetUniverse(), chn);
+            chn += footprint;
+            lsmFixtures->set(r, fix->GetDescription());
+            lstFixtures->repaintRow(r);
+        }
         //[/UserButtonCode_btnSetChn]
     }
     else if (buttonThatWasClicked == btnSetFixID.get())
     {
         //[UserButtonCode_btnSetFixID] -- add your button handler code here..
+        String text = txtFixID->getText();
+        int fixid = text.getIntValue();
+        if(!isInt(text, true)){
+            TurnRed(txtFixID);
+            return;
+        }
+        TurnRed(txtFixID, false);
+        for(int i=0; i<lstFixtures->getNumSelectedRows(); ++i){
+            int r = lstFixtures->getSelectedRow(i);
+            FixtureSystem::Fixture *fix = FixtureSystem::Fix(r);
+            fix->SetFixID(fixid++);
+            lsmFixtures->set(r, fix->GetDescription());
+            lstFixtures->repaintRow(r);
+        }
         //[/UserButtonCode_btnSetFixID]
     }
     else if (buttonThatWasClicked == btnRefresh.get())
@@ -678,6 +769,8 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == btnSort.get())
     {
         //[UserButtonCode_btnSort] -- add your button handler code here..
+        FixtureSystem::SortFixtures();
+        fillFixturesBox();
         //[/UserButtonCode_btnSort]
     }
 
@@ -696,7 +789,7 @@ void Patcher::rowSelected(TextListModel *parent, int row)
     }else if(parent == lsmDefs.get()){
         //
     }else if(parent == lsmFixtures.get()){
-        //
+        refreshFixtureEditControls();
     }
 }
 
@@ -749,7 +842,35 @@ void Patcher::fillDefsBox()
 
 void Patcher::fillFixturesBox()
 {
+    lsmFixtures->clear();
+    lstFixtures->updateContent();
+    for(int i=0; i<FixtureSystem::NumFixtures(); ++i){
+        lsmFixtures->add(FixtureSystem::Fix(i)->GetDescription());
+    }
+    lstFixtures->updateContent();
+}
 
+void Patcher::refreshFixtureEditControls()
+{
+    int r = lstFixtures->getLastRowSelected();
+    if(r < 0){
+        lblFixInfo->setText("(Select some fixtures above)", dontSendNotification);
+        txtName->setText("");
+        txtUni->setText("");
+        txtChn->setText("");
+        txtFixID->setText("");
+        return;
+    }
+    FixtureSystem::Fixture *fix = FixtureSystem::Fix(r);
+    ValueTree def = fix->GetDef();
+    lblFixInfo->setText("Manufacturer: " + def.getProperty(Identifier("manufacturer"), "(Manu)").toString() + "\n"
+        + "Name: " + def.getProperty(Identifier("name"), "(Name)").toString() + "\n"
+        + "Profile: " + def.getProperty(Identifier("profile"), "(Profile)").toString() + " ("
+        + def.getProperty(Identifier("footprint"), "XX").toString() + ")", dontSendNotification);
+    txtName->setText(fix->GetName());
+    txtUni->setText(hex(fix->GetUniverse()));
+    txtChn->setText(String(fix->GetChannel()));
+    txtFixID->setText(String(fix->GetFixID()));
 }
 
 //[/MiscUserCode]
@@ -860,8 +981,8 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="Name:" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="txtAddName" id="53604091056169ab" memberName="txtAddName2"
-              virtualName="" explicitFocusOrder="0" pos="712 464 208 24" initialText="Downstage Wash"
+  <TEXTEDITOR name="txtName" id="53604091056169ab" memberName="txtName" virtualName=""
+              explicitFocusOrder="0" pos="712 464 208 24" initialText="Downstage Wash"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
   <LABEL name="lblUni" id="644224b31f3c03eb" memberName="lblUni" virtualName=""

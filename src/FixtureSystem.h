@@ -43,16 +43,18 @@ namespace FixtureSystem {
         Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16_t chn_);
         ~Fixture();
         
-        inline ValueTree GetDef() { return def; }
+        String GetDescription() const;
         
-        inline String GetName() { return name; }
+        inline ValueTree GetDef() const { return def; }
+        
+        inline String GetName() const { return name; }
         void SetName(String newname);
         
-        inline int GetFixID() { return fixid; }
+        inline int GetFixID() const { return fixid; }
         void SetFixID(int newfixid);
         
-        inline uint16_t GetUniverse() { return uni; }
-        inline uint16_t GetChannel() { return chn; }
+        inline uint16_t GetUniverse() const { return uni; }
+        inline uint16_t GetChannel() const { return chn; }
         void SetPatch(uint16_t newuni, uint16_t newchn);
     private:
         ValueTree def;

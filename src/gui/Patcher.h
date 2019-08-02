@@ -71,6 +71,7 @@ public:
     void fillDirBox();
     void fillDefsBox();
     void fillFixturesBox();
+    void refreshFixtureEditControls();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -113,7 +114,7 @@ private:
     std::unique_ptr<Label> lblAddName;
     std::unique_ptr<TextEditor> txtAddName;
     std::unique_ptr<Label> lblName;
-    std::unique_ptr<TextEditor> txtAddName2;
+    std::unique_ptr<TextEditor> txtName;
     std::unique_ptr<Label> lblUni;
     std::unique_ptr<TextEditor> txtUni;
     std::unique_ptr<Label> lblChn;
