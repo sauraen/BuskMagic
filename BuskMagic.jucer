@@ -8,6 +8,7 @@
   <MAINGROUP id="nK6FP9" name="BuskMagic">
     <GROUP id="{10D6CFA7-0177-1248-18A7-BE991C404BD4}" name="src">
       <GROUP id="{E2D2E361-BE7B-6D4F-0D41-F7DB50F45452}" name="gui">
+        <GROUP id="{EA8D599D-25E4-CBA5-6611-0959C1C7171B}" name="Controller"/>
         <GROUP id="{4CB0A50E-33FE-3C70-22DC-DD556346E829}" name="FixParamEd">
           <GROUP id="{98B8B823-C6F0-66C8-ADE3-A5178A6019B3}" name="ColorMode">
             <FILE id="EYjBpe" name="CMY.cpp" compile="1" resource="0" file="src/gui/FixParamEd/ColorMode/CMY.cpp"/>
@@ -21,6 +22,15 @@
           <FILE id="r4qfMy" name="Color.h" compile="0" resource="0" file="src/gui/FixParamEd/Color.h"/>
           <FILE id="aeYFt3" name="Generic.cpp" compile="1" resource="0" file="src/gui/FixParamEd/Generic.cpp"/>
           <FILE id="HURtag" name="Generic.h" compile="0" resource="0" file="src/gui/FixParamEd/Generic.h"/>
+        </GROUP>
+        <GROUP id="{6322B70C-AD27-4F6C-ACFF-D700AC80132F}" name="Popup">
+          <FILE id="T0XZY8" name="ButtonMIDI.cpp" compile="1" resource="0" file="src/gui/Popup/ButtonMIDI.cpp"/>
+          <FILE id="hfVJsC" name="ButtonMIDI.h" compile="0" resource="0" file="src/gui/Popup/ButtonMIDI.h"/>
+          <FILE id="ljzNSe" name="CtrlrEditor.cpp" compile="1" resource="0" file="src/gui/Popup/CtrlrEditor.cpp"/>
+          <FILE id="QJsAMu" name="CtrlrEditor.h" compile="0" resource="0" file="src/gui/Popup/CtrlrEditor.h"/>
+          <FILE id="ocjfNK" name="PopupWindow.h" compile="0" resource="0" file="src/gui/Popup/PopupWindow.h"/>
+          <FILE id="wmx0ve" name="ValueEditor.cpp" compile="1" resource="0" file="src/gui/Popup/ValueEditor.cpp"/>
+          <FILE id="klKozR" name="ValueEditor.h" compile="0" resource="0" file="src/gui/Popup/ValueEditor.h"/>
         </GROUP>
         <FILE id="nGOUXC" name="ArtNetSetup.cpp" compile="1" resource="0" file="src/gui/ArtNetSetup.cpp"/>
         <FILE id="PuyiPs" name="ArtNetSetup.h" compile="0" resource="0" file="src/gui/ArtNetSetup.h"/>

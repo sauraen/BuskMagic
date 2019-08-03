@@ -143,6 +143,9 @@
     <ClCompile Include="..\..\src\gui\FixParamEd\ColorMode\RGBA.cpp"/>
     <ClCompile Include="..\..\src\gui\FixParamEd\Color.cpp"/>
     <ClCompile Include="..\..\src\gui\FixParamEd\Generic.cpp"/>
+    <ClCompile Include="..\..\src\gui\Popup\ButtonMIDI.cpp"/>
+    <ClCompile Include="..\..\src\gui\Popup\CtrlrEditor.cpp"/>
+    <ClCompile Include="..\..\src\gui\Popup\ValueEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\ArtNetSetup.cpp"/>
     <ClCompile Include="..\..\src\gui\FixtureEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\MIDISetup.cpp"/>
@@ -168,6 +171,10 @@
     <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\RGBA.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\Color.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\Generic.h"/>
+    <ClInclude Include="..\..\src\gui\Popup\ButtonMIDI.h"/>
+    <ClInclude Include="..\..\src\gui\Popup\CtrlrEditor.h"/>
+    <ClInclude Include="..\..\src\gui\Popup\PopupWindow.h"/>
+    <ClInclude Include="..\..\src\gui\Popup\ValueEditor.h"/>
     <ClInclude Include="..\..\src\gui\ArtNetSetup.h"/>
     <ClInclude Include="..\..\src\gui\FixtureEditor.h"/>
     <ClInclude Include="..\..\src\gui\MIDISetup.h"/>

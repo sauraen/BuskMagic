@@ -39,6 +39,7 @@
 
 #include "FixtureSystem.h"
 #include "FixtureEditor.h"
+#include "Popup/CtrlrEditor.h"
 //[/Headers]
 
 #include "Patcher.h"

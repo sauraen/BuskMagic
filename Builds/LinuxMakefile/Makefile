@@ -73,6 +73,9 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/RGBA_5b18822b.o \
   $(JUCE_OBJDIR)/Color_368bd47f.o \
   $(JUCE_OBJDIR)/Generic_9e9f733.o \
+  $(JUCE_OBJDIR)/ButtonMIDI_c4f5be4a.o \
+  $(JUCE_OBJDIR)/CtrlrEditor_540c3ce7.o \
+  $(JUCE_OBJDIR)/ValueEditor_5a6ebe71.o \
   $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o \
   $(JUCE_OBJDIR)/FixtureEditor_fac650c.o \
   $(JUCE_OBJDIR)/MIDISetup_7c6b09b2.o \
@@ -128,6 +131,21 @@ $(JUCE_OBJDIR)/Color_368bd47f.o: ../../src/gui/FixParamEd/Color.cpp
 $(JUCE_OBJDIR)/Generic_9e9f733.o: ../../src/gui/FixParamEd/Generic.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling Generic.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/ButtonMIDI_c4f5be4a.o: ../../src/gui/Popup/ButtonMIDI.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ButtonMIDI.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/CtrlrEditor_540c3ce7.o: ../../src/gui/Popup/CtrlrEditor.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling CtrlrEditor.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/ValueEditor_5a6ebe71.o: ../../src/gui/Popup/ValueEditor.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ValueEditor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o: ../../src/gui/ArtNetSetup.cpp

@@ -21,6 +21,10 @@
 #include "Common.h"
 
 namespace MIDISystem {
+    class MIDISetting {
+        //TODO
+    };
+    
     void Init();
     void Finalize();
     

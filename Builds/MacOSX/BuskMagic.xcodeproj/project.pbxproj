@@ -69,6 +69,18 @@
 			isa = PBXBuildFile;
 			fileRef = B89391872C00DA0C67D03860;
 		};
+		4C8C835A8F8D97A893519116 = {
+			isa = PBXBuildFile;
+			fileRef = F1B30C9518AAC26F86A7ECC5;
+		};
+		D40E86353791E938A2C16BB1 = {
+			isa = PBXBuildFile;
+			fileRef = C6FCEE11B25065F7DF37E15B;
+		};
+		76605CC130B7197F6A73C6E0 = {
+			isa = PBXBuildFile;
+			fileRef = 9D84CC832F783F9ED6C5198F;
+		};
 		16FBF7251CA38AB7C3B2999F = {
 			isa = PBXBuildFile;
 			fileRef = 0931C17F4AB4A2340A912B7F;
@@ -148,6 +160,13 @@
 			path = ../../src/gui/FixParamEd/ColorMode/CMY.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		07C45221ACD8DA57FA5FC5EE = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = CtrlrEditor.h;
+			path = ../../src/gui/Popup/CtrlrEditor.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		0931C17F4AB4A2340A912B7F = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -209,6 +228,13 @@
 			lastKnownFileType = sourcecode.cpp.objcpp;
 			name = "include_juce_gui_basics.mm";
 			path = "../../JuceLibraryCode/include_juce_gui_basics.mm";
+			sourceTree = "SOURCE_ROOT";
+		};
+		2433B2D434465D09377B18E0 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ButtonMIDI.h;
+			path = ../../src/gui/Popup/ButtonMIDI.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		2440AC7D85F98A153445E013 = {
@@ -273,6 +299,13 @@
 			name = WebKit.framework;
 			path = System/Library/Frameworks/WebKit.framework;
 			sourceTree = SDKROOT;
+		};
+		4C22B3322F2621E1609569A2 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ValueEditor.h;
+			path = ../../src/gui/Popup/ValueEditor.h;
+			sourceTree = "SOURCE_ROOT";
 		};
 		60F0A56E114CE913035A025B = {
 			isa = PBXFileReference;
@@ -386,6 +419,13 @@
 			path = "../../JuceLibraryCode/include_juce_graphics.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		9D84CC832F783F9ED6C5198F = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ValueEditor.cpp;
+			path = ../../src/gui/Popup/ValueEditor.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		A0B19AFF807D2939DF0FBD45 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -456,6 +496,13 @@
 			path = System/Library/Frameworks/QuartzCore.framework;
 			sourceTree = SDKROOT;
 		};
+		C6FCEE11B25065F7DF37E15B = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = CtrlrEditor.cpp;
+			path = ../../src/gui/Popup/CtrlrEditor.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		CAEE9482CE2EC5AA713872EB = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -490,6 +537,20 @@
 			includeInIndex = 0;
 			path = BuskMagic.app;
 			sourceTree = "BUILT_PRODUCTS_DIR";
+		};
+		F1B30C9518AAC26F86A7ECC5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ButtonMIDI.cpp;
+			path = ../../src/gui/Popup/ButtonMIDI.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		F1D64539AA9299E723453500 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = PopupWindow.h;
+			path = ../../src/gui/Popup/PopupWindow.h;
+			sourceTree = "SOURCE_ROOT";
 		};
 		F32C4C6DA3B9375862D89018 = {
 			isa = PBXFileReference;
@@ -530,10 +591,25 @@
 			name = FixParamEd;
 			sourceTree = "<group>";
 		};
+		309A29C8B0B89B4006145A30 = {
+			isa = PBXGroup;
+			children = (
+				F1B30C9518AAC26F86A7ECC5,
+				2433B2D434465D09377B18E0,
+				C6FCEE11B25065F7DF37E15B,
+				07C45221ACD8DA57FA5FC5EE,
+				F1D64539AA9299E723453500,
+				9D84CC832F783F9ED6C5198F,
+				4C22B3322F2621E1609569A2,
+			);
+			name = Popup;
+			sourceTree = "<group>";
+		};
 		B7D6698B4B68121DBA2C5C7E = {
 			isa = PBXGroup;
 			children = (
 				CA7558F638459772B8A88BEE,
+				309A29C8B0B89B4006145A30,
 				0931C17F4AB4A2340A912B7F,
 				702B51A655BAB27C38760312,
 				94298B9627920B56EDAA4E0E,
@@ -854,6 +930,9 @@
 				385D9AA52F61E814428DC61F,
 				3CBF4BA86FE51207EDEE3D2F,
 				02E84890133A491CEADBA122,
+				4C8C835A8F8D97A893519116,
+				D40E86353791E938A2C16BB1,
+				76605CC130B7197F6A73C6E0,
 				16FBF7251CA38AB7C3B2999F,
 				182FF3B58EFBCAE6F9B7C7E7,
 				373DBAE866ED8F17906C1266,
