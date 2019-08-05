@@ -176,7 +176,7 @@ int MIDISetting::GetValueFrom(MIDIMessage msg){
     return msg.getRawData()[type == 0xD ? 1 : 2];
 }
 
-void MIDISetting::SendMsgForValue(int valforcontinuous){
+void MIDISetting::SendMsg(int valforcontinuous){
     if(!out){
         std::cout << "Improper use of MIDISetting::SendMsgForValue on input!\n";
         return;

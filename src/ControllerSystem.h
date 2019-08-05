@@ -21,11 +21,29 @@
 #include "JuceHeader.h"
 #include "Common.h"
 
+class MagicValue {
+public:
+    MagicValue() : magic(false), mugglevalue(0.0f), chan(nullptr) {}
+    ~MagicValue() {}
+    
+    inline bool IsMagic() const { return chan != nullptr; }
+    inline float GetPlainValue() const { return mugglevalue; }
+    inline void SetPlainValue(float v) { mugglevalue = v; }
+    inline void *GetChannel() const { return chan; }
+    inline void SetChannel(void *ch) { chan = ch; }
+    
+    inline float Evaluate(float angle) const {
+        return chan != nullptr ? /*TODO chan->Evaluate(angle)*/0.0f : mugglevalue;
+    }
+private:
+    float mugglevalue;
+    void *chan;
+};
 
 class Controller {
 public:
     Controller();
-    ~Controller();
+    virtual ~Controller();
     
     int x, y;
     Colour color;
@@ -41,7 +59,7 @@ public:
     inline bool IsEnabled() const { return enabled; }
     void SetEnabled(bool en);
     
-    virtual void HandleMIDI(MidiMessage msg);
+    virtual void HandleMIDI(int port, MidiMessage msg);
     enum MIDISettingType {
         en_on = 0,
         en_off = 1,
@@ -49,18 +67,17 @@ public:
         en_out_on = 3,
         en_out_off = 4,
         ct_in = 5,
-        ct_lo = 6,
-        ct_hi = 7,
+        ct_goto_lo = 6,
+        ct_goto_hi = 7,
         ct_out = 8
     };
     virtual String GetMIDISettingStr(MIDISettingType type);
     virtual bool SetMIDISettingFromStr(MIDISettingType, String str);
     
-    virtual void Evaluate() = 0;
+    virtual float Evaluate(float angle) const = 0;
 
 protected:
-    ReadWriteLock mutex;
-    OwnedArray<MIDISetting> en_msets;
+    OwnedArray<MIDISetting> midisettings;
     
 private:
     String name;
@@ -68,7 +85,36 @@ private:
     Colour groupColor;
     
     bool enabled;
+};
+
+class SimpleController : public Controller {
+public:
+    SimpleController();
+    virtual ~SimpleController();
     
+    virtual float Evaluate(float angle) const override;
+    
+    inline MagicValue *GetValue() { return &value; }
+private:
+    MagicValue value;
+};
+
+class ContinuousController : public Controller {
+public:
+    ContinuousController();
+    virtual ~ContinuousController();
+    
+    virtual void HandleMIDI(int port, MidiMessage msg) override;
+    virtual String GetMIDISettingStr(MIDISettingType type) override;
+    virtual bool SetMIDISettingFromStr(MIDISettingType, String str) override;
+    
+    virtual float Evaluate(float angle) const override;
+    
+    inline MagicValue *GetLoValue() { return &lovalue; } 
+    inline MagicValue *GetHiValue() { return &hivalue; }
+private:
+    MagicValue lovalue, highvalue;
+    float knob;
 };
 
 namespace ControllerSystem {

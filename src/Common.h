@@ -162,5 +162,14 @@ inline ValueTree VT_Load(File f, String topleveltype){
     }
     return v;
 }
+
+struct Phasor {
+    float mag;
+    float angle;
     
+    Phasor() : mag(0.0f), angle(0.0f) {}
+    Phasor(float m, float a) : mag(m), angle(a) {}
+    Phasor(const Phasor &other) = default;
+    Phasor &operator=(const Phasor &other) = default;
+};
     

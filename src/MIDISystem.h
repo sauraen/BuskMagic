@@ -32,7 +32,7 @@ public:
     
     bool Matches(int port_, MIDIMessage msg);
     int GetValueFrom(MIDIMessage msg); //Assumes it matches!
-    void SendMsgForValue(int valforcontinuous=-1);
+    void SendMsg(int valforcontinuous=-1);
 private:
     bool out, continuous;
     int port, channel, type, note, vel;
