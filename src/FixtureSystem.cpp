@@ -18,6 +18,31 @@
 
 #include "FixtureSystem.h"
 
+
+Fixture::Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16_t chn_)
+    : def(def_), name(name_), fixid(fixid_), uni(uni_), chn(chn_) {
+    def.setProperty(Identifier("inuse"), true, nullptr);
+}
+Fixture::~Fixture() {}
+
+String Fixture::GetDescription() const {
+    return String(fixid) + ": " + hex(uni) + "." + String(chn) + ": " + name + " (" 
+        + def.getProperty(Identifier("manufacturer"), "(Manu)").toString() + " "
+        + def.getProperty(Identifier("name"), "(Name)").toString() + ")";
+}
+
+void Fixture::SetName(String newname){
+    name = newname;
+}
+void Fixture::SetFixID(int newfixid){
+    fixid = newfixid;
+}
+void Fixture::SetPatch(uint16_t newuni, uint16_t newchn){
+    uni = newuni;
+    chn = newchn;
+}
+
+
 namespace FixtureSystem {
     
     bool ParseDMXText(String text, int footprint, int &normal, int &fine, int &ultra){
@@ -82,29 +107,6 @@ namespace FixtureSystem {
         ret += def.getProperty(Identifier("name"), "(Name)").toString() + ": ";
         ret += def.getProperty(Identifier("profile"), "(Profile)").toString();
         return ret;
-    }
-    
-    Fixture::Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16_t chn_)
-        : def(def_), name(name_), fixid(fixid_), uni(uni_), chn(chn_) {
-        def.setProperty(Identifier("inuse"), true, nullptr);
-    }
-    Fixture::~Fixture() {}
-    
-    String Fixture::GetDescription() const {
-        return String(fixid) + ": " + hex(uni) + "." + String(chn) + ": " + name + " (" 
-            + def.getProperty(Identifier("manufacturer"), "(Manu)").toString() + " "
-            + def.getProperty(Identifier("name"), "(Name)").toString() + ")";
-    }
-    
-    void Fixture::SetName(String newname){
-        name = newname;
-    }
-    void Fixture::SetFixID(int newfixid){
-        fixid = newfixid;
-    }
-    void Fixture::SetPatch(uint16_t newuni, uint16_t newchn){
-        uni = newuni;
-        chn = newchn;
     }
     
     OwnedArray<Fixture> fixtures;

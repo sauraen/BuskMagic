@@ -20,10 +20,25 @@
 #include "JuceHeader.h"
 #include "Common.h"
 
+class MIDISetting {
+public:
+    MIDISetting(bool out_, bool continuous_);
+    ~MIDISetting();
+    
+    static String GetHelpText();
+    
+    String GetStr();
+    bool FromStr(String str);
+    
+    bool Matches(int port_, MIDIMessage msg);
+    int GetValueFrom(MIDIMessage msg); //Assumes it matches!
+    void SendMsgForValue(int valforcontinuous=-1);
+private:
+    bool out, continuous;
+    int port, channel, type, note, vel;
+};
+
 namespace MIDISystem {
-    class MIDISetting {
-        //TODO
-    };
     
     void Init();
     void Finalize();

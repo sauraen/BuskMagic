@@ -20,6 +20,184 @@
 
 #include <vector>
 
+MIDISetting::MIDISetting(bool out_, bool continuous_)
+    : out(out_), continuous(continuous_), 
+      port(-1), channel(-1), type(-1), note(60), vel(-1) {}
+
+MIDISetting::~MIDISetting() {}
+
+String MIDISetting::GetHelpText(){
+    return "MIDI setting text looks like P.C.CmdType.N.V\n"
+           "where P is the port; C is the channel (1-16);\n"
+           "CmdType is: NoteOff, NoteOn, PolyAft, CC, Prog,\n"
+           "ChnAft, or PitchB; N is the note or CC number;\n"
+           "and V is the velocity or value.\n"
+           "\n";
+           "Type X in place of P, C, N, or V to mean \"any\"\n"
+           "for that field. E.g. 1.X.NoteOn.60.X means port 1,\n"
+           "any channel, note on command, note 60, any velocity.\n"
+           "You can also type H or L in the velocity field to mean\n"
+           "\"high\" (64-127) or \"low\" (0-63).\n"
+           "Outputs cannot contain X, H, or L--the actual value\n"
+           "must be specified.\n"
+           "\n"
+           "Note that Prog only has N (no V), and both ChnAft and\n"
+           "PitchB only have V (no N). Continuous controllers do not\n"
+           "specify V, as this is the value of the controller.";
+}
+
+String MIDISetting::GetStr() {
+    if(type < 0) return ""; //No message
+    String ret = (port < 0 ? "X" : String(port)) + ".";
+    ret += (channel < 0 ? "X" : String(channel)) + ".";
+    switch(type){
+        case 0x8: ret += "NoteOff"; break;
+        case 0x9: ret += "NoteOn";  break;
+        case 0xA: ret += "PolyAft"; break;
+        case 0xB: ret += "CC";      break;
+        case 0xC: ret += "Prog";    break;
+        case 0xD: ret += "ChnAft";  break;
+        case 0xE: ret += "PitchB";  break;
+        default:  ret += "Error";
+    }
+    if(type < 0xD) ret += "." + (note < 0 ? "X" : String(note));
+    if(type != 0xC){
+             if(vel == -1) ret += ".X";
+        else if(vel == -2) ret += ".H";
+        else if(vel == -3) ret += ".L";
+        else ret += "." + String(vel);
+    }
+}
+
+bool MIDISetting::FromStr(String str) {
+    type = -1; //Set to "no message" before beginning
+    if(str.isEmpty()) return true; //Empty is valid--no message
+    int port_, channel_, type_, note_, vel_;
+    StringArray tk = StringArray::fromTokens(str.trim().toLowerCase(), ".", "");
+    if(tk.size() < 3) return false;
+    if(tk[0] == "x" && !out){
+        port_ = -1;
+    }else{
+        if(!isInt(tk[0], false)) return false;
+        port_ = tk[0].getIntValue();
+        if(port_ == 0) return false;
+    }
+    if(tk[1] == "x" && !out){
+        channel_ = -1;
+    }else{
+        if(!isInt(tk[1], false)) return false;
+        channel_ = tk[1].getIntValue();
+        if(channel_ == 0) return false;
+        if(channel_ > 16) return false;
+    }
+         if(tk[2] == "noteoff") type_ = 0x8;
+    else if(tk[2] == "noteon" ) type_ = 0x9;
+    else if(tk[2] == "polyaft") type_ = 0xA;
+    else if(tk[2] == "cc"     ) type_ = 0xB;
+    else if(tk[2] == "prog"   ) type_ = 0xC;
+    else if(tk[2] == "chnaft" ) type_ = 0xD;
+    else if(tk[2] == "pitchb" ) type_ = 0xE;
+    else return false;
+    if(type_ == 0xC && continuous) return false;
+    int t = 3;
+    if(type_ < 0xD){
+        if(tk.size() <= t) return false;
+        if(tk[t] == "x" && !out){
+            note_ = -1;
+        }else{
+            if(!isInt(tk[t], false)) return false;
+            note_ = tk[t].getIntValue();
+            if(note_ > 127) return false;
+        }
+        t = 4;
+    }else{
+        note_ = -1;
+    }
+    if(type_ != 0xC){
+        if(tk.size() <= t) return false;
+        if(tk[t] == "x" && !out){
+            vel_ = -1;
+        }else if(tk[t] == "h" && !out){
+            vel_ = -2;
+        }else if(tk[t] == "l" && !out){
+            vel_ = -3;
+        }else{
+            if(!isInt(tk[t], false)) return false;
+            vel_ = tk[t].getIntValue();
+            if(vel_ > 127) return false;
+        }
+        ++t;
+    }else{
+        vel_ = -1;
+    }
+    if(t != tk.size()) return false;
+    port = port_;
+    channel = channel_;
+    type = type_;
+    note = note_;
+    vel = vel_;
+    return true;
+}
+
+bool MIDISetting::Matches(int port_, MIDIMessage msg){
+    if(out){
+        std::cout << "Improper use of MIDISetting::Matches on output!\n";
+        return false;
+    }
+    if(type < 0) return false; //No message
+    if(port != -1 && port != port_) return false;
+    if(channel != -1 && !msg.isForChannel(channel)) return false;
+    switch(type){
+    case 0x8: if(!msg.isNoteOff(true)) return false; break;
+    case 0x9: if(!msg.isNoteOn(false)) return false; break;
+    case 0xA: if(!msg.isAftertouch())  return false; break;
+    case 0xB: if(!msg.isController())  return false; break;
+    case 0xC: if(!msg.isProgramChange()) return false; break;
+    case 0xD: if(!msg.isChannelPressure()) return false; break;
+    case 0xE: if(!msg.isPitchWheel()) return false; break;
+    default: return false;
+    }
+    if(type < 0xD && note != -1 && note != msg.getRawData()[1]) return false;
+    if(type != 0xC){
+        int byte = type == 0xD ? 1 : 2; //PitchB, byte 2 is MSB
+        if(vel == -2 && msg.getRawData()[byte] < 64) return false;
+        if(vel == -3 && msg.getRawData()[byte] >= 64) return false;
+        if(vel >= 0 && msg.getRawData()[byte] != vel) return false;
+    }
+    return true;
+}
+
+int MIDISetting::GetValueFrom(MIDIMessage msg){
+    if(out){
+        std::cout << "Improper use of MIDISetting::Matches on output!\n";
+        return -1;
+    }
+    if(type < 0 || type == 0xC) return -1;
+    return msg.getRawData()[type == 0xD ? 1 : 2];
+}
+
+void MIDISetting::SendMsgForValue(int valforcontinuous){
+    if(!out){
+        std::cout << "Improper use of MIDISetting::SendMsgForValue on input!\n";
+        return;
+    }
+    if(type < 0) return; //No message
+    if(continuous && (valforcontinuous < 0 || valforcontinuous > 127)){
+        std::cout << "Invalid continuous value in MIDISetting::SendMsgForValue!\n";
+        return;
+    }
+    int v = continuous ? valforcontinuous : vel;
+    switch(type){
+    case 0x8: MIDISystem::SendNoteOff(port, channel, note, v); return;
+    case 0x9: MIDISystem::SendNoteOn(port, channel, note, v); return;
+    case 0xA: MIDISystem::SendPolyAftertouch(port, channel, note, v); return;
+    case 0xB: MIDISystem::SendCC(port, channel, note, v); return;
+    case 0xC: MIDISystem::SendProgChange(port, channel, note); return;
+    case 0xD: MIDISystem::SendChanAftertouch(port, channel, v); return;
+    case 0xE: MIDISystem::SendPitchBend(port, channel, v << 7); return;
+    }
+}
+
 namespace MIDISystem {
     
     void HandleMIDIInput(int port, const MidiMessage &message){

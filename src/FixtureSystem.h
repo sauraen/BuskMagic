@@ -27,6 +27,31 @@
             dmx_normal, dmx_fine, dmx_ultra); \
     REQUIRESEMICOLON
 
+class Fixture {
+public:
+    Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16_t chn_);
+    ~Fixture();
+    
+    String GetDescription() const;
+    
+    inline ValueTree GetDef() const { return def; }
+    
+    inline String GetName() const { return name; }
+    void SetName(String newname);
+    
+    inline int GetFixID() const { return fixid; }
+    void SetFixID(int newfixid);
+    
+    inline uint16_t GetUniverse() const { return uni; }
+    inline uint16_t GetChannel() const { return chn; }
+    void SetPatch(uint16_t newuni, uint16_t newchn);
+private:
+    ValueTree def;
+    String name;
+    int fixid;
+    uint16_t uni, chn;
+};
+
 namespace FixtureSystem {
     bool ParseDMXText(String text, int footprint, int &normal, int &fine, int &ultra);
     String GetDMXText(ValueTree parent);
@@ -37,31 +62,6 @@ namespace FixtureSystem {
     
     ValueTree GetFixtureDefs();
     String GetFixDefName(ValueTree def);
-    
-    class Fixture {
-    public:
-        Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16_t chn_);
-        ~Fixture();
-        
-        String GetDescription() const;
-        
-        inline ValueTree GetDef() const { return def; }
-        
-        inline String GetName() const { return name; }
-        void SetName(String newname);
-        
-        inline int GetFixID() const { return fixid; }
-        void SetFixID(int newfixid);
-        
-        inline uint16_t GetUniverse() const { return uni; }
-        inline uint16_t GetChannel() const { return chn; }
-        void SetPatch(uint16_t newuni, uint16_t newchn);
-    private:
-        ValueTree def;
-        String name;
-        int fixid;
-        uint16_t uni, chn;
-    };
     
     void AddFixture(ValueTree def, String name, int fixid, uint16_t uni, uint16_t chn);
     void RemoveFixture(int i);

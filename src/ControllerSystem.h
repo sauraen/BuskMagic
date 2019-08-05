@@ -21,24 +21,57 @@
 #include "JuceHeader.h"
 #include "Common.h"
 
+
+class Controller {
+public:
+    Controller();
+    ~Controller();
+    
+    int x, y;
+    Colour color;
+    bool nostate;
+    
+    String GetName() const;
+    void SetName(String n);
+    inline int GetGroup() const { return group; }
+    void SetGroup(int g);
+    inline Colour GetGroupColor() const { return groupColor; }
+    void SetGroupColor(Colour col);
+    
+    inline bool IsEnabled() const { return enabled; }
+    void SetEnabled(bool en);
+    
+    virtual void HandleMIDI(MidiMessage msg);
+    enum MIDISettingType {
+        en_on = 0,
+        en_off = 1,
+        en_toggle = 2,
+        en_out_on = 3,
+        en_out_off = 4,
+        ct_in = 5,
+        ct_lo = 6,
+        ct_hi = 7,
+        ct_out = 8
+    };
+    virtual String GetMIDISettingStr(MIDISettingType type);
+    virtual bool SetMIDISettingFromStr(MIDISettingType, String str);
+    
+    virtual void Evaluate() = 0;
+
+protected:
+    ReadWriteLock mutex;
+    OwnedArray<MIDISetting> en_msets;
+    
+private:
+    String name;
+    int group;
+    Colour groupColor;
+    
+    bool enabled;
+    
+};
+
 namespace ControllerSystem {
     
-    class Controller {
-    public:
-        Controller();
-        ~Controller();
-        
-        
-    private:
-        int x, y;
-        String name;
-        Colour color;
-        int group;
-        Colour groupColor;
-        bool nostate;
-        
-        bool enabled;
-        //TODO
-    };
     
 }
