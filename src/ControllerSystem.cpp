@@ -43,7 +43,7 @@ Controller::Controller()
 
 Controller::~Controller() {}
 
-String Controller::GetName(){
+String Controller::GetName() const{
     CTRLRSYS_LOCK_READ();
     return String(name); //This is because String is not thread-safe
 }
@@ -61,6 +61,17 @@ void Controller::SetGroupColor(Colour col){
     CTRLRSYS_LOCK_WRITE();
     groupColor = col;
     //TODO copy group color to other members
+}
+
+void Controller::SetEnabled(bool en){
+    CTRLRSYS_LOCK_WRITE();
+    if(enabled == en) return;
+    enabled = en;
+    if(enabled){
+        midisettings[en_out_on]->SendMsg();
+    }else{
+        midisettings[en_out_off]->SendMsg();
+    }
 }
 
 void Controller::HandleMIDI(int port, MidiMessage msg){
@@ -96,7 +107,7 @@ String Controller::GetMIDISettingStr(MIDISettingType type){
     return midisettings[type]->GetStr();
 }
 
-bool Controller::SetMIDISettingFromStr(MIDISettingType, String str){
+bool Controller::SetMIDISettingFromStr(MIDISettingType type, String str){
     CTRLRSYS_LOCK_WRITE();
     if(type > en_out_off || type < 0){
         std::cout << "Invalid usage of Controller::SetMIDISettingFromStr()!\n";
@@ -108,9 +119,9 @@ bool Controller::SetMIDISettingFromStr(MIDISettingType, String str){
 SimpleController::SimpleController() : Controller() {}
 SimpleController::~SimpleController() {}
 
-void SimpleController::Evaluate(float angle) {
+float SimpleController::Evaluate(float angle) const {
     CTRLRSYS_LOCK_READ();
-    return value->Evaluate(angle);
+    return value.Evaluate(angle);
 }
 
 ContinuousController::ContinuousController() : Controller(), knob(0.0f) {
@@ -121,6 +132,12 @@ ContinuousController::ContinuousController() : Controller(), knob(0.0f) {
 }
 
 ContinuousController::~ContinuousController() {}
+
+void ContinuousController::SetKnob(float k){
+    CTRLRSYS_LOCK_WRITE();
+    knob = k;
+    midisettings[ct_out]->SendMsg((int)(knob * 127.0f));
+}
 
 void ContinuousController::HandleMIDI(int port, MidiMessage msg) {
     CTRLRSYS_LOCK_READ();
@@ -149,7 +166,7 @@ String ContinuousController::GetMIDISettingStr(MIDISettingType type) {
     }
     return midisettings[type]->GetStr();
 }
-bool ContinuousController::SetMIDISettingFromStr(MIDISettingType, String str) {
+bool ContinuousController::SetMIDISettingFromStr(MIDISettingType type, String str) {
     CTRLRSYS_LOCK_WRITE();
     if(type <= en_out_off) return Controller::SetMIDISettingFromStr(type, str);
     if(type > ct_out){
@@ -159,7 +176,13 @@ bool ContinuousController::SetMIDISettingFromStr(MIDISettingType, String str) {
     return midisettings[type]->FromStr(str);
 }
 
-//TODO evaluate
+float ContinuousController::Evaluate(float angle) const {
+    CTRLRSYS_LOCK_READ();
+    float l = lovalue.Evaluate(angle);
+    float h = hivalue.Evaluate(angle);
+    return (l * (1.0f - knob)) + (h * knob);
+}
+
 
 namespace ControllerSystem {
     

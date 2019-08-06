@@ -85,6 +85,10 @@
 			isa = PBXBuildFile;
 			fileRef = 0931C17F4AB4A2340A912B7F;
 		};
+		3057EB35B57670330D5511E3 = {
+			isa = PBXBuildFile;
+			fileRef = F8B07F750F68D6554B14D4BF;
+		};
 		182FF3B58EFBCAE6F9B7C7E7 = {
 			isa = PBXBuildFile;
 			fileRef = 94298B9627920B56EDAA4E0E;
@@ -104,6 +108,10 @@
 		1B790381B4E8DD68C64B60C6 = {
 			isa = PBXBuildFile;
 			fileRef = 363442D52A030D802F0667D7;
+		};
+		32C2055711FD86AA59F8C771 = {
+			isa = PBXBuildFile;
+			fileRef = 4750051CA410D31D9938AACB;
 		};
 		E23EEB6E9C02ABEBBC879A52 = {
 			isa = PBXBuildFile;
@@ -293,12 +301,33 @@
 			path = "../../JuceLibraryCode/include_juce_gui_extra.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		448F5F68DF58CBEB91ECDC49 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ControllerCanvas.h;
+			path = ../../src/gui/Controller/ControllerCanvas.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		46C6FB0157622C02EE45D2E6 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = WebKit.framework;
 			path = System/Library/Frameworks/WebKit.framework;
 			sourceTree = SDKROOT;
+		};
+		4750051CA410D31D9938AACB = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ControllerSystem.cpp;
+			path = ../../src/ControllerSystem.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		4B889AC1B6D88A0C776091AE = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = SimpleControllerCmp.h;
+			path = ../../src/gui/Controller/SimpleControllerCmp.h;
+			sourceTree = "SOURCE_ROOT";
 		};
 		4C22B3322F2621E1609569A2 = {
 			isa = PBXFileReference;
@@ -340,6 +369,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = Generic.h;
 			path = ../../src/gui/FixParamEd/Generic.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		753DC3BD6F96C713FEE8E28B = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ControllerWindow.h;
+			path = ../../src/gui/ControllerWindow.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		7CEE8785EA0060A68A8B3F67 = {
@@ -524,6 +560,13 @@
 			path = ../../src/MainComponent.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		E4A89D5178CC4394A61ECF58 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ControllerSystem.h;
+			path = ../../src/ControllerSystem.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		E8E1D6E0F37620FC9D2EE476 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -565,6 +608,22 @@
 			name = "include_juce_audio_devices.mm";
 			path = "../../JuceLibraryCode/include_juce_audio_devices.mm";
 			sourceTree = "SOURCE_ROOT";
+		};
+		F8B07F750F68D6554B14D4BF = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ControllerWindow.cpp;
+			path = ../../src/gui/ControllerWindow.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		340CC79BF702A45FEA1F3D1B = {
+			isa = PBXGroup;
+			children = (
+				448F5F68DF58CBEB91ECDC49,
+				4B889AC1B6D88A0C776091AE,
+			);
+			name = Controller;
+			sourceTree = "<group>";
 		};
 		C9C3CBBB72ED2FF85CF7D94B = {
 			isa = PBXGroup;
@@ -608,10 +667,13 @@
 		B7D6698B4B68121DBA2C5C7E = {
 			isa = PBXGroup;
 			children = (
+				340CC79BF702A45FEA1F3D1B,
 				CA7558F638459772B8A88BEE,
 				309A29C8B0B89B4006145A30,
 				0931C17F4AB4A2340A912B7F,
 				702B51A655BAB27C38760312,
+				F8B07F750F68D6554B14D4BF,
+				753DC3BD6F96C713FEE8E28B,
 				94298B9627920B56EDAA4E0E,
 				B0661EF0EE418B85855C1950,
 				B00F8F87CA52FC56D0553BC0,
@@ -631,6 +693,8 @@
 				363442D52A030D802F0667D7,
 				09D8B0FDE7FDB19885A49874,
 				9640A05CA7D688309DF158E4,
+				4750051CA410D31D9938AACB,
+				E4A89D5178CC4394A61ECF58,
 				0C0E0CECE0AC5AD88BBE8242,
 				880D8A0D96D59826EAFB7539,
 				12708D3BB00C4E063550ED8A,
@@ -934,11 +998,13 @@
 				D40E86353791E938A2C16BB1,
 				76605CC130B7197F6A73C6E0,
 				16FBF7251CA38AB7C3B2999F,
+				3057EB35B57670330D5511E3,
 				182FF3B58EFBCAE6F9B7C7E7,
 				373DBAE866ED8F17906C1266,
 				5CBD7F35C97B5078FD17F046,
 				C7EA9627119D6D6D886D6EB8,
 				1B790381B4E8DD68C64B60C6,
+				32C2055711FD86AA59F8C771,
 				E23EEB6E9C02ABEBBC879A52,
 				7EE2E61A8CB78EE8ACEB013C,
 				B565100F8B2B765F45847885,

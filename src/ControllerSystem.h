@@ -21,9 +21,11 @@
 #include "JuceHeader.h"
 #include "Common.h"
 
+#include "MIDISystem.h"
+
 class MagicValue {
 public:
-    MagicValue() : magic(false), mugglevalue(0.0f), chan(nullptr) {}
+    MagicValue() : mugglevalue(0.0f), chan(nullptr) {}
     ~MagicValue() {}
     
     inline bool IsMagic() const { return chan != nullptr; }
@@ -72,7 +74,7 @@ public:
         ct_out = 8
     };
     virtual String GetMIDISettingStr(MIDISettingType type);
-    virtual bool SetMIDISettingFromStr(MIDISettingType, String str);
+    virtual bool SetMIDISettingFromStr(MIDISettingType type, String str);
     
     virtual float Evaluate(float angle) const = 0;
 
@@ -92,9 +94,10 @@ public:
     SimpleController();
     virtual ~SimpleController();
     
+    inline MagicValue *GetValue() { return &value; }
+    
     virtual float Evaluate(float angle) const override;
     
-    inline MagicValue *GetValue() { return &value; }
 private:
     MagicValue value;
 };
@@ -104,16 +107,20 @@ public:
     ContinuousController();
     virtual ~ContinuousController();
     
+    inline float GetKnob() { return knob; }
+    void SetKnob(float k);
+    
+    inline MagicValue *GetLoValue() { return &lovalue; } 
+    inline MagicValue *GetHiValue() { return &hivalue; }
+    
     virtual void HandleMIDI(int port, MidiMessage msg) override;
     virtual String GetMIDISettingStr(MIDISettingType type) override;
     virtual bool SetMIDISettingFromStr(MIDISettingType, String str) override;
     
     virtual float Evaluate(float angle) const override;
     
-    inline MagicValue *GetLoValue() { return &lovalue; } 
-    inline MagicValue *GetHiValue() { return &hivalue; }
 private:
-    MagicValue lovalue, highvalue;
+    MagicValue lovalue, hivalue;
     float knob;
 };
 

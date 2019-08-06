@@ -67,6 +67,7 @@ String MIDISetting::GetStr() {
         else if(vel == -3) ret += ".L";
         else ret += "." + String(vel);
     }
+    return ret;
 }
 
 bool MIDISetting::FromStr(String str) {
@@ -139,7 +140,7 @@ bool MIDISetting::FromStr(String str) {
     return true;
 }
 
-bool MIDISetting::Matches(int port_, MIDIMessage msg){
+bool MIDISetting::Matches(int port_, MidiMessage msg){
     if(out){
         std::cout << "Improper use of MIDISetting::Matches on output!\n";
         return false;
@@ -167,7 +168,7 @@ bool MIDISetting::Matches(int port_, MIDIMessage msg){
     return true;
 }
 
-int MIDISetting::GetValueFrom(MIDIMessage msg){
+int MIDISetting::GetValueFrom(MidiMessage msg){
     if(out){
         std::cout << "Improper use of MIDISetting::Matches on output!\n";
         return -1;

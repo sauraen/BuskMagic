@@ -30,8 +30,8 @@ public:
     String GetStr();
     bool FromStr(String str);
     
-    bool Matches(int port_, MIDIMessage msg);
-    int GetValueFrom(MIDIMessage msg); //Assumes it matches!
+    bool Matches(int port_, MidiMessage msg);
+    int GetValueFrom(MidiMessage msg); //Assumes it matches!
     void SendMsg(int valforcontinuous=-1);
 private:
     bool out, continuous;

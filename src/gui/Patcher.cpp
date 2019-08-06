@@ -691,7 +691,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
         TurnRed(txtName, false);
         for(int i=0; i<lstFixtures->getNumSelectedRows(); ++i){
             int r = lstFixtures->getSelectedRow(i);
-            FixtureSystem::Fixture *fix = FixtureSystem::Fix(r);
+            Fixture *fix = FixtureSystem::Fix(r);
             fix->SetName(name);
             lsmFixtures->set(r, fix->GetDescription());
             lstFixtures->repaintRow(r);
@@ -710,7 +710,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
         TurnRed(txtUni, false);
         for(int i=0; i<lstFixtures->getNumSelectedRows(); ++i){
             int r = lstFixtures->getSelectedRow(i);
-            FixtureSystem::Fixture *fix = FixtureSystem::Fix(r);
+            Fixture *fix = FixtureSystem::Fix(r);
             fix->SetPatch(uni, fix->GetChannel());
             lsmFixtures->set(r, fix->GetDescription());
             lstFixtures->repaintRow(r);
@@ -729,7 +729,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
         TurnRed(txtChn, false);
         for(int i=0; i<lstFixtures->getNumSelectedRows(); ++i){
             int r = lstFixtures->getSelectedRow(i);
-            FixtureSystem::Fixture *fix = FixtureSystem::Fix(r);
+            Fixture *fix = FixtureSystem::Fix(r);
             int footprint = (int)fix->GetDef().getProperty(Identifier("footprint"), 1);
             if(chn + footprint > 513){
                 WarningBox("Could not fit one or more fixtures in universe, aborted.");
@@ -754,7 +754,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
         TurnRed(txtFixID, false);
         for(int i=0; i<lstFixtures->getNumSelectedRows(); ++i){
             int r = lstFixtures->getSelectedRow(i);
-            FixtureSystem::Fixture *fix = FixtureSystem::Fix(r);
+            Fixture *fix = FixtureSystem::Fix(r);
             fix->SetFixID(fixid++);
             lsmFixtures->set(r, fix->GetDescription());
             lstFixtures->repaintRow(r);
@@ -862,7 +862,7 @@ void Patcher::refreshFixtureEditControls()
         txtFixID->setText("");
         return;
     }
-    FixtureSystem::Fixture *fix = FixtureSystem::Fix(r);
+    Fixture *fix = FixtureSystem::Fix(r);
     ValueTree def = fix->GetDef();
     lblFixInfo->setText("Manufacturer: " + def.getProperty(Identifier("manufacturer"), "(Manu)").toString() + "\n"
         + "Name: " + def.getProperty(Identifier("name"), "(Name)").toString() + "\n"

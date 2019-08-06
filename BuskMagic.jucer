@@ -8,7 +8,12 @@
   <MAINGROUP id="nK6FP9" name="BuskMagic">
     <GROUP id="{10D6CFA7-0177-1248-18A7-BE991C404BD4}" name="src">
       <GROUP id="{E2D2E361-BE7B-6D4F-0D41-F7DB50F45452}" name="gui">
-        <GROUP id="{EA8D599D-25E4-CBA5-6611-0959C1C7171B}" name="Controller"/>
+        <GROUP id="{EA8D599D-25E4-CBA5-6611-0959C1C7171B}" name="Controller">
+          <FILE id="gVhDW5" name="ControllerCanvas.h" compile="0" resource="0"
+                file="src/gui/Controller/ControllerCanvas.h"/>
+          <FILE id="pszktd" name="SimpleControllerCmp.h" compile="0" resource="0"
+                file="src/gui/Controller/SimpleControllerCmp.h"/>
+        </GROUP>
         <GROUP id="{4CB0A50E-33FE-3C70-22DC-DD556346E829}" name="FixParamEd">
           <GROUP id="{98B8B823-C6F0-66C8-ADE3-A5178A6019B3}" name="ColorMode">
             <FILE id="EYjBpe" name="CMY.cpp" compile="1" resource="0" file="src/gui/FixParamEd/ColorMode/CMY.cpp"/>
@@ -34,6 +39,10 @@
         </GROUP>
         <FILE id="nGOUXC" name="ArtNetSetup.cpp" compile="1" resource="0" file="src/gui/ArtNetSetup.cpp"/>
         <FILE id="PuyiPs" name="ArtNetSetup.h" compile="0" resource="0" file="src/gui/ArtNetSetup.h"/>
+        <FILE id="Mt4SAQ" name="ControllerWindow.cpp" compile="1" resource="0"
+              file="src/gui/ControllerWindow.cpp"/>
+        <FILE id="b94NSL" name="ControllerWindow.h" compile="0" resource="0"
+              file="src/gui/ControllerWindow.h"/>
         <FILE id="TbwUaF" name="FixtureEditor.cpp" compile="1" resource="0"
               file="src/gui/FixtureEditor.cpp"/>
         <FILE id="vS6c7t" name="FixtureEditor.h" compile="0" resource="0" file="src/gui/FixtureEditor.h"/>
@@ -49,6 +58,10 @@
             file="src/ArtNetSystem.cpp"/>
       <FILE id="ofkb2X" name="ArtNetSystem.h" compile="0" resource="0" file="src/ArtNetSystem.h"/>
       <FILE id="LqBOIb" name="Common.h" compile="0" resource="0" file="src/Common.h"/>
+      <FILE id="W5Dv6F" name="ControllerSystem.cpp" compile="1" resource="0"
+            file="src/ControllerSystem.cpp"/>
+      <FILE id="bOfNF2" name="ControllerSystem.h" compile="0" resource="0"
+            file="src/ControllerSystem.h"/>
       <FILE id="TlotCJ" name="FixtureSystem.cpp" compile="1" resource="0"
             file="src/FixtureSystem.cpp"/>
       <FILE id="G7rn3d" name="FixtureSystem.h" compile="0" resource="0" file="src/FixtureSystem.h"/>

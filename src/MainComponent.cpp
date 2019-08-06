@@ -21,9 +21,10 @@
 #include "gui/ArtNetSetup.h"
 #include "gui/FixtureEditor.h"
 #include "gui/Patcher.h"
+#include "gui/ControllerWindow.h"
 
 MainComponent::MainComponent(){
-    addAndMakeVisible(new Patcher());
+    addAndMakeVisible(new ControllerWindow());
     setSize (1000, 800);
 }
 

@@ -147,11 +147,13 @@
     <ClCompile Include="..\..\src\gui\Popup\CtrlrEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\ValueEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\ArtNetSetup.cpp"/>
+    <ClCompile Include="..\..\src\gui\ControllerWindow.cpp"/>
     <ClCompile Include="..\..\src\gui\FixtureEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\MIDISetup.cpp"/>
     <ClCompile Include="..\..\src\gui\Patcher.cpp"/>
     <ClCompile Include="..\..\src\gui\TextListModel.cpp"/>
     <ClCompile Include="..\..\src\ArtNetSystem.cpp"/>
+    <ClCompile Include="..\..\src\ControllerSystem.cpp"/>
     <ClCompile Include="..\..\src\FixtureSystem.cpp"/>
     <ClCompile Include="..\..\src\Main.cpp"/>
     <ClCompile Include="..\..\src\MainComponent.cpp"/>
@@ -166,6 +168,8 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\gui\Controller\ControllerCanvas.h"/>
+    <ClInclude Include="..\..\src\gui\Controller\SimpleControllerCmp.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\CMY.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\RGB.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\RGBA.h"/>
@@ -176,12 +180,14 @@
     <ClInclude Include="..\..\src\gui\Popup\PopupWindow.h"/>
     <ClInclude Include="..\..\src\gui\Popup\ValueEditor.h"/>
     <ClInclude Include="..\..\src\gui\ArtNetSetup.h"/>
+    <ClInclude Include="..\..\src\gui\ControllerWindow.h"/>
     <ClInclude Include="..\..\src\gui\FixtureEditor.h"/>
     <ClInclude Include="..\..\src\gui\MIDISetup.h"/>
     <ClInclude Include="..\..\src\gui\Patcher.h"/>
     <ClInclude Include="..\..\src\gui\TextListModel.h"/>
     <ClInclude Include="..\..\src\ArtNetSystem.h"/>
     <ClInclude Include="..\..\src\Common.h"/>
+    <ClInclude Include="..\..\src\ControllerSystem.h"/>
     <ClInclude Include="..\..\src\FixtureSystem.h"/>
     <ClInclude Include="..\..\src\MainComponent.h"/>
     <ClInclude Include="..\..\src\MIDISystem.h"/>
