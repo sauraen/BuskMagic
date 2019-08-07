@@ -47,10 +47,20 @@ public:
     void resized() override {
         
     }
+    
+    void mouseDown(const MouseEvent &event) override {
+        dragbegin_vp = findParentComponentOfClass<Viewport>()->getViewPosition();
+    }
+    
+    void mouseDrag(const MouseEvent &event) override {
+        findParentComponentOfClass<Viewport>()->setViewPosition(dragbegin_vp - event.getOffsetFromDragStart());
+    }
 
 private:
     std::unique_ptr<SimpleController> ctrlr;
     std::unique_ptr<SimpleControllerCmp> ctrlrcmp;
+    
+    Point<int> dragbegin_vp;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ControllerCanvas)
 };

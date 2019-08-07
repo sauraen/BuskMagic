@@ -68,6 +68,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS_APP := \
+  $(JUCE_OBJDIR)/SimpleControllerCmp_fbd10a39.o \
   $(JUCE_OBJDIR)/CMY_3f3eb7e2.o \
   $(JUCE_OBJDIR)/RGB_4d3b0060.o \
   $(JUCE_OBJDIR)/RGBA_5b18822b.o \
@@ -109,6 +110,11 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(JUCE_LDFLAGS_APP) $(RESOURCES) $(TARGET_ARCH)
+
+$(JUCE_OBJDIR)/SimpleControllerCmp_fbd10a39.o: ../../src/gui/Controller/SimpleControllerCmp.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling SimpleControllerCmp.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/CMY_3f3eb7e2.o: ../../src/gui/FixParamEd/ColorMode/CMY.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)

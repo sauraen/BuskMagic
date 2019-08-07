@@ -30,7 +30,7 @@ namespace ControllerSystem {
 #define CTRLRSYS_LOCK_WRITE() const ScopedWriteLock wlock(ControllerSystem::mutex)
 
 Controller::Controller() 
-    : x(0), y(0), color(Colours::red), nostate(false),
+    : pos(0,0), color(Colours::red), nostate(false),
       name("New Controller"), group(0), groupColor(Colours::lightgrey),
       enabled(false)
 {

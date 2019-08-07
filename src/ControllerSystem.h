@@ -47,7 +47,7 @@ public:
     Controller();
     virtual ~Controller();
     
-    int x, y;
+    Point<int> pos;
     Colour color;
     bool nostate;
     

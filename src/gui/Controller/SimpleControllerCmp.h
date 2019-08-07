@@ -23,6 +23,8 @@
 
 #include "ControllerSystem.h"
 
+class ControllerCanvas;
+
 class SimpleControllerCmp : public Component
 {
 public:
@@ -47,9 +49,22 @@ public:
     }
 
     void resized() override {}
+    
+    void mouseDown(const MouseEvent &event) override {
+        if(event.mods.isLeftButtonDown()){
+            dragbegin_local = event.getMouseDownPosition();
+            beginDragAutoRepeat(20);
+        }else if(event.mods.isRightButtonDown()){
+            
+        }
+    }
+    
+    void mouseDrag(const MouseEvent &event) override;
 
 private:
     SimpleController *controller;
+    
+    Point<int> dragbegin_local;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleControllerCmp)
 };

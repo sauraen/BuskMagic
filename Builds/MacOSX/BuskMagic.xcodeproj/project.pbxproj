@@ -49,6 +49,10 @@
 			isa = PBXBuildFile;
 			fileRef = F32C4C6DA3B9375862D89018;
 		};
+		3717A9D5E20B63EC53227A63 = {
+			isa = PBXBuildFile;
+			fileRef = 548E81A8AE7BC3EE34CBE387;
+		};
 		2BAFB1621A32991C31661EA7 = {
 			isa = PBXBuildFile;
 			fileRef = 02770169291CC96028A6A80D;
@@ -336,6 +340,13 @@
 			path = ../../src/gui/Popup/ValueEditor.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		548E81A8AE7BC3EE34CBE387 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = SimpleControllerCmp.cpp;
+			path = ../../src/gui/Controller/SimpleControllerCmp.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		60F0A56E114CE913035A025B = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -620,6 +631,7 @@
 			isa = PBXGroup;
 			children = (
 				448F5F68DF58CBEB91ECDC49,
+				548E81A8AE7BC3EE34CBE387,
 				4B889AC1B6D88A0C776091AE,
 			);
 			name = Controller;
@@ -989,6 +1001,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3717A9D5E20B63EC53227A63,
 				2BAFB1621A32991C31661EA7,
 				721DC1B30D75271A15160103,
 				385D9AA52F61E814428DC61F,
