@@ -31,7 +31,7 @@ namespace ControllerSystem {
 
 Controller::Controller() 
     : pos(0,0), color(Colours::red), nostate(false),
-      name("New Controller"), group(0), groupColor(Colours::lightgrey),
+      name("New Controller Blah blah"), group(0), groupColor(Colours::lightgrey),
       enabled(false)
 {
     midisettings.add(new MIDISetting(false, false)); //en_on

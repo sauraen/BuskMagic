@@ -214,6 +214,13 @@
 			path = ../../src/gui/Patcher.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		1244CD3566D40BF6A1447627 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = SynthButton.h;
+			path = ../../src/gui/SynthButton.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		12708D3BB00C4E063550ED8A = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -227,6 +234,13 @@
 			name = IOKit.framework;
 			path = System/Library/Frameworks/IOKit.framework;
 			sourceTree = SDKROOT;
+		};
+		14239FE32F0D5A5B9B9D48BB = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = EnableButton.h;
+			path = ../../src/gui/Controller/EnableButton.h;
+			sourceTree = "SOURCE_ROOT";
 		};
 		145D2CB7ADC5260455480C36 = {
 			isa = PBXFileReference;
@@ -631,6 +645,7 @@
 			isa = PBXGroup;
 			children = (
 				448F5F68DF58CBEB91ECDC49,
+				14239FE32F0D5A5B9B9D48BB,
 				548E81A8AE7BC3EE34CBE387,
 				4B889AC1B6D88A0C776091AE,
 			);
@@ -692,6 +707,7 @@
 				8D1240203F285B28C57C55E2,
 				7FA3B0461695560468F96C5E,
 				0EDBA19AEB539032826F1829,
+				1244CD3566D40BF6A1447627,
 				2FBFF8EE1333B830BF03EC5D,
 				0A70ABDFE06DC9DAF9636F1A,
 			);

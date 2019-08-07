@@ -100,6 +100,19 @@ inline void WarningBox(String text){
     NativeMessageBox::showMessageBoxAsync(AlertWindow::WarningIcon, "BuskMagic", text);
 }
 
+inline void InfoBox(String text){
+    NativeMessageBox::showMessageBoxAsync(AlertWindow::InfoIcon, "BuskMagic", text);
+}
+
+inline bool isMac(){
+    return (SystemStats::getOperatingSystemType() & SystemStats::MacOSX) > 0;
+}
+
+inline bool isRightClick(const MouseEvent &event){
+    return event.mods.isRightButtonDown() || (isMac() && event.mods.isCtrlDown());
+        
+}
+
 #define NULLSTATEMENT ((void)0)
 #define REQUIRESEMICOLON do{NULLSTATEMENT;} while(false)
 

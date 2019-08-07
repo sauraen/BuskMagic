@@ -81,6 +81,10 @@ ControllerWindow::ControllerWindow ()
     canvas.reset(new ControllerCanvas());
     vptControllers->setViewedComponent(canvas.get());
 
+    if(isMac()){
+        lblInstructions->setText("Ctrl" + lblInstructions->getText().substring(5), dontSendNotification);
+    }
+
     //[/UserPreSize]
 
     setSize (800, 600);

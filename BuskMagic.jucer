@@ -11,6 +11,7 @@
         <GROUP id="{EA8D599D-25E4-CBA5-6611-0959C1C7171B}" name="Controller">
           <FILE id="gVhDW5" name="ControllerCanvas.h" compile="0" resource="0"
                 file="src/gui/Controller/ControllerCanvas.h"/>
+          <FILE id="ew8nq6" name="EnableButton.h" compile="0" resource="0" file="src/gui/Controller/EnableButton.h"/>
           <FILE id="zTlkk0" name="SimpleControllerCmp.cpp" compile="1" resource="0"
                 file="src/gui/Controller/SimpleControllerCmp.cpp"/>
           <FILE id="pszktd" name="SimpleControllerCmp.h" compile="0" resource="0"
@@ -52,6 +53,7 @@
         <FILE id="mYeBXE" name="MIDISetup.h" compile="0" resource="0" file="src/gui/MIDISetup.h"/>
         <FILE id="owp8Tw" name="Patcher.cpp" compile="1" resource="0" file="src/gui/Patcher.cpp"/>
         <FILE id="TN16vv" name="Patcher.h" compile="0" resource="0" file="src/gui/Patcher.h"/>
+        <FILE id="ijfYax" name="SynthButton.h" compile="0" resource="0" file="src/gui/SynthButton.h"/>
         <FILE id="YywxUI" name="TextListModel.cpp" compile="1" resource="0"
               file="src/gui/TextListModel.cpp"/>
         <FILE id="hPHz1t" name="TextListModel.h" compile="0" resource="0" file="src/gui/TextListModel.h"/>

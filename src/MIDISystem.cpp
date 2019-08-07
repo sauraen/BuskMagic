@@ -32,7 +32,7 @@ String MIDISetting::GetHelpText(){
            "CmdType is: NoteOff, NoteOn, PolyAft, CC, Prog,\n"
            "ChnAft, or PitchB; N is the note or CC number;\n"
            "and V is the velocity or value.\n"
-           "\n";
+           "\n"
            "Type X in place of P, C, N, or V to mean \"any\"\n"
            "for that field. E.g. 1.X.NoteOn.60.X means port 1,\n"
            "any channel, note on command, note 60, any velocity.\n"

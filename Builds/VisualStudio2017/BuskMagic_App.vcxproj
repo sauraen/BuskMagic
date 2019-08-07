@@ -170,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\gui\Controller\ControllerCanvas.h"/>
+    <ClInclude Include="..\..\src\gui\Controller\EnableButton.h"/>
     <ClInclude Include="..\..\src\gui\Controller\SimpleControllerCmp.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\CMY.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\RGB.h"/>
@@ -185,6 +186,7 @@
     <ClInclude Include="..\..\src\gui\FixtureEditor.h"/>
     <ClInclude Include="..\..\src\gui\MIDISetup.h"/>
     <ClInclude Include="..\..\src\gui\Patcher.h"/>
+    <ClInclude Include="..\..\src\gui\SynthButton.h"/>
     <ClInclude Include="..\..\src\gui\TextListModel.h"/>
     <ClInclude Include="..\..\src\ArtNetSystem.h"/>
     <ClInclude Include="..\..\src\Common.h"/>

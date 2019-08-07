@@ -22,6 +22,9 @@
 #include "Common.h"
 
 #include "ControllerSystem.h"
+#include "gui/Controller/EnableButton.h"
+#include "gui/Popup/PopupWindow.h"
+#include "gui/Popup/CtrlrEditor.h"
 
 class ControllerCanvas;
 
@@ -29,23 +32,22 @@ class SimpleControllerCmp : public Component
 {
 public:
     SimpleControllerCmp(SimpleController *c) : controller(c){
-        setSize(100, 100);
+        btnEnable.reset(new EnableButton(controller));
+        addAndMakeVisible(btnEnable.get());
+        btnEnable->setTopLeftPosition(8, 24);
+        
+        setSize(64, 88);
     }
 
     ~SimpleControllerCmp() {
-        
+        btnEnable = nullptr;
     }
 
     void paint (Graphics& g) override {
-        g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));   // clear the background
-
-        g.setColour (Colours::grey);
-        g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
-
-        g.setColour (Colours::white);
-        g.setFont (14.0f);
-        g.drawText ("SimpleControllerCmp", getLocalBounds(),
-                    Justification::centred, true);   // draw some placeholder text
+        g.fillAll(controller->GetGroupColor());
+        g.setColour(controller->GetGroupColor().getBrightness() > 0.5f ? Colours::black : Colours::white);
+        g.setFont (10.0f);
+        g.drawMultiLineText(controller->GetName(), 0, 70, 64, Justification::centred);
     }
 
     void resized() override {}
@@ -54,8 +56,8 @@ public:
         if(event.mods.isLeftButtonDown()){
             dragbegin_local = event.getMouseDownPosition();
             beginDragAutoRepeat(20);
-        }else if(event.mods.isRightButtonDown()){
-            
+        }else if(isRightClick(event)){
+            popup.show<CtrlrEditor>(event.getScreenX(), event.getScreenY(), controller);
         }
     }
     
@@ -65,6 +67,10 @@ private:
     SimpleController *controller;
     
     Point<int> dragbegin_local;
+    
+    std::unique_ptr<EnableButton> btnEnable;
+    
+    PopupWindow popup;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleControllerCmp)
 };
