@@ -96,21 +96,20 @@ inline String safeASCII(char c){
     return "_";
 }
 
-inline void WarningBox(String text){
-    NativeMessageBox::showMessageBoxAsync(AlertWindow::WarningIcon, "BuskMagic", text);
-}
-
-inline void InfoBox(String text){
-    NativeMessageBox::showMessageBoxAsync(AlertWindow::InfoIcon, "BuskMagic", text);
-}
-
 inline bool isMac(){
     return (SystemStats::getOperatingSystemType() & SystemStats::MacOSX) > 0;
 }
 
 inline bool isRightClick(const MouseEvent &event){
     return event.mods.isRightButtonDown() || (isMac() && event.mods.isCtrlDown());
-        
+}
+
+inline void WarningBox(String text){
+    NativeMessageBox::showMessageBoxAsync(AlertWindow::WarningIcon, "BuskMagic", text);
+}
+
+inline void InfoBox(String text){
+    NativeMessageBox::showMessageBoxAsync(AlertWindow::InfoIcon, "BuskMagic", text);
 }
 
 #define NULLSTATEMENT ((void)0)
@@ -139,6 +138,22 @@ inline void TurnRed(TextEditor *ed, bool turnRed = true){
 }
 inline void TurnRed(const std::unique_ptr<TextEditor> &ed, bool turnRed = true){
     TurnRed(ed.get(), turnRed);
+}
+
+inline Colour ShowColorChooserWindow(Colour initcolor, Component *optionalparent = nullptr){
+    std::unique_ptr<ColourSelector> colsel(new ColourSelector(
+        ColourSelector::showColourAtTop |
+        ColourSelector::showSliders |
+        ColourSelector::showColourspace
+    ));
+    colsel->setCurrentColour(initcolor, dontSendNotification);
+    colsel->setSize(300, 300);
+    DialogWindow::LaunchOptions opts;
+    opts.dialogTitle = "BuskMagic - Select a color\n";
+    opts.content.set(colsel.get(), false);
+    opts.componentToCentreAround = optionalparent;
+    int ret = opts.runModal();
+    return colsel->getCurrentColour();
 }
 
 inline var VT_GetChildProperty(ValueTree v, String cname, String pname, const var &defval = ""){

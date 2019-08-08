@@ -47,6 +47,7 @@
 
 //==============================================================================
 CtrlrEditor::CtrlrEditor (void *data)
+    : controller((Controller*)data)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -129,10 +130,19 @@ CtrlrEditor::CtrlrEditor (void *data)
 
 
     //[UserPreSize]
-    
+
     txtName->setEscapeAndReturnKeysConsumed(false);
     txtGroup->setEscapeAndReturnKeysConsumed(false);
-    
+    txtName->addListener(this);
+    txtGroup->addListener(this);
+
+    txtName->setText(controller->GetName());
+    txtGroup->setText(controller->GetGroup() <= 0 ? "" : String(controller->GetGroup()));
+    chkNoState->setToggleState(controller->nostate, dontSendNotification);
+    btnMainColor->setColour(TextButton::buttonColourId, controller->color);
+    std::cout << "Color is now " << controller->color.toDisplayString(true) << "\n";
+    btnGroupColor->setColour(TextButton::buttonColourId, controller->GetGroupColor());
+
     //[/UserPreSize]
 
     setSize (144, 96);
@@ -190,26 +200,32 @@ void CtrlrEditor::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == btnMainColor.get())
     {
         //[UserButtonCode_btnMainColor] -- add your button handler code here..
+        controller->color = ShowColorChooserWindow(controller->color, btnMainColor.get());
+        std::cout << "Color is now " << controller->color.toDisplayString(true) << "\n";
         //[/UserButtonCode_btnMainColor]
     }
     else if (buttonThatWasClicked == btnGroupColor.get())
     {
         //[UserButtonCode_btnGroupColor] -- add your button handler code here..
+        controller->SetGroupColor(ShowColorChooserWindow(controller->GetGroupColor(), btnGroupColor.get()));
         //[/UserButtonCode_btnGroupColor]
     }
     else if (buttonThatWasClicked == chkNoState.get())
     {
         //[UserButtonCode_chkNoState] -- add your button handler code here..
+        controller->nostate = chkNoState->getToggleState();
         //[/UserButtonCode_chkNoState]
     }
     else if (buttonThatWasClicked == btnDuplicate.get())
     {
         //[UserButtonCode_btnDuplicate] -- add your button handler code here..
+        //TODO
         //[/UserButtonCode_btnDuplicate]
     }
     else if (buttonThatWasClicked == btnDelete.get())
     {
         //[UserButtonCode_btnDelete] -- add your button handler code here..
+        WarningBox("Delete controller not implemented yet!");
         //[/UserButtonCode_btnDelete]
     }
 
@@ -220,6 +236,24 @@ void CtrlrEditor::buttonClicked (Button* buttonThatWasClicked)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void CtrlrEditor::textEditorTextChanged(TextEditor &editorThatWasChanged)
+{
+    TEXTCHANGEDHANDLER_PRE;
+    if(&editorThatWasChanged == txtName.get()){
+        controller->SetName(text);
+    }else if(&editorThatWasChanged == txtGroup.get()){
+        if(text == ""){
+            controller->SetGroup(-1);
+        }else if(isint && val >= 1){
+            controller->SetGroup(val);
+        }else{
+            turnRed = true;
+        }
+    }
+    TEXTCHANGEDHANDLER_POST;
+}
+
 //[/MiscUserCode]
 
 
@@ -233,9 +267,10 @@ void CtrlrEditor::buttonClicked (Button* buttonThatWasClicked)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="CtrlrEditor" componentName=""
-                 parentClasses="public Component" constructorParams="void *data"
-                 variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
-                 overlayOpacity="0.330" fixedSize="1" initialWidth="144" initialHeight="96">
+                 parentClasses="public Component, public TextEditor::Listener"
+                 constructorParams="void *data" variableInitialisers="controller((Controller*)data)"
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="144" initialHeight="96">
   <BACKGROUND backgroundColour="ff323e44"/>
   <TEXTEDITOR name="txtName" id="8a5bd4b32539dcce" memberName="txtName" virtualName=""
               explicitFocusOrder="0" pos="0 0 120 24" initialText="NameNameName"

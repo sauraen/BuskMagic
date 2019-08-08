@@ -22,7 +22,7 @@
 #include "Common.h"
 #include "gui/Controller/SimpleControllerCmp.h"
 
-class ControllerCanvas : public Component
+class ControllerCanvas : public Component, public Timer
 {
 public:
     ControllerCanvas() {
@@ -31,22 +31,24 @@ public:
         addAndMakeVisible(ctrlrcmp.get());
         
         setSize(2000, 2000);
+        
+        startTimerHz(30);
     }
 
     ~ControllerCanvas() {
         
     }
+    
+    void timerCallback() override {
+        repaint();
+    }
 
+    /*
     void paint (Graphics& g) override {
-        g.fillAll(Colours::orange);
-        g.setColour(Colours::black);
-        g.setFont (14.0f);
-        g.drawSingleLineText("ControllerCanvas", 100, 100);
+        g.fillAll(LookAndFeel_V4::getDarkColourScheme()
+            .getUIColour(LookAndFeel_V4::ColourScheme::windowBackground));
     }
-
-    void resized() override {
-        
-    }
+    */
     
     void mouseDown(const MouseEvent &event) override {
         dragbegin_vp = findParentComponentOfClass<Viewport>()->getViewPosition();

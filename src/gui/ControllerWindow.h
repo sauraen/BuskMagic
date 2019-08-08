@@ -64,6 +64,7 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    void parentSizeChanged() override;
     //[/UserMethods]
 
     void paint (Graphics& g) override;

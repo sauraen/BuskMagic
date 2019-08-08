@@ -38,6 +38,11 @@ public:
         
     }
     
+    void paint(Graphics &g) override {
+        SetColor(controller->color);
+        SynthButton::paint(g);
+    }
+    
     void mouseDown(const MouseEvent &event) override {
         if(isRightClick(event)){
             Point<int> mouse = getMouseXYRelative();

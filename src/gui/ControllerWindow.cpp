@@ -131,6 +131,7 @@ void ControllerWindow::resized()
     //[/UserPreResize]
 
     //[UserResized] Add your own custom resize handling here..
+    vptControllers->setSize(getWidth(), getHeight() - 24);
     //[/UserResized]
 }
 
@@ -157,6 +158,10 @@ void ControllerWindow::buttonClicked (Button* buttonThatWasClicked)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void ControllerWindow::parentSizeChanged()
+{
+    setSize(getParentWidth(), getParentHeight());
+}
 //[/MiscUserCode]
 
 
@@ -172,7 +177,7 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="ControllerWindow" componentName=""
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="800" initialHeight="600">
+                 fixedSize="0" initialWidth="800" initialHeight="600">
   <BACKGROUND backgroundColour="ff323e44"/>
   <VIEWPORT name="vptControllers" id="7b12c3fe2e485508" memberName="vptControllers"
             virtualName="" explicitFocusOrder="0" pos="0 24 800 576" vscroll="1"
