@@ -37,6 +37,8 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "gui/Controller/ControllerCanvas.h"
+#include "gui/Popup/PopupWindow.h"
 //[/Headers]
 
 #include "CtrlrEditor.h"
@@ -139,8 +141,7 @@ CtrlrEditor::CtrlrEditor (void *data)
     txtName->setText(controller->GetName());
     txtGroup->setText(controller->GetGroup() <= 0 ? "" : String(controller->GetGroup()));
     chkNoState->setToggleState(controller->nostate, dontSendNotification);
-    btnMainColor->setColour(TextButton::buttonColourId, controller->color);
-    std::cout << "Color is now " << controller->color.toDisplayString(true) << "\n";
+    btnMainColor->setColour(TextButton::buttonColourId, controller->GetColor());
     btnGroupColor->setColour(TextButton::buttonColourId, controller->GetGroupColor());
 
     //[/UserPreSize]
@@ -200,8 +201,7 @@ void CtrlrEditor::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == btnMainColor.get())
     {
         //[UserButtonCode_btnMainColor] -- add your button handler code here..
-        controller->color = ShowColorChooserWindow(controller->color, btnMainColor.get());
-        std::cout << "Color is now " << controller->color.toDisplayString(true) << "\n";
+        controller->SetColor(ShowColorChooserWindow(controller->GetColor(), btnMainColor.get()));
         //[/UserButtonCode_btnMainColor]
     }
     else if (buttonThatWasClicked == btnGroupColor.get())
@@ -219,13 +219,19 @@ void CtrlrEditor::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == btnDuplicate.get())
     {
         //[UserButtonCode_btnDuplicate] -- add your button handler code here..
-        //TODO
+        ControllerCanvas *canvas = controller->GetCanvas();
+        if(canvas == nullptr) return;
+        canvas->addComp(ControllerSystem::DuplicateController(controller));
+        canvas->grabKeyboardFocus(); //This will take focus away from the popup, which will lead to it closing
         //[/UserButtonCode_btnDuplicate]
     }
     else if (buttonThatWasClicked == btnDelete.get())
     {
         //[UserButtonCode_btnDelete] -- add your button handler code here..
-        WarningBox("Delete controller not implemented yet!");
+        ControllerCanvas *canvas = controller->GetCanvas();
+        if(canvas == nullptr) return;
+        canvas->deleteComp(controller);
+        canvas->grabKeyboardFocus(); //This will take focus away from the popup, which will lead to it closing
         //[/UserButtonCode_btnDelete]
     }
 

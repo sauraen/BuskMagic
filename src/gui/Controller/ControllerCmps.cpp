@@ -16,11 +16,11 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "SimpleControllerCmp.h"
+#include "ControllerCmps.h"
 
 #include "gui/Controller/ControllerCanvas.h"
 
-void SimpleControllerCmp::mouseDrag(const MouseEvent &event) {
+void ControllerCmp::mouseDrag(const MouseEvent &event) {
     if(!event.mods.isLeftButtonDown()) return;
     ControllerCanvas *canvas = findParentComponentOfClass<ControllerCanvas>();
     Viewport *viewport = findParentComponentOfClass<Viewport>();

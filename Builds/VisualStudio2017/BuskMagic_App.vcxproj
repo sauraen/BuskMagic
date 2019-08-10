@@ -138,7 +138,7 @@
     <Lib/>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\gui\Controller\SimpleControllerCmp.cpp"/>
+    <ClCompile Include="..\..\src\gui\Controller\ControllerCmps.cpp"/>
     <ClCompile Include="..\..\src\gui\FixParamEd\ColorMode\CMY.cpp"/>
     <ClCompile Include="..\..\src\gui\FixParamEd\ColorMode\RGB.cpp"/>
     <ClCompile Include="..\..\src\gui\FixParamEd\ColorMode\RGBA.cpp"/>
@@ -146,7 +146,7 @@
     <ClCompile Include="..\..\src\gui\FixParamEd\Generic.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\ButtonMIDI.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\CtrlrEditor.cpp"/>
-    <ClCompile Include="..\..\src\gui\Popup\ValueEditor.cpp"/>
+    <ClCompile Include="..\..\src\gui\Popup\MagicValueEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\ArtNetSetup.cpp"/>
     <ClCompile Include="..\..\src\gui\ControllerWindow.cpp"/>
     <ClCompile Include="..\..\src\gui\FixtureEditor.cpp"/>
@@ -170,8 +170,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\gui\Controller\ControllerCanvas.h"/>
+    <ClInclude Include="..\..\src\gui\Controller\ControllerCmps.h"/>
     <ClInclude Include="..\..\src\gui\Controller\EnableButton.h"/>
-    <ClInclude Include="..\..\src\gui\Controller\SimpleControllerCmp.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\CMY.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\RGB.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\RGBA.h"/>
@@ -179,11 +179,12 @@
     <ClInclude Include="..\..\src\gui\FixParamEd\Generic.h"/>
     <ClInclude Include="..\..\src\gui\Popup\ButtonMIDI.h"/>
     <ClInclude Include="..\..\src\gui\Popup\CtrlrEditor.h"/>
+    <ClInclude Include="..\..\src\gui\Popup\MagicValueEditor.h"/>
     <ClInclude Include="..\..\src\gui\Popup\PopupWindow.h"/>
-    <ClInclude Include="..\..\src\gui\Popup\ValueEditor.h"/>
     <ClInclude Include="..\..\src\gui\ArtNetSetup.h"/>
     <ClInclude Include="..\..\src\gui\ControllerWindow.h"/>
     <ClInclude Include="..\..\src\gui\FixtureEditor.h"/>
+    <ClInclude Include="..\..\src\gui\MagicValueBox.h"/>
     <ClInclude Include="..\..\src\gui\MIDISetup.h"/>
     <ClInclude Include="..\..\src\gui\Patcher.h"/>
     <ClInclude Include="..\..\src\gui\SynthButton.h"/>

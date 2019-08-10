@@ -23,36 +23,54 @@
 
 #include "MIDISystem.h"
 
+class Controller;
+
 class MagicValue {
 public:
-    MagicValue() : mugglevalue(0.0f), chan(nullptr) {}
+    MagicValue(Controller *parent);
     ~MagicValue() {}
+    MagicValue(const MagicValue &other, Controller *newparent);
     
     inline bool IsMagic() const { return chan != nullptr; }
-    inline float GetPlainValue() const { return mugglevalue; }
-    inline void SetPlainValue(float v) { mugglevalue = v; }
+    inline float GetLiteral() const { return mugglevalue; }
+    void SetLiteral(float v);
     inline void *GetChannel() const { return chan; }
-    inline void SetChannel(void *ch) { chan = ch; }
+    void SetChannel(void *ch);
     
-    inline float Evaluate(float angle) const {
-        return chan != nullptr ? /*TODO chan->Evaluate(angle)*/0.0f : mugglevalue;
+    inline String GetText(){
+        if(chan == nullptr){
+            return String(mugglevalue, 2);
+        }else{
+            return "Magic!"; //TODO
+        }
     }
+    
+    float Evaluate(float angle) const;
+    
 private:
+    Controller *controller;
     float mugglevalue;
     void *chan;
+    
+    void RefreshComponent();
 };
+
+class ControllerCmp;
+class ControllerCanvas;
 
 class Controller {
 public:
     Controller();
     virtual ~Controller();
+    Controller(const Controller &other);
     
     Point<int> pos;
-    Colour color;
     bool nostate;
     
     String GetName() const;
     void SetName(String n);
+    inline Colour GetColor() { return color; }
+    void SetColor(Colour col);
     inline int GetGroup() const { return group; }
     void SetGroup(int g);
     inline Colour GetGroupColor() const { return groupColor; }
@@ -77,22 +95,32 @@ public:
     virtual bool SetMIDISettingFromStr(MIDISettingType type, String str);
     
     virtual float Evaluate(float angle) const = 0;
+    
+    void RegisterComponent(ControllerCmp *cmp);
+    ControllerCanvas *GetCanvas();
 
 protected:
     OwnedArray<MIDISetting> midisettings;
     
+    void RefreshComponent();
+    
 private:
+    friend class MagicValue;
+    
     String name;
     int group;
-    Colour groupColor;
+    Colour color, groupColor;
     
     bool enabled;
+    
+    ControllerCmp *component;
 };
 
 class SimpleController : public Controller {
 public:
     SimpleController();
     virtual ~SimpleController();
+    SimpleController(const SimpleController &other);
     
     inline MagicValue *GetValue() { return &value; }
     
@@ -106,6 +134,7 @@ class ContinuousController : public Controller {
 public:
     ContinuousController();
     virtual ~ContinuousController();
+    ContinuousController(const ContinuousController &other);
     
     inline float GetKnob() { return knob; }
     void SetKnob(float k);
@@ -126,5 +155,11 @@ private:
 
 namespace ControllerSystem {
     
+    int NumControllers();
+    Controller *GetController(int i);
+    SimpleController *AddSimpleController();
+    ContinuousController *AddContinuousController();
+    Controller *DuplicateController(Controller *orig);
+    void DeleteController(Controller *ctrlr);
     
 }

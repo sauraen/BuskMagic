@@ -25,6 +25,10 @@ MIDISetting::MIDISetting(bool out_, bool continuous_)
       port(-1), channel(-1), type(-1), note(60), vel(-1) {}
 
 MIDISetting::~MIDISetting() {}
+MIDISetting::MIDISetting(const MIDISetting &other)
+    : out(other.out), continuous(other.continuous),
+      port(other.port), channel(other.channel), type(other.type),
+      note(other.note), vel(other.vel) {}
 
 String MIDISetting::GetHelpText(){
     return "MIDI setting text looks like P.C.CmdType.N.V\n"

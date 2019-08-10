@@ -202,11 +202,11 @@ namespace ArtNetSystem {
             bool flag = false;
             if(dev->map){
                 if(dev->map_net != universe >> 8) continue;
-                if(dev->map_subnet != (universe >> 4) & 0xF) continue;
+                if(dev->map_subnet != ((universe >> 4) & 0xF)) continue;
                 for(int i=0; i<4; ++i) if(dev->map_outuni[i] == uni) flag = true;
             }else{
                 if(dev->net != universe >> 8) continue;
-                if(dev->subnet != (universe >> 4) & 0xF) continue;
+                if(dev->subnet != ((universe >> 4) & 0xF)) continue;
                 for(int i=0; i<4; ++i) if(dev->outuni[i] == uni) flag = true;
             }
             if(!flag) continue;

@@ -39,26 +39,18 @@
 
 //[/Headers]
 
-#include "ValueEditor.h"
+#include "MagicValueEditor.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 //[/MiscUserDefs]
 
 //==============================================================================
-ValueEditor::ValueEditor (void *data)
+MagicValueEditor::MagicValueEditor (void *data)
+    : magic((MagicValue*)data)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
-
-    optLiteral.reset (new ToggleButton ("optLiteral"));
-    addAndMakeVisible (optLiteral.get());
-    optLiteral->setButtonText (TRANS("Literal:"));
-    optLiteral->setRadioGroupId (1);
-    optLiteral->addListener (this);
-    optLiteral->setToggleState (true, dontSendNotification);
-
-    optLiteral->setBounds (0, 0, 80, 24);
 
     txtLiteral.reset (new TextEditor ("txtLiteral"));
     addAndMakeVisible (txtLiteral.get());
@@ -70,15 +62,7 @@ ValueEditor::ValueEditor (void *data)
     txtLiteral->setPopupMenuEnabled (true);
     txtLiteral->setText (TRANS("0.5"));
 
-    txtLiteral->setBounds (80, 0, 48, 24);
-
-    optChannel.reset (new ToggleButton ("optChannel"));
-    addAndMakeVisible (optChannel.get());
-    optChannel->setButtonText (TRANS("Channel:"));
-    optChannel->setRadioGroupId (1);
-    optChannel->addListener (this);
-
-    optChannel->setBounds (0, 24, 88, 24);
+    txtLiteral->setBounds (0, 0, 48, 24);
 
     cbxChannel.reset (new ComboBox ("cbxChannel"));
     addAndMakeVisible (cbxChannel.get());
@@ -86,32 +70,36 @@ ValueEditor::ValueEditor (void *data)
     cbxChannel->setJustificationType (Justification::centredLeft);
     cbxChannel->setTextWhenNothingSelected (String());
     cbxChannel->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
+    cbxChannel->addItem (TRANS("^ Non-magic"), 1);
     cbxChannel->addListener (this);
 
-    cbxChannel->setBounds (88, 24, 104, 24);
+    cbxChannel->setBounds (0, 24, 120, 24);
 
 
     //[UserPreSize]
-    
+
     txtLiteral->setEscapeAndReturnKeysConsumed(false);
-    
+    txtLiteral->addListener(this);
+
+    //TODO
+    cbxChannel->setText("^ Non-magic");
+    txtLiteral->setText(String(magic->GetLiteral(), 2));
+
     //[/UserPreSize]
 
-    setSize (192, 48);
+    setSize (120, 48);
 
 
     //[Constructor] You can add your own custom stuff here..
     //[/Constructor]
 }
 
-ValueEditor::~ValueEditor()
+MagicValueEditor::~MagicValueEditor()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    optLiteral = nullptr;
     txtLiteral = nullptr;
-    optChannel = nullptr;
     cbxChannel = nullptr;
 
 
@@ -120,7 +108,7 @@ ValueEditor::~ValueEditor()
 }
 
 //==============================================================================
-void ValueEditor::paint (Graphics& g)
+void MagicValueEditor::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
@@ -131,7 +119,7 @@ void ValueEditor::paint (Graphics& g)
     //[/UserPaint]
 }
 
-void ValueEditor::resized()
+void MagicValueEditor::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
@@ -140,27 +128,7 @@ void ValueEditor::resized()
     //[/UserResized]
 }
 
-void ValueEditor::buttonClicked (Button* buttonThatWasClicked)
-{
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
-    if (buttonThatWasClicked == optLiteral.get())
-    {
-        //[UserButtonCode_optLiteral] -- add your button handler code here..
-        //[/UserButtonCode_optLiteral]
-    }
-    else if (buttonThatWasClicked == optChannel.get())
-    {
-        //[UserButtonCode_optChannel] -- add your button handler code here..
-        //[/UserButtonCode_optChannel]
-    }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
-}
-
-void ValueEditor::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
+void MagicValueEditor::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
@@ -168,6 +136,13 @@ void ValueEditor::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == cbxChannel.get())
     {
         //[UserComboBoxCode_cbxChannel] -- add your combo box handling code here..
+        if(cbxChannel->getText() == "^ Non-magic"){
+            txtLiteral->setEnabled(true);
+            magic->SetChannel(nullptr);
+        }else{
+            txtLiteral->setEnabled(false);
+            //TODO
+        }
         //[/UserComboBoxCode_cbxChannel]
     }
 
@@ -178,6 +153,16 @@ void ValueEditor::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void MagicValueEditor::textEditorTextChanged(TextEditor &editorThatWasChanged){
+    TEXTCHANGEDHANDLER_PRE;
+    if(&editorThatWasChanged == txtLiteral.get()){
+        if(!isdec) turnRed = true;
+        else magic->SetLiteral(decval);
+    }
+    TEXTCHANGEDHANDLER_POST;
+}
+
 //[/MiscUserCode]
 
 
@@ -190,24 +175,19 @@ void ValueEditor::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="ValueEditor" componentName=""
-                 parentClasses="public Component" constructorParams="void *data"
-                 variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
-                 overlayOpacity="0.330" fixedSize="1" initialWidth="192" initialHeight="48">
+<JUCER_COMPONENT documentType="Component" className="MagicValueEditor" componentName=""
+                 parentClasses="public Component, public TextEditor::Listener"
+                 constructorParams="void *data" variableInitialisers="magic((MagicValue*)data)"
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="120" initialHeight="48">
   <BACKGROUND backgroundColour="ff323e44"/>
-  <TOGGLEBUTTON name="optLiteral" id="e90dd2e7611f476d" memberName="optLiteral"
-                virtualName="" explicitFocusOrder="0" pos="0 0 80 24" buttonText="Literal:"
-                connectedEdges="0" needsCallback="1" radioGroupId="1" state="1"/>
   <TEXTEDITOR name="txtLiteral" id="f13649dee98ad067" memberName="txtLiteral"
-              virtualName="" explicitFocusOrder="0" pos="80 0 48 24" initialText="0.5"
+              virtualName="" explicitFocusOrder="0" pos="0 0 48 24" initialText="0.5"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
-  <TOGGLEBUTTON name="optChannel" id="44c32797fac1f924" memberName="optChannel"
-                virtualName="" explicitFocusOrder="0" pos="0 24 88 24" buttonText="Channel:"
-                connectedEdges="0" needsCallback="1" radioGroupId="1" state="0"/>
   <COMBOBOX name="cbxChannel" id="efc1c9a9e33c3875" memberName="cbxChannel"
-            virtualName="" explicitFocusOrder="0" pos="88 24 104 24" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+            virtualName="" explicitFocusOrder="0" pos="0 24 120 24" editable="0"
+            layout="33" items="&#94; Non-magic" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

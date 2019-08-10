@@ -24,6 +24,7 @@ class MIDISetting {
 public:
     MIDISetting(bool out_, bool continuous_);
     ~MIDISetting();
+    MIDISetting(const MIDISetting &other);
     
     static String GetHelpText();
     

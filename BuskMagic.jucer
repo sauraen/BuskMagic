@@ -11,11 +11,11 @@
         <GROUP id="{EA8D599D-25E4-CBA5-6611-0959C1C7171B}" name="Controller">
           <FILE id="gVhDW5" name="ControllerCanvas.h" compile="0" resource="0"
                 file="src/gui/Controller/ControllerCanvas.h"/>
+          <FILE id="zTlkk0" name="ControllerCmps.cpp" compile="1" resource="0"
+                file="src/gui/Controller/ControllerCmps.cpp"/>
+          <FILE id="pszktd" name="ControllerCmps.h" compile="0" resource="0"
+                file="src/gui/Controller/ControllerCmps.h"/>
           <FILE id="ew8nq6" name="EnableButton.h" compile="0" resource="0" file="src/gui/Controller/EnableButton.h"/>
-          <FILE id="zTlkk0" name="SimpleControllerCmp.cpp" compile="1" resource="0"
-                file="src/gui/Controller/SimpleControllerCmp.cpp"/>
-          <FILE id="pszktd" name="SimpleControllerCmp.h" compile="0" resource="0"
-                file="src/gui/Controller/SimpleControllerCmp.h"/>
         </GROUP>
         <GROUP id="{4CB0A50E-33FE-3C70-22DC-DD556346E829}" name="FixParamEd">
           <GROUP id="{98B8B823-C6F0-66C8-ADE3-A5178A6019B3}" name="ColorMode">
@@ -36,9 +36,11 @@
           <FILE id="hfVJsC" name="ButtonMIDI.h" compile="0" resource="0" file="src/gui/Popup/ButtonMIDI.h"/>
           <FILE id="ljzNSe" name="CtrlrEditor.cpp" compile="1" resource="0" file="src/gui/Popup/CtrlrEditor.cpp"/>
           <FILE id="QJsAMu" name="CtrlrEditor.h" compile="0" resource="0" file="src/gui/Popup/CtrlrEditor.h"/>
+          <FILE id="wmx0ve" name="MagicValueEditor.cpp" compile="1" resource="0"
+                file="src/gui/Popup/MagicValueEditor.cpp"/>
+          <FILE id="klKozR" name="MagicValueEditor.h" compile="0" resource="0"
+                file="src/gui/Popup/MagicValueEditor.h"/>
           <FILE id="ocjfNK" name="PopupWindow.h" compile="0" resource="0" file="src/gui/Popup/PopupWindow.h"/>
-          <FILE id="wmx0ve" name="ValueEditor.cpp" compile="1" resource="0" file="src/gui/Popup/ValueEditor.cpp"/>
-          <FILE id="klKozR" name="ValueEditor.h" compile="0" resource="0" file="src/gui/Popup/ValueEditor.h"/>
         </GROUP>
         <FILE id="nGOUXC" name="ArtNetSetup.cpp" compile="1" resource="0" file="src/gui/ArtNetSetup.cpp"/>
         <FILE id="PuyiPs" name="ArtNetSetup.h" compile="0" resource="0" file="src/gui/ArtNetSetup.h"/>
@@ -49,6 +51,7 @@
         <FILE id="TbwUaF" name="FixtureEditor.cpp" compile="1" resource="0"
               file="src/gui/FixtureEditor.cpp"/>
         <FILE id="vS6c7t" name="FixtureEditor.h" compile="0" resource="0" file="src/gui/FixtureEditor.h"/>
+        <FILE id="mhTPfA" name="MagicValueBox.h" compile="0" resource="0" file="src/gui/MagicValueBox.h"/>
         <FILE id="UvwTXt" name="MIDISetup.cpp" compile="1" resource="0" file="src/gui/MIDISetup.cpp"/>
         <FILE id="mYeBXE" name="MIDISetup.h" compile="0" resource="0" file="src/gui/MIDISetup.h"/>
         <FILE id="owp8Tw" name="Patcher.cpp" compile="1" resource="0" file="src/gui/Patcher.cpp"/>

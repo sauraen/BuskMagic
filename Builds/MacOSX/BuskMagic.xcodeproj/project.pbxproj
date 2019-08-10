@@ -49,9 +49,9 @@
 			isa = PBXBuildFile;
 			fileRef = F32C4C6DA3B9375862D89018;
 		};
-		3717A9D5E20B63EC53227A63 = {
+		5D8CD718C1F02EA85BBFACE8 = {
 			isa = PBXBuildFile;
-			fileRef = 548E81A8AE7BC3EE34CBE387;
+			fileRef = 2228834872E4324176A77A1D;
 		};
 		2BAFB1621A32991C31661EA7 = {
 			isa = PBXBuildFile;
@@ -81,9 +81,9 @@
 			isa = PBXBuildFile;
 			fileRef = C6FCEE11B25065F7DF37E15B;
 		};
-		76605CC130B7197F6A73C6E0 = {
+		80BF05F443520E1F5F924122 = {
 			isa = PBXBuildFile;
-			fileRef = 9D84CC832F783F9ED6C5198F;
+			fileRef = 2E299B4521733769C96122D7;
 		};
 		16FBF7251CA38AB7C3B2999F = {
 			isa = PBXBuildFile;
@@ -256,6 +256,13 @@
 			path = "../../JuceLibraryCode/include_juce_gui_basics.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		2228834872E4324176A77A1D = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ControllerCmps.cpp;
+			path = ../../src/gui/Controller/ControllerCmps.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		2433B2D434465D09377B18E0 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -282,6 +289,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = AppConfig.h;
 			path = ../../JuceLibraryCode/AppConfig.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		2E299B4521733769C96122D7 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = MagicValueEditor.cpp;
+			path = ../../src/gui/Popup/MagicValueEditor.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		2EB33737E6A339CFF1B6777B = {
@@ -326,6 +340,13 @@
 			path = ../../src/gui/Controller/ControllerCanvas.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		45408F4C624AD637C00A5B87 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = MagicValueEditor.h;
+			path = ../../src/gui/Popup/MagicValueEditor.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		46C6FB0157622C02EE45D2E6 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -338,27 +359,6 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = ControllerSystem.cpp;
 			path = ../../src/ControllerSystem.cpp;
-			sourceTree = "SOURCE_ROOT";
-		};
-		4B889AC1B6D88A0C776091AE = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			name = SimpleControllerCmp.h;
-			path = ../../src/gui/Controller/SimpleControllerCmp.h;
-			sourceTree = "SOURCE_ROOT";
-		};
-		4C22B3322F2621E1609569A2 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			name = ValueEditor.h;
-			path = ../../src/gui/Popup/ValueEditor.h;
-			sourceTree = "SOURCE_ROOT";
-		};
-		548E81A8AE7BC3EE34CBE387 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			name = SimpleControllerCmp.cpp;
-			path = ../../src/gui/Controller/SimpleControllerCmp.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		60F0A56E114CE913035A025B = {
@@ -473,18 +473,18 @@
 			path = ../../src/Common.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		98540CC143144A4D6F69DA70 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = MagicValueBox.h;
+			path = ../../src/gui/MagicValueBox.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		9B03A3406991FBD0960C1076 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
 			name = "include_juce_graphics.mm";
 			path = "../../JuceLibraryCode/include_juce_graphics.mm";
-			sourceTree = "SOURCE_ROOT";
-		};
-		9D84CC832F783F9ED6C5198F = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			name = ValueEditor.cpp;
-			path = ../../src/gui/Popup/ValueEditor.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		A0B19AFF807D2939DF0FBD45 = {
@@ -513,6 +513,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = FixtureEditor.h;
 			path = ../../src/gui/FixtureEditor.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		B5F1FB9F187E24A131C3CC0C = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ControllerCmps.h;
+			path = ../../src/gui/Controller/ControllerCmps.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		B73E58229762B5845974E61D = {
@@ -645,9 +652,9 @@
 			isa = PBXGroup;
 			children = (
 				448F5F68DF58CBEB91ECDC49,
+				2228834872E4324176A77A1D,
+				B5F1FB9F187E24A131C3CC0C,
 				14239FE32F0D5A5B9B9D48BB,
-				548E81A8AE7BC3EE34CBE387,
-				4B889AC1B6D88A0C776091AE,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -684,9 +691,9 @@
 				2433B2D434465D09377B18E0,
 				C6FCEE11B25065F7DF37E15B,
 				07C45221ACD8DA57FA5FC5EE,
+				2E299B4521733769C96122D7,
+				45408F4C624AD637C00A5B87,
 				F1D64539AA9299E723453500,
-				9D84CC832F783F9ED6C5198F,
-				4C22B3322F2621E1609569A2,
 			);
 			name = Popup;
 			sourceTree = "<group>";
@@ -703,6 +710,7 @@
 				753DC3BD6F96C713FEE8E28B,
 				94298B9627920B56EDAA4E0E,
 				B0661EF0EE418B85855C1950,
+				98540CC143144A4D6F69DA70,
 				B00F8F87CA52FC56D0553BC0,
 				8D1240203F285B28C57C55E2,
 				7FA3B0461695560468F96C5E,
@@ -1017,7 +1025,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3717A9D5E20B63EC53227A63,
+				5D8CD718C1F02EA85BBFACE8,
 				2BAFB1621A32991C31661EA7,
 				721DC1B30D75271A15160103,
 				385D9AA52F61E814428DC61F,
@@ -1025,7 +1033,7 @@
 				02E84890133A491CEADBA122,
 				4C8C835A8F8D97A893519116,
 				D40E86353791E938A2C16BB1,
-				76605CC130B7197F6A73C6E0,
+				80BF05F443520E1F5F924122,
 				16FBF7251CA38AB7C3B2999F,
 				3057EB35B57670330D5511E3,
 				182FF3B58EFBCAE6F9B7C7E7,

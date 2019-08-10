@@ -25,32 +25,32 @@
 #include "gui/Controller/EnableButton.h"
 #include "gui/Popup/PopupWindow.h"
 #include "gui/Popup/CtrlrEditor.h"
+#include "gui/MagicValueBox.h"
 
 class ControllerCanvas;
 
-class SimpleControllerCmp : public Component
+class ControllerCmp : public Component
 {
 public:
-    SimpleControllerCmp(SimpleController *c) : controller(c){
+    ControllerCmp(Controller *c) : controller(c), texty(10){
+        controller->RegisterComponent(this);
         btnEnable.reset(new EnableButton(controller));
         addAndMakeVisible(btnEnable.get());
-        btnEnable->setTopLeftPosition(8, 24);
-        
-        setSize(64, 88);
+        btnEnable->setTopLeftPosition(0, 0); //To be overridden
+        setSize(50, 50); //To be overridden
     }
-
-    ~SimpleControllerCmp() {
+    ~ControllerCmp() {
+        controller->RegisterComponent(nullptr);
         btnEnable = nullptr;
     }
-
+    inline Controller *GetController() { return controller; }
+    
     void paint (Graphics& g) override {
         g.fillAll(controller->GetGroupColor());
         g.setColour(controller->GetGroupColor().getBrightness() > 0.5f ? Colours::black : Colours::white);
         g.setFont (10.0f);
-        g.drawMultiLineText(controller->GetName(), 0, 70, 64, Justification::centred);
+        g.drawMultiLineText(controller->GetName(), 0, texty, getWidth(), Justification::centred);
     }
-
-    void resized() override {}
     
     void mouseDown(const MouseEvent &event) override {
         if(event.mods.isLeftButtonDown()){
@@ -63,14 +63,53 @@ public:
     
     void mouseDrag(const MouseEvent &event) override;
 
-private:
-    SimpleController *controller;
-    
-    Point<int> dragbegin_local;
-    
+protected:
+    Controller *controller;
+    int texty;
     std::unique_ptr<EnableButton> btnEnable;
-    
+private:
+    Point<int> dragbegin_local;
     PopupWindow popup;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ControllerCmp)
+};
 
+class SimpleControllerCmp : public ControllerCmp
+{
+public:
+    SimpleControllerCmp(SimpleController *sc) 
+        : ControllerCmp(sc), scontroller(sc){
+        boxValue.reset(new MagicValueBox(sc->GetValue()));
+        addAndMakeVisible(boxValue.get());
+        boxValue->setTopLeftPosition(16, 4);
+        btnEnable->setTopLeftPosition(8, 24);
+        texty = 70;
+        setSize(64, 88);
+    }
+    ~SimpleControllerCmp() {}
+    
+private:
+    SimpleController *scontroller;
+    
+    std::unique_ptr<MagicValueBox> boxValue;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleControllerCmp)
+};
+
+class ContinuousControllerCmp : public ControllerCmp
+{
+public:
+    ContinuousControllerCmp(ContinuousController *cc) 
+        : ControllerCmp(cc), ccontroller(cc){
+        texty = 5;
+        btnEnable->setTopLeftPosition(30, 24);
+        setSize(100, 100);
+        //TODO
+    }
+    ~ContinuousControllerCmp() {}
+    
+private:
+    ContinuousController *ccontroller;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ContinuousControllerCmp)
 };

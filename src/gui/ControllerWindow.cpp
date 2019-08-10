@@ -143,11 +143,13 @@ void ControllerWindow::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == btnNewSimple.get())
     {
         //[UserButtonCode_btnNewSimple] -- add your button handler code here..
+        canvas->addComp(ControllerSystem::AddSimpleController());
         //[/UserButtonCode_btnNewSimple]
     }
     else if (buttonThatWasClicked == btnNewContinuous.get())
     {
         //[UserButtonCode_btnNewContinuous] -- add your button handler code here..
+        canvas->addComp(ControllerSystem::AddContinuousController());
         //[/UserButtonCode_btnNewContinuous]
     }
 

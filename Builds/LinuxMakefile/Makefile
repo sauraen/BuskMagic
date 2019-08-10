@@ -68,7 +68,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS_APP := \
-  $(JUCE_OBJDIR)/SimpleControllerCmp_fbd10a39.o \
+  $(JUCE_OBJDIR)/ControllerCmps_e940cc52.o \
   $(JUCE_OBJDIR)/CMY_3f3eb7e2.o \
   $(JUCE_OBJDIR)/RGB_4d3b0060.o \
   $(JUCE_OBJDIR)/RGBA_5b18822b.o \
@@ -76,7 +76,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/Generic_9e9f733.o \
   $(JUCE_OBJDIR)/ButtonMIDI_c4f5be4a.o \
   $(JUCE_OBJDIR)/CtrlrEditor_540c3ce7.o \
-  $(JUCE_OBJDIR)/ValueEditor_5a6ebe71.o \
+  $(JUCE_OBJDIR)/MagicValueEditor_5e9a82c8.o \
   $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o \
   $(JUCE_OBJDIR)/ControllerWindow_e8832740.o \
   $(JUCE_OBJDIR)/FixtureEditor_fac650c.o \
@@ -111,9 +111,9 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(JUCE_LDFLAGS_APP) $(RESOURCES) $(TARGET_ARCH)
 
-$(JUCE_OBJDIR)/SimpleControllerCmp_fbd10a39.o: ../../src/gui/Controller/SimpleControllerCmp.cpp
+$(JUCE_OBJDIR)/ControllerCmps_e940cc52.o: ../../src/gui/Controller/ControllerCmps.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling SimpleControllerCmp.cpp"
+	@echo "Compiling ControllerCmps.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/CMY_3f3eb7e2.o: ../../src/gui/FixParamEd/ColorMode/CMY.cpp
@@ -151,9 +151,9 @@ $(JUCE_OBJDIR)/CtrlrEditor_540c3ce7.o: ../../src/gui/Popup/CtrlrEditor.cpp
 	@echo "Compiling CtrlrEditor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
-$(JUCE_OBJDIR)/ValueEditor_5a6ebe71.o: ../../src/gui/Popup/ValueEditor.cpp
+$(JUCE_OBJDIR)/MagicValueEditor_5e9a82c8.o: ../../src/gui/Popup/MagicValueEditor.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling ValueEditor.cpp"
+	@echo "Compiling MagicValueEditor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o: ../../src/gui/ArtNetSetup.cpp

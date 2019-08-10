@@ -41,6 +41,8 @@
 
 #include "JuceHeader.h"
 #include "Common.h"
+
+#include "ControllerSystem.h"
 //[/Headers]
 
 
@@ -53,39 +55,38 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ValueEditor  : public Component,
-                     public Button::Listener,
-                     public ComboBox::Listener
+class MagicValueEditor  : public Component,
+                          public TextEditor::Listener,
+                          public ComboBox::Listener
 {
 public:
     //==============================================================================
-    ValueEditor (void *data);
-    ~ValueEditor();
+    MagicValueEditor (void *data);
+    ~MagicValueEditor();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
     //[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
-    void buttonClicked (Button* buttonThatWasClicked) override;
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+    MagicValue *magic;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<ToggleButton> optLiteral;
     std::unique_ptr<TextEditor> txtLiteral;
-    std::unique_ptr<ToggleButton> optChannel;
     std::unique_ptr<ComboBox> cbxChannel;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ValueEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MagicValueEditor)
 };
 
 //[EndFile] You can add extra defines here...

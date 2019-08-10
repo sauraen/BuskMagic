@@ -30,6 +30,11 @@ public:
         contents = nullptr;
     }
     
+    void paint(Graphics &g) override {
+        //Should never be called
+        g.fillAll(Colours::orange);
+    }
+    
     template<class ContentComponent> void show(int x, int y, void *contentdata){
         if(contents != nullptr) reset();
         contents.reset(new ContentComponent(contentdata));
@@ -49,10 +54,6 @@ public:
         removeFromDesktop();
     }
 
-    void paint (Graphics& g) override {}
-
-    void resized() override {}
-    
     void focusOfChildComponentChanged(FocusChangeType cause) override {
         if(hasKeyboardFocus(true)) return;
         reset();
