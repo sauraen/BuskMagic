@@ -23,6 +23,7 @@
 
 #include "ControllerSystem.h"
 #include "gui/Controller/EnableButton.h"
+#include "gui/Controller/CCKnob.h"
 #include "gui/Popup/PopupWindow.h"
 #include "gui/Popup/CtrlrEditor.h"
 #include "gui/MagicValueBox.h"
@@ -49,7 +50,7 @@ public:
         g.fillAll(controller->GetGroupColor());
         g.setColour(controller->GetGroupColor().getBrightness() > 0.5f ? Colours::black : Colours::white);
         g.setFont (10.0f);
-        g.drawMultiLineText(controller->GetName(), 0, texty, getWidth(), Justification::centred);
+        g.drawMultiLineText(controller->GetName(), 2, texty, getWidth() - 2, Justification::centred);
     }
     
     void mouseDown(const MouseEvent &event) override {
@@ -96,20 +97,42 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleControllerCmp)
 };
 
-class ContinuousControllerCmp : public ControllerCmp
+class ContinuousControllerCmp : public ControllerCmp, public Slider::Listener
 {
 public:
     ContinuousControllerCmp(ContinuousController *cc) 
         : ControllerCmp(cc), ccontroller(cc){
-        texty = 5;
-        btnEnable->setTopLeftPosition(30, 24);
-        setSize(100, 100);
+        knob.reset(new CCKnob(ccontroller));
+        addAndMakeVisible(knob.get());
+        knob->addListener(this);
+        knob->setTopLeftPosition(8, -4);
+        
+        boxLo.reset(new MagicValueBox(cc->GetLoValue()));
+        boxHi.reset(new MagicValueBox(cc->GetHiValue()));
+        addAndMakeVisible(boxLo.get());
+        addAndMakeVisible(boxHi.get());
+        boxLo->setTopLeftPosition(4, 56);
+        boxHi->setTopLeftPosition(44, 56);
+        
+        btnEnable->setTopLeftPosition(16, 76);
+        texty = 120;
+        setSize(80, 136);
         //TODO
     }
     ~ContinuousControllerCmp() {}
     
+    void sliderValueChanged(Slider *slider) override {
+        if(slider == knob.get()){
+            ccontroller->SetKnob(knob->getValue());
+        }
+    }
+    
 private:
     ContinuousController *ccontroller;
+    
+    std::unique_ptr<CCKnob> knob;
+    std::unique_ptr<MagicValueBox> boxLo;
+    std::unique_ptr<MagicValueBox> boxHi;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ContinuousControllerCmp)
 };

@@ -81,6 +81,10 @@
 			isa = PBXBuildFile;
 			fileRef = C6FCEE11B25065F7DF37E15B;
 		};
+		1A59EB4AE0469DEA13B4CC3A = {
+			isa = PBXBuildFile;
+			fileRef = C1F78A505311F253F124B629;
+		};
 		80BF05F443520E1F5F924122 = {
 			isa = PBXBuildFile;
 			fileRef = 2E299B4521733769C96122D7;
@@ -120,6 +124,10 @@
 		E23EEB6E9C02ABEBBC879A52 = {
 			isa = PBXBuildFile;
 			fileRef = 0C0E0CECE0AC5AD88BBE8242;
+		};
+		3A51B7ABB91478673FA8E0C5 = {
+			isa = PBXBuildFile;
+			fileRef = 93CF012DE4E760859BB52754;
 		};
 		7EE2E61A8CB78EE8ACEB013C = {
 			isa = PBXBuildFile;
@@ -200,6 +208,13 @@
 			path = ../../src/gui/TextListModel.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		0ACD834D3B13CAD5784B940C = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = LightingSystem.h;
+			path = ../../src/LightingSystem.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		0C0E0CECE0AC5AD88BBE8242 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -212,6 +227,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = Patcher.h;
 			path = ../../src/gui/Patcher.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		0F894E3FFBBF28ACB2C62E55 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = KnobMIDI.h;
+			path = ../../src/gui/Popup/KnobMIDI.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		1244CD3566D40BF6A1447627 = {
@@ -459,6 +481,13 @@
 			path = ../../src/gui/MIDISetup.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		93CF012DE4E760859BB52754 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = LightingSystem.cpp;
+			path = ../../src/LightingSystem.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		94298B9627920B56EDAA4E0E = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -557,6 +586,20 @@
 			path = "Info-App.plist";
 			sourceTree = "SOURCE_ROOT";
 		};
+		C1F78A505311F253F124B629 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = KnobMIDI.cpp;
+			path = ../../src/gui/Popup/KnobMIDI.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		C40A6BCF939DD38BF25B1CEC = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = CCKnob.h;
+			path = ../../src/gui/Controller/CCKnob.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		C4D5408ABABC7C905A1DBCAA = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -651,6 +694,7 @@
 		340CC79BF702A45FEA1F3D1B = {
 			isa = PBXGroup;
 			children = (
+				C40A6BCF939DD38BF25B1CEC,
 				448F5F68DF58CBEB91ECDC49,
 				2228834872E4324176A77A1D,
 				B5F1FB9F187E24A131C3CC0C,
@@ -691,6 +735,8 @@
 				2433B2D434465D09377B18E0,
 				C6FCEE11B25065F7DF37E15B,
 				07C45221ACD8DA57FA5FC5EE,
+				C1F78A505311F253F124B629,
+				0F894E3FFBBF28ACB2C62E55,
 				2E299B4521733769C96122D7,
 				45408F4C624AD637C00A5B87,
 				F1D64539AA9299E723453500,
@@ -733,6 +779,8 @@
 				E4A89D5178CC4394A61ECF58,
 				0C0E0CECE0AC5AD88BBE8242,
 				880D8A0D96D59826EAFB7539,
+				93CF012DE4E760859BB52754,
+				0ACD834D3B13CAD5784B940C,
 				12708D3BB00C4E063550ED8A,
 				E27FBABA80566BB825BA8EEC,
 				89CDB3028D7A3780F7B4DFC9,
@@ -1033,6 +1081,7 @@
 				02E84890133A491CEADBA122,
 				4C8C835A8F8D97A893519116,
 				D40E86353791E938A2C16BB1,
+				1A59EB4AE0469DEA13B4CC3A,
 				80BF05F443520E1F5F924122,
 				16FBF7251CA38AB7C3B2999F,
 				3057EB35B57670330D5511E3,
@@ -1043,6 +1092,7 @@
 				1B790381B4E8DD68C64B60C6,
 				32C2055711FD86AA59F8C771,
 				E23EEB6E9C02ABEBBC879A52,
+				3A51B7ABB91478673FA8E0C5,
 				7EE2E61A8CB78EE8ACEB013C,
 				B565100F8B2B765F45847885,
 				7B1D415BADF2C14F9097CA68,

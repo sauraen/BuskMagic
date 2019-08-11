@@ -56,14 +56,14 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ButtonMIDI  : public Component,
-                    public TextEditor::Listener,
-                    public Button::Listener
+class KnobMIDI  : public Component,
+                  public TextEditor::Listener,
+                  public Button::Listener
 {
 public:
     //==============================================================================
-    ButtonMIDI (void *data);
-    ~ButtonMIDI();
+    KnobMIDI (void *data);
+    ~KnobMIDI();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -78,28 +78,26 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    Controller *controller;
+    ContinuousController *ccontroller;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<Label> lblOn;
-    std::unique_ptr<Label> lblOff;
-    std::unique_ptr<Label> lblToggle;
-    std::unique_ptr<Label> lblOutOn;
-    std::unique_ptr<TextEditor> txtOn;
-    std::unique_ptr<TextButton> btnLearnOn;
-    std::unique_ptr<TextEditor> txtOff;
-    std::unique_ptr<TextButton> btnLearnOff;
-    std::unique_ptr<TextEditor> txtToggle;
-    std::unique_ptr<TextButton> btnLearnToggle;
-    std::unique_ptr<TextEditor> txtOutOn;
-    std::unique_ptr<Label> lblOutOff;
-    std::unique_ptr<TextEditor> txtOutOff;
+    std::unique_ptr<Label> lblIn;
+    std::unique_ptr<Label> lblGotoLo;
+    std::unique_ptr<Label> lblGotoHi;
+    std::unique_ptr<Label> lblOut;
+    std::unique_ptr<TextEditor> txtIn;
+    std::unique_ptr<TextButton> btnLearnIn;
+    std::unique_ptr<TextEditor> txtGotoLo;
+    std::unique_ptr<TextButton> btnLearnGotoLo;
+    std::unique_ptr<TextEditor> txtGotoHi;
+    std::unique_ptr<TextButton> btnLearnGotoHi;
+    std::unique_ptr<TextEditor> txtOut;
     std::unique_ptr<TextButton> btnHelp;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ButtonMIDI)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (KnobMIDI)
 };
 
 //[EndFile] You can add extra defines here...

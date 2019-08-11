@@ -76,6 +76,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/Generic_9e9f733.o \
   $(JUCE_OBJDIR)/ButtonMIDI_c4f5be4a.o \
   $(JUCE_OBJDIR)/CtrlrEditor_540c3ce7.o \
+  $(JUCE_OBJDIR)/KnobMIDI_76846a0e.o \
   $(JUCE_OBJDIR)/MagicValueEditor_5e9a82c8.o \
   $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o \
   $(JUCE_OBJDIR)/ControllerWindow_e8832740.o \
@@ -86,6 +87,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/ArtNetSystem_e2a73c9.o \
   $(JUCE_OBJDIR)/ControllerSystem_52a6cf2b.o \
   $(JUCE_OBJDIR)/FixtureSystem_7998ab22.o \
+  $(JUCE_OBJDIR)/LightingSystem_a49be95b.o \
   $(JUCE_OBJDIR)/Main_36be1979.o \
   $(JUCE_OBJDIR)/MainComponent_dd9a9ece.o \
   $(JUCE_OBJDIR)/MIDISystem_f9013c90.o \
@@ -151,6 +153,11 @@ $(JUCE_OBJDIR)/CtrlrEditor_540c3ce7.o: ../../src/gui/Popup/CtrlrEditor.cpp
 	@echo "Compiling CtrlrEditor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
+$(JUCE_OBJDIR)/KnobMIDI_76846a0e.o: ../../src/gui/Popup/KnobMIDI.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling KnobMIDI.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
 $(JUCE_OBJDIR)/MagicValueEditor_5e9a82c8.o: ../../src/gui/Popup/MagicValueEditor.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling MagicValueEditor.cpp"
@@ -199,6 +206,11 @@ $(JUCE_OBJDIR)/ControllerSystem_52a6cf2b.o: ../../src/ControllerSystem.cpp
 $(JUCE_OBJDIR)/FixtureSystem_7998ab22.o: ../../src/FixtureSystem.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling FixtureSystem.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/LightingSystem_a49be95b.o: ../../src/LightingSystem.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling LightingSystem.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/Main_36be1979.o: ../../src/Main.cpp

@@ -9,6 +9,7 @@
     <GROUP id="{10D6CFA7-0177-1248-18A7-BE991C404BD4}" name="src">
       <GROUP id="{E2D2E361-BE7B-6D4F-0D41-F7DB50F45452}" name="gui">
         <GROUP id="{EA8D599D-25E4-CBA5-6611-0959C1C7171B}" name="Controller">
+          <FILE id="bxKqN5" name="CCKnob.h" compile="0" resource="0" file="src/gui/Controller/CCKnob.h"/>
           <FILE id="gVhDW5" name="ControllerCanvas.h" compile="0" resource="0"
                 file="src/gui/Controller/ControllerCanvas.h"/>
           <FILE id="zTlkk0" name="ControllerCmps.cpp" compile="1" resource="0"
@@ -36,6 +37,8 @@
           <FILE id="hfVJsC" name="ButtonMIDI.h" compile="0" resource="0" file="src/gui/Popup/ButtonMIDI.h"/>
           <FILE id="ljzNSe" name="CtrlrEditor.cpp" compile="1" resource="0" file="src/gui/Popup/CtrlrEditor.cpp"/>
           <FILE id="QJsAMu" name="CtrlrEditor.h" compile="0" resource="0" file="src/gui/Popup/CtrlrEditor.h"/>
+          <FILE id="PdYUSN" name="KnobMIDI.cpp" compile="1" resource="0" file="src/gui/Popup/KnobMIDI.cpp"/>
+          <FILE id="dKximt" name="KnobMIDI.h" compile="0" resource="0" file="src/gui/Popup/KnobMIDI.h"/>
           <FILE id="wmx0ve" name="MagicValueEditor.cpp" compile="1" resource="0"
                 file="src/gui/Popup/MagicValueEditor.cpp"/>
           <FILE id="klKozR" name="MagicValueEditor.h" compile="0" resource="0"
@@ -72,6 +75,10 @@
       <FILE id="TlotCJ" name="FixtureSystem.cpp" compile="1" resource="0"
             file="src/FixtureSystem.cpp"/>
       <FILE id="G7rn3d" name="FixtureSystem.h" compile="0" resource="0" file="src/FixtureSystem.h"/>
+      <FILE id="euFHeu" name="LightingSystem.cpp" compile="1" resource="0"
+            file="src/LightingSystem.cpp"/>
+      <FILE id="HRUc9Z" name="LightingSystem.h" compile="0" resource="0"
+            file="src/LightingSystem.h"/>
       <FILE id="phqWng" name="Main.cpp" compile="1" resource="0" file="src/Main.cpp"/>
       <FILE id="lAhqSj" name="MainComponent.cpp" compile="1" resource="0"
             file="src/MainComponent.cpp"/>

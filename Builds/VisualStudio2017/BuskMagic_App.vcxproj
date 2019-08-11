@@ -146,6 +146,7 @@
     <ClCompile Include="..\..\src\gui\FixParamEd\Generic.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\ButtonMIDI.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\CtrlrEditor.cpp"/>
+    <ClCompile Include="..\..\src\gui\Popup\KnobMIDI.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\MagicValueEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\ArtNetSetup.cpp"/>
     <ClCompile Include="..\..\src\gui\ControllerWindow.cpp"/>
@@ -156,6 +157,7 @@
     <ClCompile Include="..\..\src\ArtNetSystem.cpp"/>
     <ClCompile Include="..\..\src\ControllerSystem.cpp"/>
     <ClCompile Include="..\..\src\FixtureSystem.cpp"/>
+    <ClCompile Include="..\..\src\LightingSystem.cpp"/>
     <ClCompile Include="..\..\src\Main.cpp"/>
     <ClCompile Include="..\..\src\MainComponent.cpp"/>
     <ClCompile Include="..\..\src\MIDISystem.cpp"/>
@@ -169,6 +171,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\gui\Controller\CCKnob.h"/>
     <ClInclude Include="..\..\src\gui\Controller\ControllerCanvas.h"/>
     <ClInclude Include="..\..\src\gui\Controller\ControllerCmps.h"/>
     <ClInclude Include="..\..\src\gui\Controller\EnableButton.h"/>
@@ -179,6 +182,7 @@
     <ClInclude Include="..\..\src\gui\FixParamEd\Generic.h"/>
     <ClInclude Include="..\..\src\gui\Popup\ButtonMIDI.h"/>
     <ClInclude Include="..\..\src\gui\Popup\CtrlrEditor.h"/>
+    <ClInclude Include="..\..\src\gui\Popup\KnobMIDI.h"/>
     <ClInclude Include="..\..\src\gui\Popup\MagicValueEditor.h"/>
     <ClInclude Include="..\..\src\gui\Popup\PopupWindow.h"/>
     <ClInclude Include="..\..\src\gui\ArtNetSetup.h"/>
@@ -193,6 +197,7 @@
     <ClInclude Include="..\..\src\Common.h"/>
     <ClInclude Include="..\..\src\ControllerSystem.h"/>
     <ClInclude Include="..\..\src\FixtureSystem.h"/>
+    <ClInclude Include="..\..\src\LightingSystem.h"/>
     <ClInclude Include="..\..\src\MainComponent.h"/>
     <ClInclude Include="..\..\src\MIDISystem.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h"/>

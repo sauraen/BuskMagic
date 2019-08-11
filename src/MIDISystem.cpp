@@ -65,7 +65,7 @@ String MIDISetting::GetStr() {
         default:  ret += "Error";
     }
     if(type < 0xD) ret += "." + (note < 0 ? "X" : String(note));
-    if(type != 0xC){
+    if(type != 0xC && !continuous){
              if(vel == -1) ret += ".X";
         else if(vel == -2) ret += ".H";
         else if(vel == -3) ret += ".L";
@@ -118,7 +118,7 @@ bool MIDISetting::FromStr(String str) {
     }else{
         note_ = -1;
     }
-    if(type_ != 0xC){
+    if(type_ != 0xC && !continuous){
         if(tk.size() <= t) return false;
         if(tk[t] == "x" && !out){
             vel_ = -1;
@@ -163,7 +163,7 @@ bool MIDISetting::Matches(int port_, MidiMessage msg){
     default: return false;
     }
     if(type < 0xD && note != -1 && note != msg.getRawData()[1]) return false;
-    if(type != 0xC){
+    if(type != 0xC && !continuous){
         int byte = type == 0xD ? 1 : 2; //PitchB, byte 2 is MSB
         if(vel == -2 && msg.getRawData()[byte] < 64) return false;
         if(vel == -3 && msg.getRawData()[byte] >= 64) return false;
