@@ -162,4 +162,5 @@ namespace ControllerSystem {
     Controller *DuplicateController(Controller *orig);
     void DeleteController(Controller *ctrlr);
     
+    void HandleMIDI(int port, MidiMessage msg);
 }

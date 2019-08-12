@@ -80,9 +80,8 @@
       <FILE id="HRUc9Z" name="LightingSystem.h" compile="0" resource="0"
             file="src/LightingSystem.h"/>
       <FILE id="phqWng" name="Main.cpp" compile="1" resource="0" file="src/Main.cpp"/>
-      <FILE id="lAhqSj" name="MainComponent.cpp" compile="1" resource="0"
-            file="src/MainComponent.cpp"/>
-      <FILE id="k7pcwg" name="MainComponent.h" compile="0" resource="0" file="src/MainComponent.h"/>
+      <FILE id="RKjodY" name="MainWindow.cpp" compile="1" resource="0" file="src/MainWindow.cpp"/>
+      <FILE id="qsyKS2" name="MainWindow.h" compile="0" resource="0" file="src/MainWindow.h"/>
       <FILE id="titMmb" name="MIDISystem.cpp" compile="1" resource="0" file="src/MIDISystem.cpp"/>
       <FILE id="Hmf3m6" name="MIDISystem.h" compile="0" resource="0" file="src/MIDISystem.h"/>
     </GROUP>

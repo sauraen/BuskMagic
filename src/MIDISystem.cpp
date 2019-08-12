@@ -18,6 +18,8 @@
 
 #include "MIDISystem.h"
 
+#include "ControllerSystem.h"
+
 #include <vector>
 
 MIDISetting::MIDISetting(bool out_, bool continuous_)
@@ -207,6 +209,8 @@ namespace MIDISystem {
     
     void HandleMIDIInput(int port, const MidiMessage &message){
         std::cout << "MIDI message received port " << port << ": " << message.getDescription() << "\n"; //TODO
+        ControllerSystem::HandleMIDI(port, message);
+        //TODO handle by other systems
     }
     
     struct MIDIInPort {

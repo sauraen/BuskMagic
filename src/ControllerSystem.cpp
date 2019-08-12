@@ -310,4 +310,11 @@ namespace ControllerSystem {
         ctrlrs.removeObject(ctrlr, true);
     }
     
+    void HandleMIDI(int port, MidiMessage msg){
+        CTRLRSYS_LOCK_READ();
+        for(int i=0; i<ctrlrs.size(); ++i){
+            ctrlrs[i]->HandleMIDI(port, msg);
+        }
+    }
+    
 }

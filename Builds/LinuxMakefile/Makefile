@@ -89,7 +89,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/FixtureSystem_7998ab22.o \
   $(JUCE_OBJDIR)/LightingSystem_a49be95b.o \
   $(JUCE_OBJDIR)/Main_36be1979.o \
-  $(JUCE_OBJDIR)/MainComponent_dd9a9ece.o \
+  $(JUCE_OBJDIR)/MainWindow_3fb73689.o \
   $(JUCE_OBJDIR)/MIDISystem_f9013c90.o \
   $(JUCE_OBJDIR)/include_juce_audio_basics_8a4e984a.o \
   $(JUCE_OBJDIR)/include_juce_audio_devices_63111d02.o \
@@ -218,9 +218,9 @@ $(JUCE_OBJDIR)/Main_36be1979.o: ../../src/Main.cpp
 	@echo "Compiling Main.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
-$(JUCE_OBJDIR)/MainComponent_dd9a9ece.o: ../../src/MainComponent.cpp
+$(JUCE_OBJDIR)/MainWindow_3fb73689.o: ../../src/MainWindow.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling MainComponent.cpp"
+	@echo "Compiling MainWindow.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/MIDISystem_f9013c90.o: ../../src/MIDISystem.cpp

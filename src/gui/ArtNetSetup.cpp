@@ -439,7 +439,6 @@ ArtNetSetup::ArtNetSetup ()
 
 
     //[Constructor] You can add your own custom stuff here..
-    ArtNetSystem::Init(); //TODO move this to main
 
     optPollNo    ->setToggleState(ArtNetSystem::GetPollMode() == 0, dontSendNotification);
     optPollStatic->setToggleState(ArtNetSystem::GetPollMode() == 1, dontSendNotification);
@@ -495,7 +494,6 @@ ArtNetSetup::~ArtNetSetup()
     lstDevices = nullptr;
     lsmDevices = nullptr;
 
-    ArtNetSystem::Finalize();
     //[/Destructor]
 }
 
@@ -950,4 +948,3 @@ const int ArtNetSetup::artnet_logo_pngSize = 1613;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

@@ -133,9 +133,9 @@
 			isa = PBXBuildFile;
 			fileRef = 12708D3BB00C4E063550ED8A;
 		};
-		B565100F8B2B765F45847885 = {
+		B3CC698D9729C935327F6561 = {
 			isa = PBXBuildFile;
-			fileRef = E27FBABA80566BB825BA8EEC;
+			fileRef = 3102572C82C40B1591B33DDA;
 		};
 		7B1D415BADF2C14F9097CA68 = {
 			isa = PBXBuildFile;
@@ -334,6 +334,13 @@
 			path = ../../src/gui/TextListModel.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		3102572C82C40B1591B33DDA = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = MainWindow.cpp;
+			path = ../../src/MainWindow.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		363442D52A030D802F0667D7 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -460,13 +467,6 @@
 			path = ../../src/FixtureSystem.h;
 			sourceTree = "SOURCE_ROOT";
 		};
-		89CDB3028D7A3780F7B4DFC9 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			name = MainComponent.h;
-			path = ../../src/MainComponent.h;
-			sourceTree = "SOURCE_ROOT";
-		};
 		8A9C11402DC21C640DF95563 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -542,6 +542,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = FixtureEditor.h;
 			path = ../../src/gui/FixtureEditor.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		B1F733C62786EEDEA807FF9A = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = MainWindow.h;
+			path = ../../src/MainWindow.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		B5F1FB9F187E24A131C3CC0C = {
@@ -626,13 +633,6 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = RGB.cpp;
 			path = ../../src/gui/FixParamEd/ColorMode/RGB.cpp;
-			sourceTree = "SOURCE_ROOT";
-		};
-		E27FBABA80566BB825BA8EEC = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			name = MainComponent.cpp;
-			path = ../../src/MainComponent.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		E4A89D5178CC4394A61ECF58 = {
@@ -782,8 +782,8 @@
 				93CF012DE4E760859BB52754,
 				0ACD834D3B13CAD5784B940C,
 				12708D3BB00C4E063550ED8A,
-				E27FBABA80566BB825BA8EEC,
-				89CDB3028D7A3780F7B4DFC9,
+				3102572C82C40B1591B33DDA,
+				B1F733C62786EEDEA807FF9A,
 				B73E58229762B5845974E61D,
 				B788B4A4E695A23D87F4790D,
 			);
@@ -1094,7 +1094,7 @@
 				E23EEB6E9C02ABEBBC879A52,
 				3A51B7ABB91478673FA8E0C5,
 				7EE2E61A8CB78EE8ACEB013C,
-				B565100F8B2B765F45847885,
+				B3CC698D9729C935327F6561,
 				7B1D415BADF2C14F9097CA68,
 				46383F447C575EB6A5F75FF5,
 				2182685E7A92EF7A0146F1FB,

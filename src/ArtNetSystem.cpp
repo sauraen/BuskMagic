@@ -381,6 +381,7 @@ namespace ArtNetSystem {
             recvsock.setEnablePortReuse(true);
             while(!threadShouldExit()){
                 while(!threadShouldExit() && recvsock.waitUntilReady(true, 1) == 0);
+                if(threadShouldExit()) break;
                 String senderIPstr; int port;
                 int readbytes = recvsock.read(packetbuf, maxpacketsize, false, senderIPstr, port);
                 IPAddress senderIP(senderIPstr);
