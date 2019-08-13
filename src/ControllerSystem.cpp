@@ -143,7 +143,7 @@ void Controller::HandleMIDI(int port, MidiMessage msg){
         enabled = false;
         midisettings[en_out_off]->SendMsg();
         RefreshComponent();
-    }else if(midisettings[en_off]->Matches(port, msg)){
+    }else if(midisettings[en_toggle]->Matches(port, msg)){
         CTRLRSYS_LOCK_WRITE();
         if(enabled){
             enabled = false;

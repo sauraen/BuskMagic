@@ -40,6 +40,7 @@ public:
     
     void paint(Graphics &g) override {
         SetColor(controller->GetColor());
+        setToggleState(controller->IsEnabled(), dontSendNotification);
         SynthButton::paint(g);
     }
     

@@ -381,7 +381,7 @@ void MIDISetup::refreshLists(){
     lsmInPorts->clear();
     lstInPorts->updateContent();
     for(int i=0; i<MIDISystem::NumInPorts(); ++i){
-        lsmInPorts->add(String(i) + ": " + MIDISystem::InPortDeviceName(i));
+        lsmInPorts->add(String(i+1) + ": " + MIDISystem::InPortDeviceName(i));
     }
     lstInPorts->updateContent();
     //
@@ -396,7 +396,7 @@ void MIDISetup::refreshLists(){
     lsmOutPorts->clear();
     lstOutPorts->updateContent();
     for(int i=0; i<MIDISystem::NumOutPorts(); ++i){
-        lsmOutPorts->add(String(i) + ": " + MIDISystem::OutPortDeviceName(i));
+        lsmOutPorts->add(String(i+1) + ": " + MIDISystem::OutPortDeviceName(i));
     }
     lstOutPorts->updateContent();
 }

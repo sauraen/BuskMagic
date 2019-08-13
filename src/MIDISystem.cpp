@@ -54,7 +54,7 @@ String MIDISetting::GetHelpText(){
 
 String MIDISetting::GetStr() {
     if(type < 0) return ""; //No message
-    String ret = (port < 0 ? "X" : String(port)) + ".";
+    String ret = (port < 0 ? "X" : String(port+1)) + ".";
     ret += (channel < 0 ? "X" : String(channel)) + ".";
     switch(type){
         case 0x8: ret += "NoteOff"; break;
@@ -88,6 +88,7 @@ bool MIDISetting::FromStr(String str) {
         if(!isInt(tk[0], false)) return false;
         port_ = tk[0].getIntValue();
         if(port_ == 0) return false;
+        --port_;
     }
     if(tk[1] == "x" && !out){
         channel_ = -1;
@@ -208,7 +209,7 @@ void MIDISetting::SendMsg(int valforcontinuous){
 namespace MIDISystem {
     
     void HandleMIDIInput(int port, const MidiMessage &message){
-        std::cout << "MIDI message received port " << port << ": " << message.getDescription() << "\n"; //TODO
+        //std::cout << "MIDI message received port " << port << ": " << message.getDescription() << "\n"; //TODO
         ControllerSystem::HandleMIDI(port, message);
         //TODO handle by other systems
     }
@@ -337,24 +338,24 @@ namespace MIDISystem {
         outports[p].device->sendMessageNow(msg);
     }
     void SendNoteOff(int p, int c, int n, int v){
-        SendInternal(p, MidiMessage::noteOff(c+1, n, (uint8_t)v));
+        SendInternal(p, MidiMessage::noteOff(c, n, (uint8_t)v));
     }
     void SendNoteOn(int p, int c, int n, int v){
-        SendInternal(p, MidiMessage::noteOn(c+1, n, (uint8_t)v));
+        SendInternal(p, MidiMessage::noteOn(c, n, (uint8_t)v));
     }
     void SendPolyAftertouch(int p, int c, int n, int a){
-        SendInternal(p, MidiMessage::aftertouchChange(c+1, n, a));
+        SendInternal(p, MidiMessage::aftertouchChange(c, n, a));
     }
     void SendCC(int p, int c, int cc, int v){
-        SendInternal(p, MidiMessage::controllerEvent(c+1, cc, v));
+        SendInternal(p, MidiMessage::controllerEvent(c, cc, v));
     }
     void SendProgChange(int p, int c, int prog){
-        SendInternal(p, MidiMessage::programChange(c+1, prog));
+        SendInternal(p, MidiMessage::programChange(c, prog));
     }
     void SendChanAftertouch(int p, int c, int a){
-        SendInternal(p, MidiMessage::channelPressureChange(c+1, a));
+        SendInternal(p, MidiMessage::channelPressureChange(c, a));
     }
     void SendPitchBend(int p, int c, int pb){
-        SendInternal(p, MidiMessage::pitchWheel(c+1, pb));
+        SendInternal(p, MidiMessage::pitchWheel(c, pb));
     }
 }

@@ -129,11 +129,20 @@ inline void InfoBox(String text){
 #define TEXTCHANGEDHANDLER_POST \
     TurnRed(&editorThatWasChanged, turnRed); \
     REQUIRESEMICOLON
+
+#define FROMLOOKANDFEEL(colorType) \
+    LookAndFeel::getDefaultLookAndFeel().findColour(colorType)
     
+inline Colour LFWindowColor(){
+    return FROMLOOKANDFEEL(ResizableWindow::backgroundColourId);
+}
+inline Colour LFWidgetColor(){
+    return FROMLOOKANDFEEL(TextEditor::backgroundColourId);
+}
+
 inline void TurnRed(TextEditor *ed, bool turnRed = true){
     ed->setColour(TextEditor::backgroundColourId,
-        turnRed ? Colours::red : LookAndFeel_V4::getDarkColourScheme()
-        .getUIColour(LookAndFeel_V4::ColourScheme::widgetBackground));
+        turnRed ? Colours::red : LFWidgetColor());
     ed->repaint();
 }
 inline void TurnRed(const std::unique_ptr<TextEditor> &ed, bool turnRed = true){

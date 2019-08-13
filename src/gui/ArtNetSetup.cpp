@@ -53,7 +53,7 @@ ArtNetSetup::ArtNetSetup ()
     //[/Constructor_pre]
 
     lblHeader.reset (new Label ("lblHeader",
-                                TRANS("M S IP Address     BI NT.S.  IN   /  OUT   NAME")));
+                                TRANS("M S IP Address      BI NT.S.  IN   /  OUT   NAME")));
     addAndMakeVisible (lblHeader.get());
     lblHeader->setFont (Font (Font::getDefaultMonospacedFontName(), 15.00f, Font::plain));
     lblHeader->setJustificationType (Justification::centredLeft);
@@ -61,7 +61,7 @@ ArtNetSetup::ArtNetSetup ()
     lblHeader->setColour (TextEditor::textColourId, Colours::black);
     lblHeader->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblHeader->setBounds (0, 24, 360, 24);
+    lblHeader->setBounds (0, 24, 552, 24);
 
     lblDeviceType.reset (new Label ("lblDeviceType",
                                     TRANS("Discovered Controller:")));
@@ -419,6 +419,7 @@ ArtNetSetup::ArtNetSetup ()
 
     TextListModel::Initialize(lsmDevices, lstDevices, this, this, "Devices");
 
+    lsmDevices->setFont(Font(Font::getDefaultMonospacedFontName(), 15.00f, Font::plain));
     lstDevices->setBounds(0, 48, 600, 136);
 
     txtShortName->addListener(this);
@@ -756,8 +757,8 @@ BEGIN_JUCER_METADATA
            mode="1"/>
   </BACKGROUND>
   <LABEL name="lblHeader" id="7366d591fbb23722" memberName="lblHeader"
-         virtualName="" explicitFocusOrder="0" pos="0 24 360 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="M S IP Address     BI NT.S.  IN   /  OUT   NAME"
+         virtualName="" explicitFocusOrder="0" pos="0 24 552 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="M S IP Address      BI NT.S.  IN   /  OUT   NAME"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default monospaced font" fontsize="15.0" kerning="0.0"
          bold="0" italic="0" justification="33"/>
@@ -948,3 +949,4 @@ const int ArtNetSetup::artnet_logo_pngSize = 1613;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

@@ -26,23 +26,52 @@
 #include "ArtNetSystem.h"
 #include "MIDISystem.h"
 
-class SubWindow : public DocumentWindow {
+class SubWindow : public Component {
 public:
-    SubWindow(String name) 
-        : DocumentWindow(name, Colours::purple, DocumentWindow::closeButton, true)
-    {
-        //TODO: setIcon(const Image &blah);
-        setUsingNativeTitleBar(true);
-        setResizable(false, false);
+    SubWindow(String name, bool resizable, Component *ownedcontents) : Component(name){
+        //Normal setup
+        setVisible(false);
+        contents.reset(ownedcontents);
+        addAndMakeVisible(contents.get());
+        setSize(contents->getWidth(), contents->getHeight());
+        //Setup for peer
+        setOpaque(true);
+        addToDesktop(ComponentPeer::windowHasTitleBar | 
+            (resizable ? (ComponentPeer::windowIsResizable 
+                | ComponentPeer::windowHasMaximiseButton) : 0)
+            | ComponentPeer::windowHasCloseButton 
+            | ComponentPeer::windowHasDropShadow);
+        //Peer
+        ComponentPeer *peer = getPeer();
+        peer->setVisible(false);
+        peer->setTitle(name);
+        //TODO: peer->setIcon(const Image &blah);
+    }
+    ~SubWindow() {
+        contents = nullptr;
+    }
+    void paint(Graphics &g) override {
+        g.fillAll(LFWindowColor());
+    }
+    void userTriedToCloseWindow() override {
+        getPeer()->setVisible(false);
         setVisible(false);
     }
-    ~SubWindow() {}
-    void closeButtonPressed() override {
-        setVisible(false);
+    void show() {
+        if(isVisible()){
+            getPeer()->toFront(true);
+            return;
+        }
+        getPeer()->setVisible(true);
+        setVisible(true);
+        TopLevelWindow *tlw = TopLevelWindow::getActiveTopLevelWindow();
+        if(tlw != nullptr){
+            setCentrePosition(tlw->getPosition() + 
+                Point<int>(tlw->getWidth()/2, tlw->getHeight()/2));
+        }
     }
-    void center() {
-        centreAroundComponent(nullptr, getWidth(), getHeight());
-    }
+private:
+    std::unique_ptr<Component> contents;
 };
 
 namespace {
@@ -50,7 +79,7 @@ namespace {
 }
 
 MainWindow::MainWindow() 
-    : DocumentWindow("BuskMagic", Colours::purple, DocumentWindow::allButtons, true)
+    : DocumentWindow("BuskMagic", LFWindowColor(), DocumentWindow::allButtons, true)
 {
     setUsingNativeTitleBar(true);
     setResizable(true, false);
@@ -68,15 +97,10 @@ MainWindow::MainWindow()
     ArtNetSystem::Init();
     MIDISystem::Init();
     //GUI startup
-    artnetWindow.reset(new SubWindow("BuskMagic - Art-Net Setup"));
-    artnetWindow->setContentOwned(new ArtNetSetup(), true);
-    midiWindow.reset(new SubWindow("BuskMagic - MIDI Setup"));
-    midiWindow->setContentOwned(new MIDISetup(), true);
-    patcherWindow.reset(new SubWindow("BuskMagic - Patcher"));
-    patcherWindow->setContentOwned(new Patcher(), true);
-    controllersWindow.reset(new SubWindow("BuskMagic - Controllers"));
-    controllersWindow->setContentOwned(new ControllerWindow(), false);
-    controllersWindow->setResizable(true, false);
+    artnetWindow.reset(new SubWindow("BuskMagic - Art-Net Setup", false, new ArtNetSetup()));
+    midiWindow.reset(new SubWindow("BuskMagic - MIDI Setup", false, new MIDISetup()));
+    patcherWindow.reset(new SubWindow("BuskMagic - Patcher", false, new Patcher()));
+    controllersWindow.reset(new SubWindow("BuskMagic - Controllers", true, new ControllerWindow()));
 }
 
 MainWindow::~MainWindow() {
@@ -143,20 +167,16 @@ void MainMenus::menuItemSelected(int menuItemID, int topLevelMenuIndex){
         JUCEApplication::getInstance()->systemRequestedQuit();
         break;
     case 0x2000:
-        artnetWindow->setVisible(true);
-        artnetWindow->center();
+        artnetWindow->show();
         break;
     case 0x2001:
-        midiWindow->setVisible(true);
-        artnetWindow->center();
+        midiWindow->show();
         break;
     case 0x2010:
-        patcherWindow->setVisible(true);
-        artnetWindow->center();
+        patcherWindow->show();
         break;
     case 0x3000:
-        controllersWindow->setVisible(true);
-        artnetWindow->center();
+        controllersWindow->show();
         break;
     case 0x3001:
         WarningBox("Tempo system not yet implemented!");

@@ -406,7 +406,7 @@ namespace ArtNetSystem {
                     std::cout << "ArtNetSystem receive: bad protocol revision!\n";
                     continue;
                 }
-                std::cout << "Received Art-Net packet opcode 0x" << hex(opcode) << "\n";
+                //std::cout << "Received Art-Net packet opcode 0x" << hex(opcode) << "\n";
                 if(opcode == 0x2000){
                     SendArtPollReply(senderIP);
                 }else if(opcode == 0x2100){
