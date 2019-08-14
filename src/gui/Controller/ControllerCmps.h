@@ -117,7 +117,6 @@ public:
         btnEnable->setTopLeftPosition(16, 76);
         texty = 120;
         setSize(80, 136);
-        //TODO
     }
     ~ContinuousControllerCmp() {}
     

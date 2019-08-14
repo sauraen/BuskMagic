@@ -18,6 +18,8 @@
 
 #include "ChannelSystem.h"
 
+#include "FixtureSystem.h"
+
 String Channel::OpGetLetters(ChannelOp o){
     switch(o){
     case OpPrioTop: return CharPointer_UTF8 ("\xe2\x86\x91");
@@ -73,7 +75,10 @@ void Channel::SetLetters(String newletters){
 
 Phasor *Channel::GetPhasor(int i) const {
     LS_LOCK_READ();
-    if(i < 0 || i >= phasors.size()) return nullptr;
+    if(i < 0 || i >= phasors.size()){
+        jassertfalse;
+        return nullptr;
+    }
     return phasors[i];
 }
 
@@ -83,7 +88,10 @@ Phasor *Channel::GetPhasorForController(Controller *c, bool addIfNotPresent){
         for(int i=0; i<phasors.size(); ++i){
             if(phasors[i]->src == c) return phasors[i];
         }
-        if(!addIfNotPresent) return nullptr;
+        if(!addIfNotPresent){
+            jassertfalse;
+            return nullptr;
+        }
     } //Must give up read lock before acquiring write lock to avoid deadlock
     LS_LOCK_WRITE();
     Phasor *ret = new Phasor(c);
@@ -100,19 +108,32 @@ void Channel::RemovePhasor(int i){
 void Channel::RemovePhasorForController(Controller *c){
     LS_LOCK_WRITE();
     for(int i=phasors.size()-1; i>=0; --i){
-        if(phasors[i]->src == c) phasors.remove(i);
+        if(phasors[i]->src == c){
+            phasors.remove(i);
+            return;
+        }
     }
 }
 
 void Channel::SortPhasors(){
-    //LS_LOCK_WRITE(); //Already locked from ChannelSystem::SortAllChannelPhasors
-    //TODO
+    LS_LOCK_WRITE();
+    int destpos = 0;
+    for(int i=0; i<ControllerSystem::NumControllers(); ++i){
+        Controller *c = ControllerSystem::GetController(i);
+        for(int j=0; j<phasors.size(); ++j){
+            if(phasors[j]->src == c){
+                phasors.move(j, destpos++);
+                break;
+            }
+        }
+    }
+    jassert(destpos == phasors.size());
 }
 
-#define EVALCHN() phasors[i]->mag * c->Evaluate(angle + phasors[i]->angle)
+#define EVALCHN() (phasors[i]->mag * c->Evaluate(angle + phasors[i]->angle))
 
 float Channel::Evaluate(float angle) const {
-    //LS_LOCK_READ(); //Already locked from evaluate system
+    LS_LOCK_READ();
     float val; bool flag;
     switch(op){
     case OpPrioTop:
@@ -156,13 +177,87 @@ float Channel::Evaluate(float angle) const {
         }
         return val;
     case OpAdd:
-        //TODO
-        break;
     case OpMultiply:
-        //
-        break;
+        flag = false;
+        val = op == OpAdd ? 0.0f : 1.0f;
+        for(int i=0; i<phasors.size(); ++i){
+            Controller *c = phasors[i]->src;
+            if(c->IsEnabled()){
+                flag = true;
+                float v = EVALCHN();
+                if(op == OppAdd){
+                    val += v;
+                }else{
+                    val *= v;
+                }
+            }
+        }
+        if(flag) return val;
+        return defaultvalue;
     default:
         jassertfalse;
         return 0.0f;
+    }
+}
+
+namespace ChannelSystem {
+    
+    OwnedArray<Channel> freechannels;
+    
+    int NumTotalChannels(){
+        LS_LOCK_READ();
+        int total = freechannels.size();
+        for(int i=0; i<FixtureSystem::NumFixtures(); ++i){
+            total += FixtureSystem::Fix(i)->GetNumChannels();
+        }
+        return total;
+    }
+    int NumFreeChannels() { return freechannels.size(); }
+    Channel *GetFreeChannel(int i){
+        LS_LOCK_READ();
+        if(i < 0 || i >= freechannels.size()){
+            jassertfalse;
+            return nullptr;
+        }
+        return freechannels[i];
+    }
+    Channel *AddFreeChannel(){
+        LS_LOCK_WRITE();
+        Channel *ret = new Channel();
+        freechannels.add(ret);
+        return ret;
+    }
+    void RemoveFreeChannel(int i){
+        LS_LOCK_WRITE();
+        if(i < 0 || i >= freechannels.size()){
+            jassertfalse;
+            return;
+        }
+        ControllerSystem::RemoveAllMagicValuesForChannel(freechannels[i]);
+        freechannels.remove(i);
+    }
+    
+    void RemoveAllPhasorsForController(Controller *c){
+        LS_LOCK_WRITE();
+        for(int i=0; i<freechannels.size(); ++i){
+            freechannels[i]->RemovePhasorForController(c);
+        }
+        for(int i=0; i<FixtureSystem::NumFixtures(); ++i){
+            for(int j=0; j<FixtureSystem::Fix(i)->GetNumChannels(); ++j){
+                FixtureSystem::Fix(i)->GetChannel(j)->RemovePhasorForController(c);
+            }
+        }
+    }
+    
+    void SortAllChannelPhasors(){
+        LS_LOCK_WRITE();
+        for(int i=0; i<freechannels.size(); ++i){
+            freechannels[i]->SortPhasors();
+        }
+        for(int i=0; i<FixtureSystem::NumFixtures(); ++i){
+            for(int j=0; j<FixtureSystem::Fix(i)->GetNumChannels(); ++j){
+                FixtureSystem::Fix(i)->GetChannel(j)->SortPhasors();
+            }
+        }
     }
 }

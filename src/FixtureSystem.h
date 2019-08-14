@@ -20,6 +20,8 @@
 #include "JuceHeader.h"
 #include "Common.h"
 
+class Channel;
+
 #define DMXTEXTCHANGEDHANDLER \
     int dmx_normal, dmx_fine, dmx_ultra; \
     bool dmx_ok = FixtureSystem::ParseDMXText(text, \
@@ -40,16 +42,20 @@ public:
     void SetName(String newname);
     
     inline int GetFixID() const { return fixid; }
-    void SetFixID(int newfixid);
+    inline void SetFixID(int newfixid) { fixid = newfixid; }
     
     inline uint16_t GetUniverse() const { return uni; }
-    inline uint16_t GetChannel() const { return chn; }
+    inline uint16_t GetDMXChannel() const { return chn; }
     void SetPatch(uint16_t newuni, uint16_t newchn);
+    
+    inline int GetNumChannels() const { return channels.size(); }
+    Channel *GetChannel(int i) const;
 private:
     ValueTree def;
     String name;
     int fixid;
     uint16_t uni, chn;
+    OwnedArray<Channel> channels;
 };
 
 namespace FixtureSystem {

@@ -209,7 +209,8 @@ void MIDISetting::SendMsg(int valforcontinuous){
 namespace MIDISystem {
     
     void HandleMIDIInput(int port, const MidiMessage &message){
-        //std::cout << "MIDI message received port " << port << ": " << message.getDescription() << "\n"; //TODO
+        //std::cout << "MIDI message received port " << port 
+        //    << ": " << message.getDescription() << "\n";
         ControllerSystem::HandleMIDI(port, message);
         //TODO handle by other systems
     }

@@ -24,6 +24,7 @@
 #include "MIDISystem.h"
 
 class Controller;
+class Channel;
 
 class MagicValue {
 public:
@@ -37,20 +38,14 @@ public:
     inline void *GetChannel() const { return chan; }
     void SetChannel(void *ch);
     
-    inline String GetText(){
-        if(chan == nullptr){
-            return String(mugglevalue, 2);
-        }else{
-            return "Magic!"; //TODO
-        }
-    }
+    String GetText();
     
     float Evaluate(float angle) const;
     
 private:
     Controller *controller;
     float mugglevalue;
-    void *chan;
+    Channel *chan;
     
     void RefreshComponent();
 };
@@ -160,7 +155,10 @@ namespace ControllerSystem {
     SimpleController *AddSimpleController();
     ContinuousController *AddContinuousController();
     Controller *DuplicateController(Controller *orig);
-    void DeleteController(Controller *ctrlr);
+    void RemoveController(Controller *ctrlr);
+    void ChangeControllerOrder(int orig, int newpos);
+    
+    void RemoveAllMagicValuesForChannel(Channel *chn);
     
     void HandleMIDI(int port, MidiMessage msg);
 }

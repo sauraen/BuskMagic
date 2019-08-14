@@ -18,6 +18,8 @@
 
 #include "ControllerSystem.h"
 
+#include "ChannelSystem.h"
+
 #include "gui/Controller/ControllerCmps.h"
 #include "gui/Controller/ControllerCanvas.h"
 
@@ -33,8 +35,11 @@ void MagicValue::SetChannel(void *ch) {
     chan = ch; 
     RefreshComponent();
 }
+String MagicValue::GetText(){
+    return chan != nullptr ? chan->GetLetters() : String(mugglevalue, 2);
+}
 float MagicValue::Evaluate(float angle) const {
-    return chan != nullptr ? /*TODO chan->Evaluate(angle)*/0.0f : mugglevalue;
+    return chan != nullptr ? chan->Evaluate(angle) : mugglevalue;
 }
 void MagicValue::RefreshComponent(){
     controller->RefreshComponent();
@@ -119,7 +124,7 @@ void Controller::SetEnabled(bool en){
 }
 
 void Controller::HandleMIDI(int port, MidiMessage msg){
-    //LS_LOCK_READ(); //Already locked from ControllerSystem::HandleMIDI
+    LS_LOCK_READ();
     if(midisettings[en_on]->Matches(port, msg)){
         if(enabled) return;
         enabled = true;
@@ -205,7 +210,7 @@ void ContinuousController::SetKnob(float k){
 }
 
 void ContinuousController::HandleMIDI(int port, MidiMessage msg) {
-    //LS_LOCK_READ(); //Already locked from ControllerSystem::HandleMIDI
+    LS_LOCK_READ();
     Controller::HandleMIDI(port, msg);
     if(midisettings[ct_in]->Matches(port, msg)){
         knob = (float)midisettings[ct_in]->GetValueFrom(msg) / 127.0f;
@@ -256,7 +261,7 @@ namespace ControllerSystem {
     Controller *GetController(int i){
         LS_LOCK_READ();
         if(i < 0 || i >= ctrlrs.size()){
-            std::cout << "Invalid controller!\n";
+            jassertfalse;
             return nullptr;
         }
         return ctrlrs[i];
@@ -288,9 +293,37 @@ namespace ControllerSystem {
             return nullptr;
         }
     }
-    void DeleteController(Controller *ctrlr){
+    void RemoveController(Controller *ctrlr){
         LS_LOCK_WRITE();
+        ChannelSystem::RemoveAllPhasorsForController(ctrlr);
         ctrlrs.removeObject(ctrlr, true);
+    }
+    
+    void ChangeControllerOrder(int orig, int newpos){
+        LS_LOCK_WRITE();
+        ctrlrs.move(orig, newpos);
+        ChannelSystem::SortAllChannelPhasors();
+    }
+    
+    void RemoveAllMagicValuesForChannel(Channel *chn){
+        LS_LOCK_WRITE();
+        for(int i=0; i<ctrlrs.size(); ++i){
+            if(SimpleController *sc = dynamic_cast<SimpleController*>(ctrlrs[i])){
+                if(sc->GetValue()->GetChannel() == chn){
+                    sc->GetValue()->SetChannel(nullptr);
+                }
+            }else if(ContinuousController *cc = dynamic_cast<ContinuousController*>(ctrlrs[i])){
+                if(cc->GetLoValue()->GetChannel() == chn){
+                    sc->GetLoValue()->SetChannel(nullptr);
+                }
+                if(cc->GetHiValue()->GetChannel() == chn){
+                    sc->GetHiValue()->SetChannel(nullptr);
+                }
+            }else{
+                jassertfalse;
+                return nullptr;
+            }
+        }
     }
     
     void HandleMIDI(int port, MidiMessage msg){

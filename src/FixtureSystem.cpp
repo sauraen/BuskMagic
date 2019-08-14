@@ -18,10 +18,36 @@
 
 #include "FixtureSystem.h"
 
+#include "ChannelSystem.h"
 
 Fixture::Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16_t chn_)
     : def(def_), name(name_), fixid(fixid_), uni(uni_), chn(chn_) {
     def.setProperty(Identifier("inuse"), true, nullptr);
+    for(int p=0; p<def.getNumChildren(); ++p){
+        ValueTree param = def.getChild(p);
+        String ptype = param.getProperty(Identifier("type"), "");
+        if(ptype == "Generic"){
+            Channel *gchan = new Channel();
+            gchan->SetName(param.getProperty(Identifier("name"), "Error"));
+            gchan->SetLetters(param.getProperty(Identifier("letters"), "X"));
+            gchan->SetDefaultValue(0.0f);
+            gchan->SetOp(Channel::OpAdd);
+            channels.add(gchan);
+        }else if(ptype == "Color"){
+            Channel *hchan = new Channel();
+            hchan->SetName("Hue - " + param.getProperty(Identifier("name"), "Error"));
+            hchan->SetLetters("H");
+            hchan->SetDefaultValue(0.0f);
+            hchan->SetOp(Channel::OpAdd);
+            channels.add(hchan);
+            Channel *lchan = new Channel();
+            lchan->SetName("Lightness - " + param.getProperty(Identifier("name"), "Error"));
+            lchan->SetLetters("L");
+            lchan->SetDefaultValue(1.0f);
+            lchan->SetOp(Channel::OpAdd);
+            channels.add(lchan);
+        }
+    }
 }
 Fixture::~Fixture() {}
 
@@ -31,15 +57,26 @@ String Fixture::GetDescription() const {
         + def.getProperty(Identifier("name"), "(Name)").toString() + ")";
 }
 
+String Fixture::GetName(){
+    LS_LOCK_READ();
+    return name;
+}
 void Fixture::SetName(String newname){
+    LS_LOCK_WRITE();
     name = newname;
 }
-void Fixture::SetFixID(int newfixid){
-    fixid = newfixid;
-}
 void Fixture::SetPatch(uint16_t newuni, uint16_t newchn){
+    LS_LOCK_WRITE();
     uni = newuni;
     chn = newchn;
+}
+Channel *Fixture::GetChannel(int i){
+    LS_LOCK_READ();
+    if(i < 0 || i >= channels.size()){
+        jassertfalse;
+        return nullptr;
+    }
+    return channels[i];
 }
 
 
@@ -111,9 +148,11 @@ namespace FixtureSystem {
     
     OwnedArray<Fixture> fixtures;
     void AddFixture(ValueTree def, String name, int fixid, uint16_t uni, uint16_t chn){
+        LS_LOCK_WRITE();
         fixtures.add(new Fixture(def, name, fixid, uni, chn));
     }
     void RemoveFixture(int i){
+        LS_LOCK_WRITE();
         if(i >= fixtures.size()) return;
         ValueTree def = fixtures[i]->GetDef();
         fixtures.remove(i);
@@ -129,7 +168,14 @@ namespace FixtureSystem {
         }
     }
     int NumFixtures() { return fixtures.size(); }
-    Fixture *Fix(int i) { return fixtures[i]; }
+    Fixture *Fix(int i) {
+        LS_LOCK_READ();
+        if(i < 0 || i >= fixtures.size()){
+            jassertfalse;
+            return nullptr;
+        }
+        return fixtures[i];
+    }
     
     class FixtureComparator {
     public:
@@ -144,6 +190,7 @@ namespace FixtureSystem {
         return first->GetFixID() < second->GetFixID() ? -1 : 1;
     }
     void SortFixtures(){
+        LS_LOCK_WRITE();
         FixtureComparator fc;
         fixtures.sort(fc, false);
     }
