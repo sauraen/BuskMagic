@@ -155,6 +155,7 @@
     <ClCompile Include="..\..\src\gui\Patcher.cpp"/>
     <ClCompile Include="..\..\src\gui\TextListModel.cpp"/>
     <ClCompile Include="..\..\src\ArtNetSystem.cpp"/>
+    <ClCompile Include="..\..\src\ChannelSystem.cpp"/>
     <ClCompile Include="..\..\src\ControllerSystem.cpp"/>
     <ClCompile Include="..\..\src\FixtureSystem.cpp"/>
     <ClCompile Include="..\..\src\LightingSystem.cpp"/>
@@ -194,6 +195,7 @@
     <ClInclude Include="..\..\src\gui\SynthButton.h"/>
     <ClInclude Include="..\..\src\gui\TextListModel.h"/>
     <ClInclude Include="..\..\src\ArtNetSystem.h"/>
+    <ClInclude Include="..\..\src\ChannelSystem.h"/>
     <ClInclude Include="..\..\src\Common.h"/>
     <ClInclude Include="..\..\src\ControllerSystem.h"/>
     <ClInclude Include="..\..\src\FixtureSystem.h"/>

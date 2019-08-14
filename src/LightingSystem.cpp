@@ -18,3 +18,7 @@
 
 #include "LightingSystem.h"
 
+namespace LightingSystem {
+    ReadWriteLock mutex;
+    
+}

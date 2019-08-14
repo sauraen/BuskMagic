@@ -117,6 +117,10 @@
 			isa = PBXBuildFile;
 			fileRef = 363442D52A030D802F0667D7;
 		};
+		31F7E985A2A10E08753B340E = {
+			isa = PBXBuildFile;
+			fileRef = E632431708C7563C746D207F;
+		};
 		32C2055711FD86AA59F8C771 = {
 			isa = PBXBuildFile;
 			fileRef = 4750051CA410D31D9938AACB;
@@ -579,6 +583,13 @@
 			path = ../../src/gui/FixParamEd/Generic.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		BBB2C537D3D8468FFA1FF083 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ChannelSystem.h;
+			path = ../../src/ChannelSystem.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		BBCCC6BAD44C410F93ED4E96 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -640,6 +651,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = ControllerSystem.h;
 			path = ../../src/ControllerSystem.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		E632431708C7563C746D207F = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ChannelSystem.cpp;
+			path = ../../src/ChannelSystem.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		E8E1D6E0F37620FC9D2EE476 = {
@@ -774,6 +792,8 @@
 				B7D6698B4B68121DBA2C5C7E,
 				363442D52A030D802F0667D7,
 				09D8B0FDE7FDB19885A49874,
+				E632431708C7563C746D207F,
+				BBB2C537D3D8468FFA1FF083,
 				9640A05CA7D688309DF158E4,
 				4750051CA410D31D9938AACB,
 				E4A89D5178CC4394A61ECF58,
@@ -1090,6 +1110,7 @@
 				5CBD7F35C97B5078FD17F046,
 				C7EA9627119D6D6D886D6EB8,
 				1B790381B4E8DD68C64B60C6,
+				31F7E985A2A10E08753B340E,
 				32C2055711FD86AA59F8C771,
 				E23EEB6E9C02ABEBBC879A52,
 				3A51B7ABB91478673FA8E0C5,

@@ -21,17 +21,6 @@
 #include "gui/Controller/ControllerCmps.h"
 #include "gui/Controller/ControllerCanvas.h"
 
-namespace ControllerSystem {
-     
-     namespace {
-         ReadWriteLock mutex;
-     }
-     
-}
-
-#define CTRLRSYS_LOCK_READ() const ScopedReadLock rlock(ControllerSystem::mutex)
-#define CTRLRSYS_LOCK_WRITE() const ScopedWriteLock wlock(ControllerSystem::mutex)
-
 MagicValue::MagicValue(Controller *parent) 
     : controller(parent), mugglevalue(0.0f), chan(nullptr) {}
 MagicValue::MagicValue(const MagicValue &other, Controller *newparent) 
@@ -75,11 +64,11 @@ Controller::Controller(const Controller &other)
 }
 
 String Controller::GetName() const{
-    CTRLRSYS_LOCK_READ();
-    return String(name); //This is because String is not thread-safe
+    LS_LOCK_READ();
+    return name;
 }
 void Controller::SetName(String n){
-    CTRLRSYS_LOCK_WRITE();
+    LS_LOCK_WRITE();
     name = n;
     RefreshComponent();
 }
@@ -89,7 +78,7 @@ void Controller::SetColor(Colour col){
 }
 
 void Controller::SetGroup(int g){
-    CTRLRSYS_LOCK_WRITE();
+    LS_LOCK_WRITE();
     group = g;
     if(group > 0){
         for(int i=0; i<ControllerSystem::NumControllers(); ++i){
@@ -102,7 +91,7 @@ void Controller::SetGroup(int g){
     RefreshComponent();
 }
 void Controller::SetGroupColor(Colour col){
-    CTRLRSYS_LOCK_WRITE();
+    LS_LOCK_WRITE();
     groupColor = col;
     if(group > 0){
         for(int i=0; i<ControllerSystem::NumControllers(); ++i){
@@ -118,7 +107,7 @@ void Controller::SetGroupColor(Colour col){
 }
 
 void Controller::SetEnabled(bool en){
-    CTRLRSYS_LOCK_WRITE();
+    LS_LOCK_READ();
     if(enabled == en) return;
     enabled = en;
     if(enabled){
@@ -130,21 +119,18 @@ void Controller::SetEnabled(bool en){
 }
 
 void Controller::HandleMIDI(int port, MidiMessage msg){
-    CTRLRSYS_LOCK_READ();
+    //LS_LOCK_READ(); //Already locked from ControllerSystem::HandleMIDI
     if(midisettings[en_on]->Matches(port, msg)){
         if(enabled) return;
-        CTRLRSYS_LOCK_WRITE();
         enabled = true;
         midisettings[en_out_on]->SendMsg();
         RefreshComponent();
     }else if(midisettings[en_off]->Matches(port, msg)){
         if(!enabled) return;
-        CTRLRSYS_LOCK_WRITE();
         enabled = false;
         midisettings[en_out_off]->SendMsg();
         RefreshComponent();
     }else if(midisettings[en_toggle]->Matches(port, msg)){
-        CTRLRSYS_LOCK_WRITE();
         if(enabled){
             enabled = false;
             midisettings[en_out_off]->SendMsg();
@@ -157,7 +143,7 @@ void Controller::HandleMIDI(int port, MidiMessage msg){
 }
 
 String Controller::GetMIDISettingStr(MIDISettingType type){
-    CTRLRSYS_LOCK_READ();
+    LS_LOCK_READ();
     if(type > en_out_off || type < 0){
         std::cout << "Invalid usage of Controller::GetMIDISettingStr()!\n";
         return "Error";
@@ -166,7 +152,7 @@ String Controller::GetMIDISettingStr(MIDISettingType type){
 }
 
 bool Controller::SetMIDISettingFromStr(MIDISettingType type, String str){
-    CTRLRSYS_LOCK_WRITE();
+    LS_LOCK_WRITE();
     if(type > en_out_off || type < 0){
         std::cout << "Invalid usage of Controller::SetMIDISettingFromStr()!\n";
         return false;
@@ -175,15 +161,15 @@ bool Controller::SetMIDISettingFromStr(MIDISettingType type, String str){
 }
 
 void Controller::RegisterComponent(ControllerCmp *cmp){
-    CTRLRSYS_LOCK_WRITE();
+    LS_LOCK_WRITE();
     component = cmp;
 }
 void Controller::RefreshComponent(){
-    CTRLRSYS_LOCK_READ();
+    LS_LOCK_READ();
     if(component != nullptr) component->repaint();
 }
 ControllerCanvas *Controller::GetCanvas(){
-    CTRLRSYS_LOCK_READ();
+    LS_LOCK_READ();
     if(component == nullptr) return nullptr;
     ControllerCanvas *canvas = component->findParentComponentOfClass<ControllerCanvas>();
     return canvas;
@@ -195,7 +181,7 @@ SimpleController::SimpleController(const SimpleController &other)
     : Controller(other), value(other.value, this) {}
 
 float SimpleController::Evaluate(float angle) const {
-    CTRLRSYS_LOCK_READ();
+    //LS_LOCK_READ(); //Not locking because channel evaluation will lock
     return value.Evaluate(angle);
 }
 
@@ -213,34 +199,31 @@ ContinuousController::ContinuousController(const ContinuousController &other)
       hivalue(other.hivalue, this), knob(other.knob) {}
 
 void ContinuousController::SetKnob(float k){
-    CTRLRSYS_LOCK_WRITE();
+    LS_LOCK_WRITE();
     knob = k;
     midisettings[ct_out]->SendMsg((int)(knob * 127.0f));
 }
 
 void ContinuousController::HandleMIDI(int port, MidiMessage msg) {
-    CTRLRSYS_LOCK_READ();
+    //LS_LOCK_READ(); //Already locked from ControllerSystem::HandleMIDI
     Controller::HandleMIDI(port, msg);
     if(midisettings[ct_in]->Matches(port, msg)){
-        CTRLRSYS_LOCK_WRITE();
         knob = (float)midisettings[ct_in]->GetValueFrom(msg) / 127.0f;
         jassert(knob >= 0.0f && knob <= 1.0f);
         midisettings[ct_out]->SendMsg((int)(knob * 127.0f));
         RefreshComponent();
     }else if(midisettings[ct_goto_lo]->Matches(port, msg)){
-        CTRLRSYS_LOCK_WRITE();
         knob = 0.0f;
         midisettings[ct_out]->SendMsg(0);
         RefreshComponent();
     }else if(midisettings[ct_goto_hi]->Matches(port, msg)){
-        CTRLRSYS_LOCK_WRITE();
         knob = 1.0f;
         midisettings[ct_out]->SendMsg(127);
         RefreshComponent();
     }
 }
 String ContinuousController::GetMIDISettingStr(MIDISettingType type) {
-    CTRLRSYS_LOCK_READ();
+    LS_LOCK_READ();
     if(type <= en_out_off) return Controller::GetMIDISettingStr(type);
     if(type > ct_out){
         std::cout << "Invalid usage of ContinuousController::GetMIDISettingStr()!\n";
@@ -249,7 +232,7 @@ String ContinuousController::GetMIDISettingStr(MIDISettingType type) {
     return midisettings[type]->GetStr();
 }
 bool ContinuousController::SetMIDISettingFromStr(MIDISettingType type, String str) {
-    CTRLRSYS_LOCK_WRITE();
+    LS_LOCK_WRITE();
     if(type <= en_out_off) return Controller::SetMIDISettingFromStr(type, str);
     if(type > ct_out){
         std::cout << "Invalid usage of ContinuousController::SetMIDISettingFromStr()!\n";
@@ -259,7 +242,7 @@ bool ContinuousController::SetMIDISettingFromStr(MIDISettingType type, String st
 }
 
 float ContinuousController::Evaluate(float angle) const {
-    CTRLRSYS_LOCK_READ();
+    //LS_LOCK_READ(); //Not locking because channel evaluation will lock
     float l = lovalue.Evaluate(angle);
     float h = hivalue.Evaluate(angle);
     return (l * (1.0f - knob)) + (h * knob);
@@ -271,7 +254,7 @@ namespace ControllerSystem {
     
     int NumControllers() { return ctrlrs.size(); }
     Controller *GetController(int i){
-        CTRLRSYS_LOCK_READ();
+        LS_LOCK_READ();
         if(i < 0 || i >= ctrlrs.size()){
             std::cout << "Invalid controller!\n";
             return nullptr;
@@ -279,19 +262,19 @@ namespace ControllerSystem {
         return ctrlrs[i];
     }
     SimpleController *AddSimpleController(){
-        CTRLRSYS_LOCK_WRITE();
+        LS_LOCK_WRITE();
         SimpleController *sc = new SimpleController();
         ctrlrs.add(sc);
         return sc;
     }
     ContinuousController *AddContinuousController(){
-        CTRLRSYS_LOCK_WRITE();
+        LS_LOCK_WRITE();
         ContinuousController *cc = new ContinuousController();
         ctrlrs.add(cc);
         return cc;
     }
     Controller *DuplicateController(Controller *orig){
-        CTRLRSYS_LOCK_WRITE();
+        LS_LOCK_WRITE();
         if(SimpleController *sc = dynamic_cast<SimpleController*>(orig)){
             SimpleController *n = new SimpleController(*sc);
             ctrlrs.add(n);
@@ -306,12 +289,12 @@ namespace ControllerSystem {
         }
     }
     void DeleteController(Controller *ctrlr){
-        CTRLRSYS_LOCK_WRITE();
+        LS_LOCK_WRITE();
         ctrlrs.removeObject(ctrlr, true);
     }
     
     void HandleMIDI(int port, MidiMessage msg){
-        CTRLRSYS_LOCK_READ();
+        LS_LOCK_READ();
         for(int i=0; i<ctrlrs.size(); ++i){
             ctrlrs[i]->HandleMIDI(port, msg);
         }
