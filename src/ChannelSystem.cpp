@@ -49,7 +49,7 @@ String Channel::OpGetDescription(ChannelOp o){
 }
 
 Channel::Channel() : name("New channel"), letters("N"), defaultvalue(0.0f), 
-    op(OpAdd) {
+    op(OpAdd), beingevaluated(false) {
     
 }
 Channel::~Channel(){
@@ -134,6 +134,11 @@ void Channel::SortPhasors(){
 
 float Channel::Evaluate(float angle) const {
     LS_LOCK_READ();
+    if(beingevaluated){
+        LightingSystem::SignalRecursion();
+        return 0.0f;
+    }
+    beingevaluated = true;
     float val; bool flag;
     switch(op){
     case OpPrioTop:

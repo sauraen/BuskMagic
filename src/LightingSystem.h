@@ -25,5 +25,5 @@ namespace LightingSystem {
     #define LS_LOCK_READ() const ScopedReadLock lslock(LightingSystem::mutex)
     #define LS_LOCK_WRITE() const ScopedWriteLock lslock(LightingSystem::mutex)
     
-    
+    void SignalRecursion();
 }

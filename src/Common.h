@@ -165,20 +165,20 @@ inline Colour ShowColorChooserWindow(Colour initcolor, Component *optionalparent
     return colsel->getCurrentColour();
 }
 
-inline var VT_GetChildProperty(ValueTree v, String cname, String pname, const var &defval = ""){
-    return v.getOrCreateChildWithName(Identifier(cname), nullptr).getProperty(Identifier(pname), defval);
+inline var VT_GetChildProperty(ValueTree v, Identifier cname, Identifier pname, const var &defval = ""){
+    return v.getOrCreateChildWithName(cname, nullptr).getProperty(pname, defval);
 }
-inline void VT_SetChildProperty(ValueTree v, String cname, String pname, const var &value){
-    v.getOrCreateChildWithName(Identifier(cname), nullptr).setProperty(Identifier(pname), value, nullptr);
+inline void VT_SetChildProperty(ValueTree v, Identifier cname, Identifier pname, const var &value){
+    v.getOrCreateChildWithName(cname, nullptr).setProperty(pname, value, nullptr);
 }
-inline void VT_RemoveChildWithName(ValueTree v, String name){
-    ValueTree c = v.getChildWithName(Identifier(name));
+inline void VT_RemoveChildWithName(ValueTree v, Identifier name){
+    ValueTree c = v.getChildWithName(name);
     if(c.isValid()){
         v.removeChild(c, nullptr);
     }
 }
 
-inline ValueTree VT_Load(File f, String topleveltype){
+inline ValueTree VT_Load(File f, Identifier topleveltype){
     if(!f.existsAsFile()){
         std::cout << "File " << f.getFullPathName() << " does not exist\n";
         return ValueTree();
@@ -193,7 +193,7 @@ inline ValueTree VT_Load(File f, String topleveltype){
         std::cout << "File " << f.getFullPathName() << " is not a valid Juce ValueTree\n";
         return ValueTree();
     }
-    if(!v.hasType(Identifier(topleveltype))){
+    if(!v.hasType(topleveltype)){
         std::cout << "File " << f.getFullPathName() << " is not the correct type of ValueTree (" << topleveltype << ")\n";
         return ValueTree();
     }

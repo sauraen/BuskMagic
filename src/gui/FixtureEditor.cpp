@@ -281,10 +281,10 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
 
     cbxAddParam->setSelectedItemIndex(0, dontSendNotification);
 
-    txtManufacturer->setText(fixture.getProperty(Identifier("manufacturer"), "[not specified]"));
-    txtFixtureName->setText(fixture.getProperty(Identifier("name"), "[no name]"));
-    txtProfileName->setText(fixture.getProperty(Identifier("profile"), "[not specified]"));
-    txtDMX->setText(fixture.getProperty(Identifier("footprint"), 0));
+    txtManufacturer->setText(fixture.getProperty(idManufacturer, "[not specified]"));
+    txtFixtureName->setText(fixture.getProperty(idName, "[no name]"));
+    txtProfileName->setText(fixture.getProperty(idProfile, "[not specified]"));
+    txtDMX->setText(fixture.getProperty(idFootprint, 0));
     txtPName->setText("");
     txtPLetters->setText("");
     fillParamsBox();
@@ -368,21 +368,21 @@ void FixtureEditor::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == btnAddParam.get())
     {
         //[UserButtonCode_btnAddParam] -- add your button handler code here..
-        if((bool)fixture.getProperty(Identifier("inuse"), false)){
+        if((bool)fixture.getProperty(idInUse, false)){
             NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic",
                 "Cannot add parameters to fixtures which are in use.");
             return;
         }
-        param = ValueTree(Identifier("param"));
+        param = ValueTree(idParam);
         String t = cbxAddParam->getText();
         int typecount = 1;
         for(int i=0; i<fixture.getNumChildren(); ++i){
-            if(fixture.getChild(i).getProperty(Identifier("type"), "error").toString() == t) ++typecount;
+            if(fixture.getChild(i).getProperty(idType, "error").toString() == t) ++typecount;
         }
         String typecountstr = (typecount >= 2 ? String(typecount) : "");
-        param.setProperty(Identifier("type"), t, nullptr);
-        param.setProperty(Identifier("name"), t + typecountstr, nullptr);
-        param.setProperty(Identifier("letters"), t.substring(0, 1) + typecountstr, nullptr);
+        param.setProperty(idType, t, nullptr);
+        param.setProperty(idName, t + typecountstr, nullptr);
+        param.setProperty(idLetters, t.substring(0, 1) + typecountstr, nullptr);
         fixture.addChild(param, -1, nullptr);
         lsmParams->add(getParamDesc(param));
         lstParams->updateContent();
@@ -393,7 +393,7 @@ void FixtureEditor::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_btnRemoveParam] -- add your button handler code here..
         if(!param.isValid()) return;
-        if((bool)fixture.getProperty(Identifier("inuse"), false)){
+        if((bool)fixture.getProperty(idInUse, false)){
             NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic",
                 "Cannot remove parameters from fixtures which are in use.");
             return;
@@ -409,7 +409,7 @@ void FixtureEditor::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_btnParamUp] -- add your button handler code here..
         if(!param.isValid()) return;
-        if((bool)fixture.getProperty(Identifier("inuse"), false)){
+        if((bool)fixture.getProperty(idInUse, false)){
             NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic",
                 "Cannot reorder parameters in fixtures which are in use.");
             return;
@@ -427,7 +427,7 @@ void FixtureEditor::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_btnParamDown] -- add your button handler code here..
         if(!param.isValid()) return;
-        if((bool)fixture.getProperty(Identifier("inuse"), false)){
+        if((bool)fixture.getProperty(idInUse, false)){
             NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "BuskMagic",
                 "Cannot reorder parameters from fixtures which are in use.");
             return;
@@ -461,28 +461,28 @@ void FixtureEditor::textEditorTextChanged(TextEditor &editorThatWasChanged)
 {
     TEXTCHANGEDHANDLER_PRE;
     if(&editorThatWasChanged == txtManufacturer.get()){
-        fixture.setProperty(Identifier("manufacturer"), text, nullptr);
+        fixture.setProperty(idManufacturer, text, nullptr);
     }else if(&editorThatWasChanged == txtFixtureName.get()){
-        fixture.setProperty(Identifier("name"), text, nullptr);
+        fixture.setProperty(idName, text, nullptr);
     }else if(&editorThatWasChanged == txtProfileName.get()){
-        fixture.setProperty(Identifier("profile"), text, nullptr);
+        fixture.setProperty(idProfile, text, nullptr);
     }else if(&editorThatWasChanged == txtDMX.get()){
         if(!isint || val < 0){
             turnRed = true;
         }else{
-            fixture.setProperty(Identifier("footprint"), val, nullptr);
+            fixture.setProperty(idFootprint, val, nullptr);
         }
     }else if(&editorThatWasChanged == txtPName.get()){
         if(!param.isValid()) return;
         if(text.length() == 0) turnRed = true;
-        param.setProperty(Identifier("name"), text, nullptr);
+        param.setProperty(idName, text, nullptr);
         int i = fixture.indexOf(param);
         lsmParams->set(i, getParamDesc(param));
         lstParams->repaintRow(i);
     }else if(&editorThatWasChanged == txtPLetters.get()){
         if(!param.isValid()) return;
         if(text.length() == 0 || text.length() > 2) turnRed = true;
-        param.setProperty(Identifier("letters"), text, nullptr);
+        param.setProperty(idLetters, text, nullptr);
         int i = fixture.indexOf(param);
         lsmParams->set(i, getParamDesc(param));
         lstParams->repaintRow(i);
@@ -502,11 +502,11 @@ void FixtureEditor::fillParamsBox()
 
 void FixtureEditor::refreshParamControls()
 {
-    txtPName->setText(param.isValid() ? param.getProperty(Identifier("name"), "") : "");
+    txtPName->setText(param.isValid() ? param.getProperty(idName, "") : "");
     txtPName->setEnabled(param.isValid());
-    txtPLetters->setText(param.isValid() ? param.getProperty(Identifier("letters"), "") : "");
+    txtPLetters->setText(param.isValid() ? param.getProperty(idLetters, "") : "");
     txtPLetters->setEnabled(param.isValid());
-    String type = param.isValid() ? param.getProperty(Identifier("type"), "") : "";
+    String type = param.isValid() ? param.getProperty(idType, "") : "";
     if(type == "Generic"){
         parameditor.reset(new FixParamEd::Generic(param));
     }else if(type == "Color"){
@@ -522,9 +522,9 @@ void FixtureEditor::refreshParamControls()
 
 String FixtureEditor::getParamDesc(ValueTree prm)
 {
-    String ret = prm.getProperty(Identifier("letters"), "XX");
-    ret += ": " + prm.getProperty(Identifier("name"), "(Error)").toString();
-    ret += " (" + prm.getProperty(Identifier("type"), "<Error>").toString() + ")";
+    String ret = prm.getProperty(idLetters, "XX");
+    ret += ": " + prm.getProperty(idName, "(Error)").toString();
+    ret += " (" + prm.getProperty(idType, "<Error>").toString() + ")";
     return ret;
 }
 

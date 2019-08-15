@@ -118,7 +118,7 @@ Color::Color (ValueTree prm)
 
     //[Constructor] You can add your own custom stuff here..
 
-    cbxMode->setText(param.getProperty(Identifier("colormode"), "RGB").toString());
+    cbxMode->setText(param.getProperty(idColorMode, "RGB").toString());
     fillModeControls();
 
     //[/Constructor]
@@ -177,7 +177,25 @@ void Color::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == cbxMode.get())
     {
         //[UserComboBoxCode_cbxMode] -- add your combo box handling code here..
-        param.setProperty(Identifier("colormode"), cbxMode->getText(), nullptr);
+        String colormode = cbxMode->getText();
+        param.setProperty(idColorMode, colormode, nullptr);
+        if(colormode == "CMY"){
+            VT_RemoveChildWithName(param, idRed);
+            VT_RemoveChildWithName(param, idGreen);
+            VT_RemoveChildWithName(param, idBlue);
+            VT_RemoveChildWithName(param, idAmber);
+            VT_RemoveChildWithName(param, idWhite);
+        }else{
+            VT_RemoveChildWithName(param, idCyan);
+            VT_RemoveChildWithName(param, idMagenta);
+            VT_RemoveChildWithName(param, idYellow);
+            if(colormode == "RGB" || colormode == "RGBW"){
+                VT_RemoveChildWithName(param, idAmber);
+            }
+            if(colormode == "RGB" || colormode == "RGBA"){
+                VT_RemoveChildWithName(param, idWhite);
+            }
+        }
         fillModeControls();
         //[/UserComboBoxCode_cbxMode]
     }
@@ -196,7 +214,7 @@ void Color::textEditorTextChanged(TextEditor &editorThatWasChanged)
     DMXTEXTCHANGEDHANDLER;
     if(&editorThatWasChanged == txtDMXW.get()){
         if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
-            param.getOrCreateChildWithName(Identifier("white"), nullptr),
+            param.getOrCreateChildWithName(idWhite, nullptr),
             dmx_normal, dmx_fine, dmx_ultra);
     }
     TEXTCHANGEDHANDLER_POST;
@@ -204,16 +222,12 @@ void Color::textEditorTextChanged(TextEditor &editorThatWasChanged)
 
 void Color::fillModeControls()
 {
-    String mode = param.getProperty(Identifier("colormode"), "RGB").toString();
+    String mode = param.getProperty(idColorMode, "RGB").toString();
     bool white = (mode == "RGBW" || mode == "RGBAW");
     lblW->setVisible(white);
     txtDMXW->setVisible(white);
     if(white){
-        txtDMXW->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName("white", nullptr)));
-    }else{
-        if(param.getChildWithName(Identifier("white")).isValid()){
-            param.removeChild(param.getChildWithName(Identifier("white")), nullptr);
-        }
+        txtDMXW->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idWhite, nullptr)));
     }
     if(mode == "RGB" || mode == "RGBW"){
         coloreditor.reset(new FixParamEd::ColorMode::RGB(param));

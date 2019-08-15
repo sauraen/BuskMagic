@@ -321,18 +321,18 @@ RGBA::RGBA (ValueTree prm)
 
     //[Constructor] You can add your own custom stuff here..
 
-    txtDMXR->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("red"), nullptr)));
-    txtDMXA->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("amber"), nullptr)));
-    txtDMXG->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("green"), nullptr)));
-    txtDMXB->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("blue"), nullptr)));
-    txtHueR->setText(String((float)VT_GetChildProperty(param, "red", "hue", 0.0f), 3));
-    txtHueRA->setText(String((float)VT_GetChildProperty(param, "red", "huemix", 0.1f), 3));
-    txtHueA->setText(String((float)VT_GetChildProperty(param, "amber", "hue", 0.2f), 3));
-    txtHueAG->setText(String((float)VT_GetChildProperty(param, "amber", "huemix", 0.32f), 3));
-    txtHueG->setText(String((float)VT_GetChildProperty(param, "green", "hue", 0.50f), 3));
-    txtHueGB->setText(String((float)VT_GetChildProperty(param, "green", "huemix", 0.625f), 3));
-    txtHueB->setText(String((float)VT_GetChildProperty(param, "blue", "hue", 0.75f), 3));
-    txtHueBR->setText(String((float)VT_GetChildProperty(param, "blue", "huemix", 0.875f), 3));
+    txtDMXR->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idRed, nullptr)));
+    txtDMXA->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idAmber, nullptr)));
+    txtDMXG->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idGreen, nullptr)));
+    txtDMXB->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idBlue, nullptr)));
+    txtHueR->setText(String((float)VT_GetChildProperty(param, idRed, "hue", 0.0f), 3));
+    txtHueRA->setText(String((float)VT_GetChildProperty(param, idRed, "huemix", 0.1f), 3));
+    txtHueA->setText(String((float)VT_GetChildProperty(param, idAmber, "hue", 0.2f), 3));
+    txtHueAG->setText(String((float)VT_GetChildProperty(param, idAmber, "huemix", 0.32f), 3));
+    txtHueG->setText(String((float)VT_GetChildProperty(param, idGreen, "hue", 0.50f), 3));
+    txtHueGB->setText(String((float)VT_GetChildProperty(param, idGreen, "huemix", 0.625f), 3));
+    txtHueB->setText(String((float)VT_GetChildProperty(param, idBlue, "hue", 0.75f), 3));
+    txtHueBR->setText(String((float)VT_GetChildProperty(param, idBlue, "huemix", 0.875f), 3));
 
     //[/Constructor]
 }
@@ -400,44 +400,44 @@ void RGBA::textEditorTextChanged(TextEditor &editorThatWasChanged)
     DMXTEXTCHANGEDHANDLER;
     if(&editorThatWasChanged == txtDMXR.get()){
         if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
-            param.getOrCreateChildWithName(Identifier("red"), nullptr),
+            param.getOrCreateChildWithName(idRed, nullptr),
             dmx_normal, dmx_fine, dmx_ultra);
     }else if(&editorThatWasChanged == txtDMXA.get()){
         if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
-            param.getOrCreateChildWithName(Identifier("amber"), nullptr),
+            param.getOrCreateChildWithName(idAmber, nullptr),
             dmx_normal, dmx_fine, dmx_ultra);
     }else if(&editorThatWasChanged == txtDMXG.get()){
         if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
-            param.getOrCreateChildWithName(Identifier("green"), nullptr),
+            param.getOrCreateChildWithName(idGreen, nullptr),
             dmx_normal, dmx_fine, dmx_ultra);
     }else if(&editorThatWasChanged == txtDMXB.get()){
         if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
-            param.getOrCreateChildWithName(Identifier("blue"), nullptr),
+            param.getOrCreateChildWithName(idBlue, nullptr),
             dmx_normal, dmx_fine, dmx_ultra);
     }else if(&editorThatWasChanged == txtHueR.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "red", "hue", decval);
+        else VT_SetChildProperty(param, idRed, "hue", decval);
     }else if(&editorThatWasChanged == txtHueRA.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "red", "huemix", decval);
+        else VT_SetChildProperty(param, idRed, "huemix", decval);
     }else if(&editorThatWasChanged == txtHueA.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "amber", "hue", decval);
+        else VT_SetChildProperty(param, idAmber, "hue", decval);
     }else if(&editorThatWasChanged == txtHueAG.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "amber", "huemix", decval);
+        else VT_SetChildProperty(param, idAmber, "huemix", decval);
     }else if(&editorThatWasChanged == txtHueG.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "green", "hue", decval);
+        else VT_SetChildProperty(param, idGreen, "hue", decval);
     }else if(&editorThatWasChanged == txtHueGB.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "green", "huemix", decval);
+        else VT_SetChildProperty(param, idGreen, "huemix", decval);
     }else if(&editorThatWasChanged == txtHueB.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "blue", "hue", decval);
+        else VT_SetChildProperty(param, idBlue, "hue", decval);
     }else if(&editorThatWasChanged == txtHueBR.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "blue", "huemix", decval);
+        else VT_SetChildProperty(param, idBlue, "huemix", decval);
     }
     TEXTCHANGEDHANDLER_POST;
 }

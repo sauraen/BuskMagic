@@ -587,10 +587,10 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_btnNewDef] -- add your button handler code here..
         ValueTree v("fixturedef");
-        v.setProperty(Identifier("manufacturer"), "(Manufacturer)", nullptr);
-        v.setProperty(Identifier("name"), "(New fixture)", nullptr);
-        v.setProperty(Identifier("profile"), "1-channel mode", nullptr);
-        v.setProperty(Identifier("footprint"), 1, nullptr);
+        v.setProperty(idManufacturer, "(Manufacturer)", nullptr);
+        v.setProperty(idName, "(New fixture)", nullptr);
+        v.setProperty(idProfile, "1-channel mode", nullptr);
+        v.setProperty(idFootprint, 1, nullptr);
         FixtureSystem::GetFixtureDefs().addChild(v, -1, nullptr);
         fillDefsBox();
         //[/UserButtonCode_btnNewDef]
@@ -664,7 +664,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
         //
         if(error) return;
         //
-        int footprint = def.getProperty(Identifier("footprint"), 1);
+        int footprint = def.getProperty(idFootprint, 1);
         if(qty * footprint + chn > 513){
             WarningBox("Cannot fit " + String(qty) + "x fixtures with footprint " + String(footprint)
                 + " at channel " + String(chn) + ".");
@@ -730,7 +730,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
         for(int i=0; i<lstFixtures->getNumSelectedRows(); ++i){
             int r = lstFixtures->getSelectedRow(i);
             Fixture *fix = FixtureSystem::Fix(r);
-            int footprint = (int)fix->GetDef().getProperty(Identifier("footprint"), 1);
+            int footprint = (int)fix->GetDef().getProperty(idFootprint, 1);
             if(chn + footprint > 513){
                 WarningBox("Could not fit one or more fixtures in universe, aborted.");
                 return;
@@ -864,10 +864,10 @@ void Patcher::refreshFixtureEditControls()
     }
     Fixture *fix = FixtureSystem::Fix(r);
     ValueTree def = fix->GetDef();
-    lblFixInfo->setText("Manufacturer: " + def.getProperty(Identifier("manufacturer"), "(Manu)").toString() + "\n"
-        + "Name: " + def.getProperty(Identifier("name"), "(Name)").toString() + "\n"
-        + "Profile: " + def.getProperty(Identifier("profile"), "(Profile)").toString() + " ("
-        + def.getProperty(Identifier("footprint"), "XX").toString() + ")", dontSendNotification);
+    lblFixInfo->setText("Manufacturer: " + def.getProperty(idManufacturer, "(Manu)").toString() + "\n"
+        + "Name: " + def.getProperty(idName, "(Name)").toString() + "\n"
+        + "Profile: " + def.getProperty(idProfile, "(Profile)").toString() + " ("
+        + def.getProperty(idFootprint, "XX").toString() + ")", dontSendNotification);
     txtName->setText(fix->GetName());
     txtUni->setText(hex(fix->GetUniverse()));
     txtChn->setText(String(fix->GetChannel()));

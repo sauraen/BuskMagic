@@ -260,15 +260,15 @@ CMY::CMY (ValueTree prm)
 
     //[Constructor] You can add your own custom stuff here..
 
-    txtDMXC->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("cyan"), nullptr)));
-    txtDMXM->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("magenta"), nullptr)));
-    txtDMXY->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(Identifier("yellow"), nullptr)));
-    txtHueC->setText(String((float)VT_GetChildProperty(param, "cyan", "hue", 0.625f), 3));
-    txtHueCM->setText(String((float)VT_GetChildProperty(param, "cyan", "huemix", 0.75f), 3));
-    txtHueM->setText(String((float)VT_GetChildProperty(param, "magenta", "hue", 0.875f), 3));
-    txtHueMY->setText(String((float)VT_GetChildProperty(param, "magenta", "huemix", 0.0f), 3));
-    txtHueY->setText(String((float)VT_GetChildProperty(param, "yellow", "hue", 0.25f), 3));
-    txtHueYC->setText(String((float)VT_GetChildProperty(param, "yellow", "huemix", 0.5f), 3));
+    txtDMXC->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idCyan, nullptr)));
+    txtDMXM->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idMagenta, nullptr)));
+    txtDMXY->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idYellow, nullptr)));
+    txtHueC->setText(String((float)VT_GetChildProperty(param, idCyan, "hue", 0.625f), 3));
+    txtHueCM->setText(String((float)VT_GetChildProperty(param, idCyan, "huemix", 0.75f), 3));
+    txtHueM->setText(String((float)VT_GetChildProperty(param, idMagenta, "hue", 0.875f), 3));
+    txtHueMY->setText(String((float)VT_GetChildProperty(param, idMagenta, "huemix", 0.0f), 3));
+    txtHueY->setText(String((float)VT_GetChildProperty(param, idYellow, "hue", 0.25f), 3));
+    txtHueYC->setText(String((float)VT_GetChildProperty(param, idYellow, "huemix", 0.5f), 3));
 
     //[/Constructor]
 }
@@ -331,34 +331,34 @@ void CMY::textEditorTextChanged(TextEditor &editorThatWasChanged)
     DMXTEXTCHANGEDHANDLER;
     if(&editorThatWasChanged == txtDMXC.get()){
         if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
-            param.getOrCreateChildWithName(Identifier("cyan"), nullptr),
+            param.getOrCreateChildWithName(idCyan, nullptr),
             dmx_normal, dmx_fine, dmx_ultra);
     }else if(&editorThatWasChanged == txtDMXM.get()){
         if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
-            param.getOrCreateChildWithName(Identifier("magenta"), nullptr),
+            param.getOrCreateChildWithName(idMagenta, nullptr),
             dmx_normal, dmx_fine, dmx_ultra);
     }else if(&editorThatWasChanged == txtDMXY.get()){
         if(!dmx_ok) turnRed = true; else FixtureSystem::SetDMXChannels(
-            param.getOrCreateChildWithName(Identifier("yellow"), nullptr),
+            param.getOrCreateChildWithName(idYellow, nullptr),
             dmx_normal, dmx_fine, dmx_ultra);
     }else if(&editorThatWasChanged == txtHueC.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "cyan", "hue", decval);
+        else VT_SetChildProperty(param, idCyan, "hue", decval);
     }else if(&editorThatWasChanged == txtHueCM.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "cyan", "huemix", decval);
+        else VT_SetChildProperty(param, idCyan, "huemix", decval);
     }else if(&editorThatWasChanged == txtHueM.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "magenta", "hue", decval);
+        else VT_SetChildProperty(param, idMagenta, "hue", decval);
     }else if(&editorThatWasChanged == txtHueMY.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "magenta", "huemix", decval);
+        else VT_SetChildProperty(param, idMagenta, "huemix", decval);
     }else if(&editorThatWasChanged == txtHueY.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "yellow", "hue", decval);
+        else VT_SetChildProperty(param, idYellow, "hue", decval);
     }else if(&editorThatWasChanged == txtHueYC.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, "yellow", "huemix", decval);
+        else VT_SetChildProperty(param, idYellow, "huemix", decval);
     }
     TEXTCHANGEDHANDLER_POST;
 }

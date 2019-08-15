@@ -20,12 +20,41 @@
 #include "JuceHeader.h"
 #include "Common.h"
 
+extern Identifier idFixDefs;
+extern Identifier idFixture;
+extern Identifier idInUse;
+extern Identifier idType;
+extern Identifier idName;
+extern Identifier idLetters;
+extern Identifier idManufacturer;
+extern Identifier idProfile;
+extern Identifier idFootprint;
+
+extern Identifier idParam;
+extern Identifier idChannel;
+extern Identifier idNormal;
+extern Identifier idFine;
+extern Identifier idUltra;
+extern Identifier idHue;
+extern Identifier idHueMix;
+extern Identifier idColorMode;
+
+extern Identifier idRed;
+extern Identifier idGreen;
+extern Identifier idBlue;
+extern Identifier idAmber;
+extern Identifier idWhite;
+extern Identifier idUV;
+extern Identifier idCyan;
+extern Identifier idMagenta;
+extern Identifier idYellow;
+
 class Channel;
 
 #define DMXTEXTCHANGEDHANDLER \
     int dmx_normal, dmx_fine, dmx_ultra; \
     bool dmx_ok = FixtureSystem::ParseDMXText(text, \
-            (int)param.getParent().getProperty(Identifier("footprint"), 1), \
+            (int)param.getParent().getProperty(idFootprint, 1), \
             dmx_normal, dmx_fine, dmx_ultra); \
     REQUIRESEMICOLON
 
@@ -50,6 +79,8 @@ public:
     
     inline int GetNumChannels() const { return channels.size(); }
     Channel *GetChannel(int i) const;
+    
+    void Evaluate(uint8_t *uniarray);
 private:
     ValueTree def;
     String name;

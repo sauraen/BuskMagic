@@ -70,6 +70,7 @@ private:
     String name, letters;
     float defaultvalue;
     ChannelOp op;
+    bool beingevaluated;
     
     OwnedArray<Phasor> phasors;
 };
