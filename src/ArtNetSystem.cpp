@@ -18,11 +18,20 @@
 
 #include "ArtNetSystem.h"
 
+#include "LightingSystem.h"
+
 #include <cstring>
 
 namespace ArtNetSystem {
+    
+    ReadWriteLock mutex;
+    //These are intentionally named the same so you cannot start with a read
+    //lock and escalate to a write lock
+    #define AS_LOCK_READ() const ScopedReadLock aslock(ArtNetSystem::mutex)
+    #define AS_LOCK_WRITE() const ScopedWriteLock aslock(ArtNetSystem::mutex)
 
     String ArtNetDevice::GetTableRow(){
+        AS_LOCK_READ();
         String ret;
              if(mode == Mode::manual)       ret += "M";
         else if(mode == Mode::discovered)   ret += "D";
@@ -60,6 +69,7 @@ namespace ArtNetSystem {
     }
     
     String ArtNetDevice::GetDescription(){
+        AS_LOCK_READ();
         String ret;
              if(mode == Mode::manual)       ret += "Manual";
         else if(mode == Mode::discovered)   ret += "Discovered";
@@ -89,13 +99,39 @@ namespace ArtNetSystem {
     
     static OwnedArray<ArtNetDevice> devices;
     int NumDevices() { return devices.size(); }
-    ArtNetDevice *GetDevice(int d) { return devices[d]; }
+    ArtNetDevice *GetDevice(int d) {
+        AS_LOCK_READ();
+        if(d < 0 || d >= devices.size()){
+            jassertfalse;
+            return nullptr;
+        }
+        return devices[d];
+    }
     
     void AddBlankDevice(){
+        AS_LOCK_WRITE();
         devices.add(new ArtNetDevice());
     }
     void RemoveDevice(int d){
+        AS_LOCK_WRITE();
         devices.remove(d);
+    }
+    
+    Array<uint16_t> GetSortedListNeededUniverses(){
+        AS_LOCK_READ();
+        Array<uint16_t> ret;
+        for(int d=0; d<devices.size(); ++d){
+            uint16_t netsubnet, universe;
+            if(dev->map){
+                netsubnet = ((uint16_t)dev->map_net << 8) | (dev->map_subnet << 4);
+            }else{
+                netsubnet = ((uint16_t)dev->net << 8) | (dev->subnet << 4);
+            }
+            for(int i=0; i<4; ++i){
+                universe = netsubnet | (dev->map ? map_outuni[i] : outuni[i]);
+                //TODO 7F for not present
+            }
+        }
     }
     
     uint32_t ParseUniverseText(String unitxt){
@@ -178,6 +214,7 @@ namespace ArtNetSystem {
     
     void ChangeDeviceUniverses(int d, uint8_t net, uint8_t subnet, 
         const uint8_t *inuni, const uint8_t *outuni){
+        AS_LOCK_READ();
         ArtNetDevice *dev = devices[d];
         if(dev == nullptr) return;
         uint8_t *data = new uint8_t[95];
@@ -192,30 +229,46 @@ namespace ArtNetSystem {
         data[93] = 0; //SwVideo, reserved
         data[94] = 0; //Command
         SendArtNet(dev->ip, 0x6000, data, 95);
+        delete[] data;
     }
     
     void SendDMX512(uint16_t universe, const uint8_t *buf512){
+        AS_LOCK_READ();
         uint8_t *data = new uint8_t[518];
         for(int d=0; d<devices.size(); ++d){
             ArtNetDevice *dev = devices[d];
-            uint8_t uni = universe & 0xF;
             bool flag = false;
+            uint16_t send_universe;
             if(dev->map){
                 if(dev->map_net != universe >> 8) continue;
                 if(dev->map_subnet != ((universe >> 4) & 0xF)) continue;
-                for(int i=0; i<4; ++i) if(dev->map_outuni[i] == uni) flag = true;
+                for(int i=0; i<4; ++i){
+                    if(dev->map_outuni[i] == (universe & 0xF)){
+                        flag = true;
+                        send_universe = ((uint16_t)dev->net << 8) 
+                                        | (dev->subnet << 4)
+                                        | (dev->outuni[i]);
+                        break;
+                    }
+                }
             }else{
                 if(dev->net != universe >> 8) continue;
                 if(dev->subnet != ((universe >> 4) & 0xF)) continue;
-                for(int i=0; i<4; ++i) if(dev->outuni[i] == uni) flag = true;
+                for(int i=0; i<4; ++i){
+                    if(dev->outuni[i] == (universe & 0xF)){
+                        flag = true;
+                        send_universe = universe;
+                        break;
+                    }
+                }
             }
             if(!flag) continue;
             data[0] = dev->artdmx_sequence;
             ++dev->artdmx_sequence;
             if(dev->artdmx_sequence == 0) dev->artdmx_sequence = 1;
             data[1] = 0; //Physical
-            data[2] = universe & 0xFF;
-            data[3] = (universe >> 8) & 0x7F;
+            data[2] = send_universe & 0xFF;
+            data[3] = (send_universe >> 8) & 0x7F;
             data[4] = 0x02; //LengthHi, 512
             data[5] = 0x00; //Length, 512
             memcpy(&data[6], buf512, 512);
@@ -252,6 +305,7 @@ namespace ArtNetSystem {
             uint16_t data = 0;
             IPAddress bcast = pollmode == 2 ? dhcpBroadcast : staticBroadcast;
             SendArtNet(bcast, 0x2000, (uint8_t*)&data, 2);
+            AS_LOCK_READ();
             for(int d=0; d<devices.size(); ++d){
                 const IPAddress &ip = devices[d]->ip;
                 if(!ip.isNull() && !isIPInSubnet(ip, bcast)){
@@ -327,6 +381,7 @@ namespace ArtNetSystem {
             std::cout << "ReceivedArtPollReply: packet too short!\n";
             return;
         }
+        AS_LOCK_READ();
         ArtNetDevice *dev = nullptr;
         for(int i=0; i<devices.size(); ++i){
             if(devices[i]->ip == senderIP){
@@ -420,6 +475,7 @@ namespace ArtNetSystem {
     static ArtNetReceiver *receiver = nullptr;
     
     void Init(){
+        AS_LOCK_READ();
         if(sendsock != nullptr){
             std::cout << "ArtNetSystem already initted!\n";
             return;
@@ -437,6 +493,7 @@ namespace ArtNetSystem {
         SendArtPollReply(IPAddress());
     }
     void Finalize(){
+        AS_LOCK_WRITE();
         delete poller; poller = nullptr;
         receiver->stopThread(10);
         delete receiver; receiver = nullptr;

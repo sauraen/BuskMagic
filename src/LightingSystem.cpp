@@ -21,4 +21,32 @@
 namespace LightingSystem {
     ReadWriteLock mutex;
     
+    void SignalRecursion(){
+        std::cout << "Recursion detected!\n"; //TODO
+    }
+    
+    class LightingThread : public HighResolutionTimer {
+    public:
+        LightingThread() { startTimer(33); }
+        virtual ~LightingThread() {}
+        virtual void hiResTimerCallback() override {
+            LS_LOCK_READ();
+            
+        }
+    }
+    static LightingThread *lth = nullptr;
+    
+    void Init(){
+        if(lth != nullptr){
+            std::cout << "LightingSystem multiply initted!\n";
+            return;
+        }
+        lth = new LightingThread();
+    }
+    
+    void Finalize(){
+        lth->stopTimer();
+        delete lth;
+        lth = nullptr;
+    }
 }

@@ -96,6 +96,7 @@ MainWindow::MainWindow()
     //Application startup
     ArtNetSystem::Init();
     MIDISystem::Init();
+    LightingSystem::Init();
     //GUI startup
     artnetWindow.reset(new SubWindow("BuskMagic - Art-Net Setup", false, new ArtNetSetup()));
     midiWindow.reset(new SubWindow("BuskMagic - MIDI Setup", false, new MIDISetup()));
@@ -111,8 +112,9 @@ MainWindow::~MainWindow() {
     patcherWindow = nullptr;
     controllersWindow = nullptr;
     //Application finalize
-    ArtNetSystem::Finalize();
+    LightingSystem::Finalize();
     MIDISystem::Finalize();
+    ArtNetSystem::Finalize();
 }
 
 void MainWindow::closeButtonPressed() {

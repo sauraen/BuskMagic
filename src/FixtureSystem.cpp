@@ -142,6 +142,13 @@ inline void GetHueAndHueMix(ValueTree param, Identifier basecolor, float &hue, f
     huemix = (float)subnode.getProperty(idHueMix, 0.0f);
 }
 
+///Add a multiple of 1.0f to hue until it is between lovalue and 1.0f+lovalue.
+inline float WrapHueToRange(float hue, float lovalue){
+    float ret = h + std::ceil(lovalue) - lovalue;
+    ret -= std::floor(ret);
+    return ret + lovalue;
+}
+
 inline void WhiteFade(float lightness, float &colorchan){
     if(lightness < 0.5f){
         return;
@@ -154,6 +161,7 @@ inline void WhiteFade(float lightness, float &colorchan){
     }
 }
 
+
 void Fixture::Evaluate(uint8_t *uniarray){
     int footprint = def.getProperty(idFootprint, 1);
     int c = 0;
@@ -165,11 +173,11 @@ void Fixture::Evaluate(uint8_t *uniarray){
             WriteAllValueDMXChannels(gvalue, param, chn, footprint, uniarray);
         }else if(ptype == "Color"){
             float hue = channels[c++]->Evaluate(0.0f);
-            hue = hue - std::floor(hue); //Wrap/normalize
             float lightness = channels[c++]->Evaluate(0.0f);
             if(lightness < 0.0f) lightness = 0.0f;
             if(lightness > 1.5f) lightness = 1.5f;
             String colormode = param.getProperty(idColorMode, "RGB");
+            const float eps = 0.000001f;
             if(colormode != "CMY"){
                 bool hasamber = colormode == "RGBA" || colormode == "RGBAW";
                 bool haswhite = colormode == "RGBW" || colormode == "RGBAW";
@@ -177,9 +185,23 @@ void Fixture::Evaluate(uint8_t *uniarray){
                 float rh, rhm, ah, ahm, gh, ghm, bh, bhm;
                 GetHueAndHueMix(param, idRed, rh, rhm);
                 if(hasamber) GetHueAndHueMix(param, idAmber, ah, ahm);
-                GetHueAndHueMix(param, idGreen, rh, rhm);
-                GetHueAndHueMix(param, idBlue, rh, rhm);
-                const float eps = 0.000001f;
+                GetHueAndHueMix(param, idGreen, gh, ghm);
+                GetHueAndHueMix(param, idBlue, bh, bhm);
+                if(rhm < rh) rhm += 1.0f;
+                if(!hasamber){
+                    if(gh < rhm) gh += 1.0f;
+                }else{
+                    if(ah < rhm) ah += 1.0f;
+                    if(ahm < ah) ahm += 1.0f;
+                    if(gh < ahm) gh += 1.0f;
+                }
+                if(ghm < gh) ghm += 1.0f;
+                if(bh < ghm) bh += 1.0f;
+                if(bhm < bh) bhm += 1.0f;
+                if(rh + 1.0f < bhm){
+                    std::cout << "Bad hue/huemix values in " << colormode << "fixture!\n";
+                }
+                hue = WrapHueToRange(hue, rh);
                 if(hue >= rh && hue < rhm){
                     r = 1.0f;
                     (hasamber ? a : g) = (hue - rh) / (eps + rhm - rh);
@@ -226,7 +248,44 @@ void Fixture::Evaluate(uint8_t *uniarray){
                 WriteAllValueDMXChannels(g, param.getChildWithName(idGreen), chn, footprint, uniarray);
                 WriteAllValueDMXChannels(b, param.getChildWithName(idBlue), chn, footprint, uniarray);
             }else{
-                //TODO
+                float c = 0.0f, m = 0.0f, y = 0.0f;
+                float ch, chm, mh, mhm, yh, yhm;
+                GetHueAndHueMix(param, idCyan, ch, chm);
+                GetHueAndHueMix(param, idMagenta, mh, mhm);
+                GetHueAndHueMix(param, idYellow, yh, yhm);
+                if(chm < ch) chm += 1.0f;
+                if(mh < chm) mh += 1.0f;
+                if(mhm < mh) mhm += 1.0f;
+                if(yh < mhm) yh += 1.0f;
+                if(yhm < yh) yhm += 1.0f;
+                if(ch + 1.0f < yhm){
+                    std::cout << "Bad hue/huemix values in CMY fixture!\n";
+                }
+                hue = WrapHueToRange(hue, ch);
+                if(hue >= ch && hue < chm){
+                    c = 1.0f;
+                    m = (hue - ch) / (eps + chm - ch);
+                }else if(hue >= chm && hue < mh){
+                    m = 1.0f;
+                    c = (mh - hue) / (eps + mh - chm);
+                }else if(hue >= mh && hue < mhm){
+                    m = 1.0f;
+                    y = (hue - mh) / (eps + mhm - mh);
+                }else if(hue >= mhm && hue < yh){
+                    y = 1.0f;
+                    m = (yh - hue) / (eps + yh - mhm);
+                }else if(hue >= yh && hue < yhm){
+                    y = 1.0f;
+                    c = (hue - yh) / (eps + yhm - yh);
+                }else if(hue >= yhm && hue < 1.0f + ch){
+                    c = 1.0f;
+                    y = (ch + 1.0f - hue) / (eps + ch + 1.0f - yhm);
+                }else{
+                    jassertfalse; //Should not be possible even for invalid values
+                }
+                WriteAllValueDMXChannels(c, param.getChildWithName(idCyan), chn, footprint, uniarray);
+                WriteAllValueDMXChannels(m, param.getChildWithName(idMagenta), chn, footprint, uniarray);
+                WriteAllValueDMXChannels(y, param.getChildWithName(idYellow), chn, footprint, uniarray);
             }
         }
     }

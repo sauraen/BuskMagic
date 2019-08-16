@@ -75,6 +75,8 @@ namespace ArtNetSystem {
     void AddBlankDevice();
     void RemoveDevice(int d);
     
+    Array<uint16_t> GetSortedListNeededUniverses();
+    
     uint32_t ParseUniverseText(String unitxt);
     String GetUniverseText(const uint8_t *uni);
     IPAddress ParseIPAddress(String ipstr);
