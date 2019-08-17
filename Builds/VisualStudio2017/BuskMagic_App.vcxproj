@@ -151,8 +151,10 @@
     <ClCompile Include="..\..\src\gui\ArtNetSetup.cpp"/>
     <ClCompile Include="..\..\src\gui\ControllerWindow.cpp"/>
     <ClCompile Include="..\..\src\gui\FixtureEditor.cpp"/>
+    <ClCompile Include="..\..\src\gui\MatrixEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\MIDISetup.cpp"/>
     <ClCompile Include="..\..\src\gui\Patcher.cpp"/>
+    <ClCompile Include="..\..\src\gui\StatusBar.cpp"/>
     <ClCompile Include="..\..\src\gui\TextListModel.cpp"/>
     <ClCompile Include="..\..\src\ArtNetSystem.cpp"/>
     <ClCompile Include="..\..\src\ChannelSystem.cpp"/>
@@ -190,8 +192,11 @@
     <ClInclude Include="..\..\src\gui\ControllerWindow.h"/>
     <ClInclude Include="..\..\src\gui\FixtureEditor.h"/>
     <ClInclude Include="..\..\src\gui\MagicValueBox.h"/>
+    <ClInclude Include="..\..\src\gui\MatrixEditor.h"/>
     <ClInclude Include="..\..\src\gui\MIDISetup.h"/>
+    <ClInclude Include="..\..\src\gui\MultiListBox.h"/>
     <ClInclude Include="..\..\src\gui\Patcher.h"/>
+    <ClInclude Include="..\..\src\gui\StatusBar.h"/>
     <ClInclude Include="..\..\src\gui\SynthButton.h"/>
     <ClInclude Include="..\..\src\gui\TextListModel.h"/>
     <ClInclude Include="..\..\src\ArtNetSystem.h"/>

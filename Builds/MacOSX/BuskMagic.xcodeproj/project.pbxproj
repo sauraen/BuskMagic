@@ -101,6 +101,10 @@
 			isa = PBXBuildFile;
 			fileRef = 94298B9627920B56EDAA4E0E;
 		};
+		D698DAD2F167E46FCC270083 = {
+			isa = PBXBuildFile;
+			fileRef = BB829DB2A94FBA2620D41463;
+		};
 		373DBAE866ED8F17906C1266 = {
 			isa = PBXBuildFile;
 			fileRef = B00F8F87CA52FC56D0553BC0;
@@ -108,6 +112,10 @@
 		5CBD7F35C97B5078FD17F046 = {
 			isa = PBXBuildFile;
 			fileRef = 7FA3B0461695560468F96C5E;
+		};
+		92FE66EC0A061510F8D80AB5 = {
+			isa = PBXBuildFile;
+			fileRef = FD1180090C881E3443424B3D;
 		};
 		C7EA9627119D6D6D886D6EB8 = {
 			isa = PBXBuildFile;
@@ -282,6 +290,13 @@
 			path = "../../JuceLibraryCode/include_juce_gui_basics.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		20679837855052ACD6FD3ACF = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = StatusBar.h;
+			path = ../../src/gui/StatusBar.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		2228834872E4324176A77A1D = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -436,6 +451,13 @@
 			path = ../../src/gui/ControllerWindow.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		7C664AAD0A50158F7EAC68AD = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = MultiListBox.h;
+			path = ../../src/gui/MultiListBox.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		7CEE8785EA0060A68A8B3F67 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -534,6 +556,13 @@
 			path = ../../src/gui/FixParamEd/ColorMode/RGB.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		AB433E20DA875E3E36B1484E = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = MatrixEditor.h;
+			path = ../../src/gui/MatrixEditor.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		B00F8F87CA52FC56D0553BC0 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -581,6 +610,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Generic.cpp;
 			path = ../../src/gui/FixParamEd/Generic.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		BB829DB2A94FBA2620D41463 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = MatrixEditor.cpp;
+			path = ../../src/gui/MatrixEditor.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		BBB2C537D3D8468FFA1FF083 = {
@@ -709,6 +745,13 @@
 			path = ../../src/gui/ControllerWindow.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		FD1180090C881E3443424B3D = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = StatusBar.cpp;
+			path = ../../src/gui/StatusBar.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		340CC79BF702A45FEA1F3D1B = {
 			isa = PBXGroup;
 			children = (
@@ -775,10 +818,15 @@
 				94298B9627920B56EDAA4E0E,
 				B0661EF0EE418B85855C1950,
 				98540CC143144A4D6F69DA70,
+				BB829DB2A94FBA2620D41463,
+				AB433E20DA875E3E36B1484E,
 				B00F8F87CA52FC56D0553BC0,
 				8D1240203F285B28C57C55E2,
+				7C664AAD0A50158F7EAC68AD,
 				7FA3B0461695560468F96C5E,
 				0EDBA19AEB539032826F1829,
+				FD1180090C881E3443424B3D,
+				20679837855052ACD6FD3ACF,
 				1244CD3566D40BF6A1447627,
 				2FBFF8EE1333B830BF03EC5D,
 				0A70ABDFE06DC9DAF9636F1A,
@@ -1106,8 +1154,10 @@
 				16FBF7251CA38AB7C3B2999F,
 				3057EB35B57670330D5511E3,
 				182FF3B58EFBCAE6F9B7C7E7,
+				D698DAD2F167E46FCC270083,
 				373DBAE866ED8F17906C1266,
 				5CBD7F35C97B5078FD17F046,
+				92FE66EC0A061510F8D80AB5,
 				C7EA9627119D6D6D886D6EB8,
 				1B790381B4E8DD68C64B60C6,
 				31F7E985A2A10E08753B340E,

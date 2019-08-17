@@ -21,16 +21,31 @@
 #include "JuceHeader.h"
 #include "Common.h"
 
+#include "gui/MatrixEditor.h"
+#include "gui/StatusBar.h"
+
 class MainWindowComponent : public Component {
 public:
-    MainWindowComponent() {}
+    MainWindowComponent() {
+        mtxEditor.reset(new MatrixEditor());
+        addAndMakeVisible(mtxEditor.get());
+        barStatus.reset(new StatusBar());
+        addAndMakeVisible(barStatus.get());
+    }
     ~MainWindowComponent() {}
     
-    void paint(Graphics &g){
-        g.fillAll(Colours::orange);
-        //TODO add matrix editor, status bar, etc.
+    void paint(Graphics &g) override {
+        g.fillAll(LFWindowColor());
+    }
+    
+    void resized() override {
+        mtxEditor->setBounds(0, 0, getWidth(), getHeight() - 24);
+        barStatus->setBounds(0, getHeight() - 24, getWidth(), 24);
     }
 private:
+    std::unique_ptr<MatrixEditor> mtxEditor;
+    std::unique_ptr<StatusBar> barStatus;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindowComponent)
 };
 
