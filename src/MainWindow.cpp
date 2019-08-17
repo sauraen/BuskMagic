@@ -25,6 +25,7 @@
 
 #include "ArtNetSystem.h"
 #include "MIDISystem.h"
+#include "LightingSystem.h"
 
 class SubWindow : public Component {
 public:

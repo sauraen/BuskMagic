@@ -120,7 +120,9 @@ namespace ArtNetSystem {
     Array<uint16_t> GetSortedListNeededUniverses(){
         AS_LOCK_READ();
         Array<uint16_t> ret;
+        DefaultElementComparator<uint16_t> sorter;
         for(int d=0; d<devices.size(); ++d){
+            ArtNetDevice *dev = devices[d];
             uint16_t netsubnet, universe;
             if(dev->map){
                 netsubnet = ((uint16_t)dev->map_net << 8) | (dev->map_subnet << 4);
@@ -128,10 +130,15 @@ namespace ArtNetSystem {
                 netsubnet = ((uint16_t)dev->net << 8) | (dev->subnet << 4);
             }
             for(int i=0; i<4; ++i){
-                universe = netsubnet | (dev->map ? map_outuni[i] : outuni[i]);
-                //TODO 7F for not present
+                uint8_t outuni = dev->map ? dev->map_outuni[i] : dev->outuni[i];
+                if(outuni > 0x0F) continue;
+                universe = netsubnet | outuni;
+                if(ret.indexOfSorted(sorter, universe) < 0){
+                    ret.addSorted(sorter, universe);
+                }
             }
         }
+        return ret;
     }
     
     uint32_t ParseUniverseText(String unitxt){
@@ -182,7 +189,9 @@ namespace ArtNetSystem {
     
     static DatagramSocket *sendsock = nullptr;
     
-    static void SendArtNet(IPAddress dest, uint16_t opcode, const uint8_t *data, size_t dlen, bool packetHasProtVer = true){
+    static void SendArtNet(IPAddress dest, uint16_t opcode, const uint8_t *data, 
+            size_t dlen, bool packetHasProtVer = true, 
+            ArtNetDevice *optionalDevForStatus = nullptr){
         int hlen = packetHasProtVer ? 12 : 10;
         uint8_t *buf = new uint8_t[hlen+dlen];
         sprintf((char*)buf, "Art-Net");
@@ -194,19 +203,31 @@ namespace ArtNetSystem {
         }
         memcpy(&buf[hlen], data, dlen);
         assert(sendsock != nullptr);
-        int res = sendsock->waitUntilReady(false, 5);
-        if(res < 0){
-            std::cout << "Socket state error!\n";
-        }else if(res == 0){
-            std::cout << "Socket not ready to write!\n";
-        }else{
-            res = sendsock->write(dest.toString(), 0x1936, buf, hlen+dlen);
-            if(res <= 0){
-                std::cout << "Error sending packet!\n";
-            }else if(res != hlen+dlen){
-                std::cout << "Failed to send whole packet!\n";
+        int retrycount = 0;
+        const int max_retries = 2;
+        while(retrycount++ < max_retries){
+            int res = sendsock->waitUntilReady(false, 5);
+            if(res < 0){
+                std::cout << "Socket state error!\n";
+                break;
+            }else if(res == 0){
+                std::cout << "Socket not ready to write!\n";
             }else{
-                //std::cout << "Sent Art-Net packet with opcode 0x" << hex(opcode) << " length " << hlen+dlen << "\n";
+                res = sendsock->write(dest.toString(), 0x1936, buf, hlen+dlen);
+                if(res <= 0){
+                    std::cout << "Error sending packet!\n";
+                }else if(res != hlen+dlen){
+                    std::cout << "Failed to send whole packet!\n";
+                }else{
+                    //std::cout << "Sent Art-Net packet with opcode 0x" << hex(opcode) << " length " << hlen+dlen << "\n";
+                }
+                break;
+            }
+        }
+        if(retrycount >= max_retries){
+            std::cout << "Gave up waiting for socket to be ready! Dropping data!\n";
+            if(optionalDevForStatus != nullptr){
+                optionalDevForStatus->nodereport = String("Connection timed out!");
             }
         }
         delete[] buf;
@@ -228,7 +249,7 @@ namespace ArtNetSystem {
         data[92] = 0x80 | (subnet & 0xF);
         data[93] = 0; //SwVideo, reserved
         data[94] = 0; //Command
-        SendArtNet(dev->ip, 0x6000, data, 95);
+        SendArtNet(dev->ip, 0x6000, data, 95, true, dev);
         delete[] data;
     }
     
@@ -272,7 +293,7 @@ namespace ArtNetSystem {
             data[4] = 0x02; //LengthHi, 512
             data[5] = 0x00; //Length, 512
             memcpy(&data[6], buf512, 512);
-            SendArtNet(dev->ip, 0x5000, data, 518);
+            SendArtNet(dev->ip, 0x5000, data, 518, true, dev);
         }
         delete[] data;
     }
@@ -309,7 +330,7 @@ namespace ArtNetSystem {
             for(int d=0; d<devices.size(); ++d){
                 const IPAddress &ip = devices[d]->ip;
                 if(!ip.isNull() && !isIPInSubnet(ip, bcast)){
-                    SendArtNet(ip, 0x2000, (uint8_t*)&data, 2);
+                    SendArtNet(ip, 0x2000, (uint8_t*)&data, 2, true, devices[d]);
                 }
             }
         }

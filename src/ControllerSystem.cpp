@@ -18,6 +18,7 @@
 
 #include "ControllerSystem.h"
 
+#include "LightingSystem.h"
 #include "ChannelSystem.h"
 
 #include "gui/Controller/ControllerCmps.h"
@@ -31,7 +32,7 @@ void MagicValue::SetLiteral(float v) {
     mugglevalue = v;
     RefreshComponent();
 }
-void MagicValue::SetChannel(void *ch) {
+void MagicValue::SetChannel(Channel *ch) {
     chan = ch; 
     RefreshComponent();
 }
@@ -314,14 +315,13 @@ namespace ControllerSystem {
                 }
             }else if(ContinuousController *cc = dynamic_cast<ContinuousController*>(ctrlrs[i])){
                 if(cc->GetLoValue()->GetChannel() == chn){
-                    sc->GetLoValue()->SetChannel(nullptr);
+                    cc->GetLoValue()->SetChannel(nullptr);
                 }
                 if(cc->GetHiValue()->GetChannel() == chn){
-                    sc->GetHiValue()->SetChannel(nullptr);
+                    cc->GetHiValue()->SetChannel(nullptr);
                 }
             }else{
                 jassertfalse;
-                return nullptr;
             }
         }
     }

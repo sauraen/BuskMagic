@@ -52,8 +52,8 @@ public:
     String GetLetters() const;
     void SetLetters(String newletters);
     inline float GetDefaultValue() const { return defaultvalue; }
-    inline void SetDefaultValue(float f) const { defaultvalue = f; }
-    inline ChannelOp GetOp() const { return oper; }
+    inline void SetDefaultValue(float f) { defaultvalue = f; }
+    inline ChannelOp GetOp() const { return op; }
     inline void SetOp(ChannelOp o) { op = o; }
     
     inline int NumPhasors() const { return phasors.size(); }
@@ -70,9 +70,13 @@ private:
     String name, letters;
     float defaultvalue;
     ChannelOp op;
-    bool beingevaluated;
+    
+    friend class EvaluatedTracker;
+    mutable bool beingevaluated;
     
     OwnedArray<Phasor> phasors;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Channel)
 };
 
 namespace ChannelSystem {

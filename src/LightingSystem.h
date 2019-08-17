@@ -17,6 +17,8 @@
 */
 
 #pragma once
+#include "JuceHeader.h"
+#include "Common.h"
 
 namespace LightingSystem {
     extern ReadWriteLock mutex;

@@ -18,6 +18,11 @@
 
 #include "LightingSystem.h"
 
+#include "ArtNetSystem.h"
+#include "FixtureSystem.h"
+
+#include <cstring>
+
 namespace LightingSystem {
     ReadWriteLock mutex;
     
@@ -30,10 +35,24 @@ namespace LightingSystem {
         LightingThread() { startTimer(33); }
         virtual ~LightingThread() {}
         virtual void hiResTimerCallback() override {
-            LS_LOCK_READ();
-            
+            Array<uint16_t> eval_universes = ArtNetSystem::GetSortedListNeededUniverses();
+            for(int u=0; u<eval_universes.size(); ++u){
+                uint16_t universe = eval_universes[u];
+                memset(unidata, 0, 512);
+                {
+                    LS_LOCK_READ();
+                    for(int f=0; f<FixtureSystem::NumFixtures(); ++f){
+                        Fixture *fix = FixtureSystem::Fix(f);
+                        if(fix->GetUniverse() != universe) continue;
+                        fix->Evaluate(unidata);
+                    }
+                }
+                ArtNetSystem::SendDMX512(universe, unidata);
+            }
         }
-    }
+    private:
+        uint8_t unidata[512];
+    };
     static LightingThread *lth = nullptr;
     
     void Init(){

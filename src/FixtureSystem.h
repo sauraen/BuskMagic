@@ -67,7 +67,7 @@ public:
     
     inline ValueTree GetDef() const { return def; }
     
-    inline String GetName() const { return name; }
+    String GetName() const;
     void SetName(String newname);
     
     inline int GetFixID() const { return fixid; }
@@ -87,6 +87,8 @@ private:
     int fixid;
     uint16_t uni, chn;
     OwnedArray<Channel> channels;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Fixture)
 };
 
 namespace FixtureSystem {

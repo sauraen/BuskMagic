@@ -66,7 +66,7 @@ public:
             removeChildComponent(cmp);
             delete cmp;
         }
-        ControllerSystem::DeleteController(ctrlr);
+        ControllerSystem::RemoveController(ctrlr);
     }
     void refreshComponents(){
         ctrlr_cmps.clear(true);

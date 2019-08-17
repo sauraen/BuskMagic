@@ -36,7 +36,7 @@ public:
     inline float GetLiteral() const { return mugglevalue; }
     void SetLiteral(float v);
     inline void *GetChannel() const { return chan; }
-    void SetChannel(void *ch);
+    void SetChannel(Channel *ch);
     
     String GetText();
     

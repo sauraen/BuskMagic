@@ -711,7 +711,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
         for(int i=0; i<lstFixtures->getNumSelectedRows(); ++i){
             int r = lstFixtures->getSelectedRow(i);
             Fixture *fix = FixtureSystem::Fix(r);
-            fix->SetPatch(uni, fix->GetChannel());
+            fix->SetPatch(uni, fix->GetDMXChannel());
             lsmFixtures->set(r, fix->GetDescription());
             lstFixtures->repaintRow(r);
         }
@@ -870,7 +870,7 @@ void Patcher::refreshFixtureEditControls()
         + def.getProperty(idFootprint, "XX").toString() + ")", dontSendNotification);
     txtName->setText(fix->GetName());
     txtUni->setText(hex(fix->GetUniverse()));
-    txtChn->setText(String(fix->GetChannel()));
+    txtChn->setText(String(fix->GetDMXChannel()));
     txtFixID->setText(String(fix->GetFixID()));
 }
 
@@ -1045,4 +1045,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

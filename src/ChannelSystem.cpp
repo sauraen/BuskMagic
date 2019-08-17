@@ -18,7 +18,9 @@
 
 #include "ChannelSystem.h"
 
+#include "LightingSystem.h"
 #include "FixtureSystem.h"
+#include "ControllerSystem.h"
 
 String Channel::OpGetLetters(ChannelOp o){
     switch(o){
@@ -130,6 +132,14 @@ void Channel::SortPhasors(){
     jassert(destpos == phasors.size());
 }
 
+class EvaluatedTracker {
+public:
+    inline EvaluatedTracker(const Channel *ch) : channel(ch){ channel->beingevaluated = true; }
+    inline ~EvaluatedTracker() { channel->beingevaluated = false; }
+private:
+    const Channel *channel;
+};
+
 #define EVALCHN() (phasors[i]->mag * c->Evaluate(angle + phasors[i]->angle))
 
 float Channel::Evaluate(float angle) const {
@@ -138,7 +148,7 @@ float Channel::Evaluate(float angle) const {
         LightingSystem::SignalRecursion();
         return 0.0f;
     }
-    beingevaluated = true;
+    EvaluatedTracker trkr(this);
     float val; bool flag;
     switch(op){
     case OpPrioTop:
@@ -190,7 +200,7 @@ float Channel::Evaluate(float angle) const {
             if(c->IsEnabled()){
                 flag = true;
                 float v = EVALCHN();
-                if(op == OppAdd){
+                if(op == OpAdd){
                     val += v;
                 }else{
                     val *= v;
@@ -207,7 +217,7 @@ float Channel::Evaluate(float angle) const {
 
 namespace ChannelSystem {
     
-    OwnedArray<Channel> freechannels;
+    static OwnedArray<Channel> freechannels;
     
     int NumTotalChannels(){
         LS_LOCK_READ();

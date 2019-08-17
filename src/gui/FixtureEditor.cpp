@@ -39,6 +39,8 @@
 
 #include "gui/FixParamEd/Generic.h"
 #include "gui/FixParamEd/Color.h"
+
+#include "FixtureSystem.h"
 //[/Headers]
 
 #include "FixtureEditor.h"
@@ -633,4 +635,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

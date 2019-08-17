@@ -194,7 +194,7 @@ inline ValueTree VT_Load(File f, Identifier topleveltype){
         return ValueTree();
     }
     if(!v.hasType(topleveltype)){
-        std::cout << "File " << f.getFullPathName() << " is not the correct type of ValueTree (" << topleveltype << ")\n";
+        std::cout << "File " << f.getFullPathName() << " is not the correct type of ValueTree (" << topleveltype.toString() << ")\n";
         return ValueTree();
     }
     return v;

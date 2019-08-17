@@ -18,6 +18,7 @@
 
 #include "FixtureSystem.h"
 
+#include "LightingSystem.h"
 #include "ChannelSystem.h"
 
 Identifier idFixDefs("fixdefs");
@@ -64,13 +65,13 @@ Fixture::Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16
             channels.add(gchan);
         }else if(ptype == "Color"){
             Channel *hchan = new Channel();
-            hchan->SetName("Hue - " + param.getProperty(idName, "Error"));
+            hchan->SetName("Hue - " + param.getProperty(idName, "Error").toString());
             hchan->SetLetters("H");
             hchan->SetDefaultValue(0.0f);
             hchan->SetOp(Channel::OpAdd);
             channels.add(hchan);
             Channel *lchan = new Channel();
-            lchan->SetName("Lightness - " + param.getProperty(idName, "Error"));
+            lchan->SetName("Lightness - " + param.getProperty(idName, "Error").toString());
             lchan->SetLetters("L");
             lchan->SetDefaultValue(1.0f);
             lchan->SetOp(Channel::OpAdd);
@@ -78,7 +79,9 @@ Fixture::Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16
         }
     }
 }
-Fixture::~Fixture() {}
+Fixture::~Fixture() {
+    
+}
 
 String Fixture::GetDescription() const {
     return String(fixid) + ": " + hex(uni) + "." + String(chn) + ": " + name + " (" 
@@ -86,7 +89,7 @@ String Fixture::GetDescription() const {
         + def.getProperty(idName, "(Name)").toString() + ")";
 }
 
-String Fixture::GetName(){
+String Fixture::GetName() const {
     LS_LOCK_READ();
     return name;
 }
@@ -99,7 +102,7 @@ void Fixture::SetPatch(uint16_t newuni, uint16_t newchn){
     uni = newuni;
     chn = newchn;
 }
-Channel *Fixture::GetChannel(int i){
+Channel *Fixture::GetChannel(int i) const {
     LS_LOCK_READ();
     if(i < 0 || i >= channels.size()){
         jassertfalse;
@@ -144,7 +147,7 @@ inline void GetHueAndHueMix(ValueTree param, Identifier basecolor, float &hue, f
 
 ///Add a multiple of 1.0f to hue until it is between lovalue and 1.0f+lovalue.
 inline float WrapHueToRange(float hue, float lovalue){
-    float ret = h + std::ceil(lovalue) - lovalue;
+    float ret = hue + std::ceil(lovalue) - lovalue;
     ret -= std::floor(ret);
     return ret + lovalue;
 }
@@ -358,7 +361,7 @@ namespace FixtureSystem {
         return ret;
     }
     
-    OwnedArray<Fixture> fixtures;
+    static OwnedArray<Fixture> fixtures;
     void AddFixture(ValueTree def, String name, int fixid, uint16_t uni, uint16_t chn){
         LS_LOCK_WRITE();
         fixtures.add(new Fixture(def, name, fixid, uni, chn));
@@ -395,8 +398,8 @@ namespace FixtureSystem {
     };
     int FixtureComparator::compareElements(Fixture *first, Fixture *second){
         if(first->GetFixID() == second->GetFixID()){
-            uint32_t first_unichn = (uint32_t)first->GetUniverse() << 16 | first->GetChannel();
-            uint32_t second_unichn = (uint32_t)second->GetUniverse() << 16 | second->GetChannel();
+            uint32_t first_unichn = (uint32_t)first->GetUniverse() << 16 | first->GetDMXChannel();
+            uint32_t second_unichn = (uint32_t)second->GetUniverse() << 16 | second->GetDMXChannel();
             return first_unichn < second_unichn ? -1 : first_unichn == second_unichn ? 0 : 1;
         }
         return first->GetFixID() < second->GetFixID() ? -1 : 1;
