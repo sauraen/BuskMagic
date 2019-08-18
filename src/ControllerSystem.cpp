@@ -21,8 +21,15 @@
 #include "LightingSystem.h"
 #include "ChannelSystem.h"
 
+#include "gui/MatrixEditor.h"
 #include "gui/Controller/ControllerCmps.h"
 #include "gui/Controller/ControllerCanvas.h"
+
+
+static void RefreshMatrixEditor(bool invalidate){
+    MatrixEditor::mtxed_static->RefreshControllerFilters();
+    if(invalidate) MatrixEditor::mtxed_static->RefreshVisibleControllerSet();
+}
 
 MagicValue::MagicValue(Controller *parent) 
     : controller(parent), mugglevalue(0.0f), chan(nullptr) {}
@@ -77,6 +84,7 @@ void Controller::SetName(String n){
     LS_LOCK_WRITE();
     name = n;
     RefreshComponent();
+    RefreshMatrixEditor(false);
 }
 void Controller::SetColor(Colour col){
     color = col;
@@ -95,6 +103,7 @@ void Controller::SetGroup(int g){
         }
     }
     RefreshComponent();
+    RefreshMatrixEditor(false);
 }
 void Controller::SetGroupColor(Colour col){
     LS_LOCK_WRITE();
@@ -271,39 +280,43 @@ namespace ControllerSystem {
         LS_LOCK_WRITE();
         SimpleController *sc = new SimpleController();
         ctrlrs.add(sc);
+        RefreshMatrixEditor(true);
         return sc;
     }
     ContinuousController *AddContinuousController(){
         LS_LOCK_WRITE();
         ContinuousController *cc = new ContinuousController();
         ctrlrs.add(cc);
+        RefreshMatrixEditor(true);
         return cc;
     }
     Controller *DuplicateController(Controller *orig){
         LS_LOCK_WRITE();
+        Controller *n;
         if(SimpleController *sc = dynamic_cast<SimpleController*>(orig)){
-            SimpleController *n = new SimpleController(*sc);
-            ctrlrs.add(n);
-            return n;
+            n = new SimpleController(*sc);
         }else if(ContinuousController *cc = dynamic_cast<ContinuousController*>(orig)){
-            ContinuousController *n = new ContinuousController(*cc);
-            ctrlrs.add(n);
-            return n;
+            n = new ContinuousController(*cc);
         }else{
             jassertfalse;
             return nullptr;
         }
+        RefreshMatrixEditor(true);
+        ctrlrs.add(n);
+        return n;
     }
     void RemoveController(Controller *ctrlr){
         LS_LOCK_WRITE();
         ChannelSystem::RemoveAllPhasorsForController(ctrlr);
         ctrlrs.removeObject(ctrlr, true);
+        RefreshMatrixEditor(true);
     }
     
     void ChangeControllerOrder(int orig, int newpos){
         LS_LOCK_WRITE();
         ctrlrs.move(orig, newpos);
         ChannelSystem::SortAllChannelPhasors();
+        RefreshMatrixEditor(true);
     }
     
     void RemoveAllMagicValuesForChannel(Channel *chn){

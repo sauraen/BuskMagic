@@ -58,6 +58,7 @@ public:
     Controller();
     virtual ~Controller();
     Controller(const Controller &other);
+    virtual String GetClassType() = 0;
     
     Point<int> pos;
     bool nostate;
@@ -116,6 +117,7 @@ public:
     SimpleController();
     virtual ~SimpleController();
     SimpleController(const SimpleController &other);
+    String GetClassType() override { return "Simple"; }
     
     inline MagicValue *GetValue() { return &value; }
     
@@ -130,6 +132,7 @@ public:
     ContinuousController();
     virtual ~ContinuousController();
     ContinuousController(const ContinuousController &other);
+    String GetClassType() override { return "Continuous"; }
     
     inline float GetKnob() { return knob; }
     void SetKnob(float k);

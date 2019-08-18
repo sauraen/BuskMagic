@@ -21,6 +21,8 @@
 #include "LightingSystem.h"
 #include "ChannelSystem.h"
 
+#include "gui/MatrixEditor.h"
+
 Identifier idFixDefs("fixdefs");
 Identifier idFixture("fixture");
 Identifier idInUse("inuse");
@@ -49,6 +51,12 @@ Identifier idUV("uv");
 Identifier idCyan("cyan");
 Identifier idMagenta("magenta");
 Identifier idYellow("yellow");
+
+
+static void RefreshMatrixEditor(bool invalidate){
+    MatrixEditor::mtxed_static->RefreshChannelFilters();
+    if(invalidate) MatrixEditor::mtxed_static->RefreshVisibleChannelSet();
+}
 
 Fixture::Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16_t chn_)
     : def(def_), name(name_), fixid(fixid_), uni(uni_), chn(chn_) {
@@ -96,6 +104,12 @@ String Fixture::GetName() const {
 void Fixture::SetName(String newname){
     LS_LOCK_WRITE();
     name = newname;
+    RefreshMatrixEditor(false);
+}
+void Fixture::SetFixID(int newfixid){
+    LS_LOCK_WRITE();
+    fixid = newfixid;
+    RefreshMatrixEditor(false);
 }
 void Fixture::SetPatch(uint16_t newuni, uint16_t newchn){
     LS_LOCK_WRITE();
@@ -365,6 +379,7 @@ namespace FixtureSystem {
     void AddFixture(ValueTree def, String name, int fixid, uint16_t uni, uint16_t chn){
         LS_LOCK_WRITE();
         fixtures.add(new Fixture(def, name, fixid, uni, chn));
+        RefreshMatrixEditor(true);
     }
     void RemoveFixture(int i){
         LS_LOCK_WRITE();
@@ -381,6 +396,7 @@ namespace FixtureSystem {
         if(!useddef){
             def.setProperty(idInUse, false, nullptr);
         }
+        RefreshMatrixEditor(true);
     }
     int NumFixtures() { return fixtures.size(); }
     Fixture *Fix(int i) {

@@ -71,7 +71,7 @@ public:
     void SetName(String newname);
     
     inline int GetFixID() const { return fixid; }
-    inline void SetFixID(int newfixid) { fixid = newfixid; }
+    void SetFixID(int newfixid);
     
     inline uint16_t GetUniverse() const { return uni; }
     inline uint16_t GetDMXChannel() const { return chn; }

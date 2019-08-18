@@ -82,6 +82,40 @@ public:
             lst->deselectAllRows();
         }
     }
+    
+    bool isItemSelected(String s){
+        for(int i=0; i<lsm->getNumRows(); ++i){
+            if(lsm->get(i) == s){
+                return lst->isRowSelected(i);
+            }
+        }
+        return false;
+    }
+    
+#define UPDATELVALUE() lvalue = lsm->getNumRows() > l ? lsm->get(l).getIntValue() : 0
+    void syncToSortedIntList(Array<int> array, bool ignoreFirst){
+        int l = ignoreFirst ? 1 : 0;
+        int a = 0;
+        int UPDATELVALUE();
+        while(l<lsm->getNumRows() || a<array.size()){
+            if(l >= lsm->getNumRows()){
+                lsm->add(String(array[a++]));
+                ++l;
+            }else if(a >= array.size()){
+                lsm->remove(l);
+            }else if(array[a] < lvalue){
+                lsm->insert(l++, String(array[a++]));
+            }else if(array[a] > lvalue){
+                lsm->remove(l);
+                UPDATELVALUE();
+            }else{ //array[a] == lvalue
+                ++a; ++l;
+                UPDATELVALUE();
+            }
+        }
+        lst->updateContent();
+    }
+#undef UPDATELVALUE
 
 private:
     TextListModel::Listener *parent;

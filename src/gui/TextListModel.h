@@ -33,6 +33,7 @@ public:
     ~TextListModel();
     
     void add(String s);
+    void addIfNotPresent(String s);
     void insert(int i, String s);
     void remove(int i);
     void clear();

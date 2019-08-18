@@ -30,6 +30,9 @@ TextListModel::~TextListModel(){
 void TextListModel::add(String s){
     strings.add(s);
 }
+void TextListModel::addIfNotPresent(String s){
+    strings.addIfNotAlreadyThere(s, false);
+}
 void TextListModel::insert(int i, String s){
     strings.insert(i, s);
 }

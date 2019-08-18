@@ -22,9 +22,13 @@
 #include "Common.h"
 
 #include "MultiListBox.h"
+#include "ControllerSystem.h"
+#include "ChannelSystem.h"
 
 class MatrixEditor : public Component, public TextListModel::Listener {
 public:
+    static MatrixEditor *mtxed_static; //Only one of these
+
     MatrixEditor();
     ~MatrixEditor();
 
@@ -32,15 +36,22 @@ public:
     void resized() override;
     
     void rowSelected(TextListModel* parent, int row) override;
-
+    
+    void RefreshControllerFilters();
+    void RefreshChannelFilters();
+    void RefreshVisibleControllerSet();
+    void RefreshVisibleChannelSet();
+    
 private:
     std::unique_ptr<MultiListBox> mlbCtType;
     std::unique_ptr<MultiListBox> mlbCtGroup;
     std::unique_ptr<MultiListBox> mlbCtName;
     std::unique_ptr<MultiListBox> mlbFixID;
     std::unique_ptr<MultiListBox> mlbFixName;
-    std::unique_ptr<MultiListBox> mlbChType;
     std::unique_ptr<MultiListBox> mlbChName;
+    
+    Array<Controller*> ctSet;
+    Array<Channel*> chSet;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MatrixEditor)
 };

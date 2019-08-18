@@ -22,6 +22,14 @@
 #include "FixtureSystem.h"
 #include "ControllerSystem.h"
 
+#include "gui/MatrixEditor.h"
+
+
+static void RefreshMatrixEditor(bool invalidate){
+    MatrixEditor::mtxed_static->RefreshChannelFilters();
+    if(invalidate) MatrixEditor::mtxed_static->RefreshVisibleChannelSet();
+}
+
 String Channel::OpGetLetters(ChannelOp o){
     switch(o){
     case OpPrioTop: return CharPointer_UTF8 ("\xe2\x86\x91");
@@ -65,6 +73,7 @@ String Channel::GetName() const{
 void Channel::SetName(String newname){
     LS_LOCK_WRITE();
     name = newname;
+    RefreshMatrixEditor(false);
 }
 String Channel::GetLetters() const{
     LS_LOCK_READ();
@@ -240,6 +249,7 @@ namespace ChannelSystem {
         LS_LOCK_WRITE();
         Channel *ret = new Channel();
         freechannels.add(ret);
+        RefreshMatrixEditor(true);
         return ret;
     }
     void RemoveFreeChannel(int i){
@@ -250,6 +260,7 @@ namespace ChannelSystem {
         }
         ControllerSystem::RemoveAllMagicValuesForChannel(freechannels[i]);
         freechannels.remove(i);
+        RefreshMatrixEditor(true);
     }
     
     void RemoveAllPhasorsForController(Controller *c){

@@ -140,6 +140,8 @@ inline Colour LFWidgetColor(){
     return FROMLOOKANDFEEL(TextEditor::backgroundColourId);
 }
 
+#undef FROMLOOKANDFEEL
+
 inline void TurnRed(TextEditor *ed, bool turnRed = true){
     ed->setColour(TextEditor::backgroundColourId,
         turnRed ? Colours::red : LFWidgetColor());
