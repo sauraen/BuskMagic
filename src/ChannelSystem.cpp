@@ -109,10 +109,7 @@ Phasor *Channel::GetPhasorForController(Controller *c, bool addIfNotPresent){
         for(int i=0; i<phasors.size(); ++i){
             if(phasors[i]->src == c) return phasors[i];
         }
-        if(!addIfNotPresent){
-            jassertfalse;
-            return nullptr;
-        }
+        if(!addIfNotPresent) return nullptr;
     } //Must give up read lock before acquiring write lock to avoid deadlock
     LS_LOCK_WRITE();
     Phasor *ret = new Phasor(c);

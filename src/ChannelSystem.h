@@ -27,7 +27,7 @@ class Fixture;
 struct Phasor {
     Controller *src;
     float mag;
-    float angle;
+    float angle; //in cycles
     
     Phasor(Controller *c) : src(c), mag(0.0f), angle(0.0f) {}
     Phasor(Controller *c, float m, float a) : src(c), mag(m), angle(a) {}

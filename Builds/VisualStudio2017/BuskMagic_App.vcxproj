@@ -148,6 +148,7 @@
     <ClCompile Include="..\..\src\gui\Popup\CtrlrEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\KnobMIDI.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\MagicValueEditor.cpp"/>
+    <ClCompile Include="..\..\src\gui\Popup\PhasorEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\ArtNetSetup.cpp"/>
     <ClCompile Include="..\..\src\gui\ControllerWindow.cpp"/>
     <ClCompile Include="..\..\src\gui\FixtureEditor.cpp"/>
@@ -187,6 +188,7 @@
     <ClInclude Include="..\..\src\gui\Popup\CtrlrEditor.h"/>
     <ClInclude Include="..\..\src\gui\Popup\KnobMIDI.h"/>
     <ClInclude Include="..\..\src\gui\Popup\MagicValueEditor.h"/>
+    <ClInclude Include="..\..\src\gui\Popup\PhasorEditor.h"/>
     <ClInclude Include="..\..\src\gui\Popup\PopupWindow.h"/>
     <ClInclude Include="..\..\src\gui\ArtNetSetup.h"/>
     <ClInclude Include="..\..\src\gui\ControllerWindow.h"/>

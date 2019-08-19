@@ -97,7 +97,11 @@ inline String safeASCII(char c){
 }
 
 inline bool isMac(){
-    return (SystemStats::getOperatingSystemType() & SystemStats::MacOSX) > 0;
+#ifdef JUCE_MAC
+    return true;
+#else
+    return false;
+#endif
 }
 
 inline bool isRightClick(const MouseEvent &event){
@@ -141,6 +145,10 @@ inline Colour LFWidgetColor(){
 }
 
 #undef FROMLOOKANDFEEL
+
+inline Font GetNormalFont(float size = 15.0f){
+    return Font(size, Font::plain).withTypefaceStyle("Regular");
+}
 
 inline void TurnRed(TextEditor *ed, bool turnRed = true){
     ed->setColour(TextEditor::backgroundColourId,

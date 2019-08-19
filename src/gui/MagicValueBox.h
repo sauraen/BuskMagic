@@ -39,7 +39,7 @@ public:
         g.fillRect(getLocalBounds());
         g.setColour(Colours::black);
         g.drawRect(getLocalBounds(), 1);
-        g.setFont(12.0f);
+        g.setFont(GetNormalFont(12.0f));
         g.drawText(magic->GetText(), 0, 0, getWidth(), getHeight(), 
             Justification::centred, false);
     }

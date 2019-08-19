@@ -43,6 +43,9 @@
                 file="src/gui/Popup/MagicValueEditor.cpp"/>
           <FILE id="klKozR" name="MagicValueEditor.h" compile="0" resource="0"
                 file="src/gui/Popup/MagicValueEditor.h"/>
+          <FILE id="UyBGjC" name="PhasorEditor.cpp" compile="1" resource="0"
+                file="src/gui/Popup/PhasorEditor.cpp"/>
+          <FILE id="wNhBYw" name="PhasorEditor.h" compile="0" resource="0" file="src/gui/Popup/PhasorEditor.h"/>
           <FILE id="ocjfNK" name="PopupWindow.h" compile="0" resource="0" file="src/gui/Popup/PopupWindow.h"/>
         </GROUP>
         <FILE id="nGOUXC" name="ArtNetSetup.cpp" compile="1" resource="0" file="src/gui/ArtNetSetup.cpp"/>

@@ -22,7 +22,11 @@
 #include "FixtureSystem.h"
 #include "ChannelSystem.h"
 
+#include "gui/Popup/PopupWindow.h"
+#include "gui/Popup/PhasorEditor.h"
+
 #include <algorithm>
+#include <cmath>
 
 MatrixEditor *MatrixEditor::mtxed_static = nullptr;
 
@@ -76,13 +80,16 @@ void MatrixEditor::paint (Graphics& g) {
     Colour textcolor = Colours::white;
     int main_bottom_y = getHeight() - main_dbottom;
     int ch_bottom_y = getHeight() - ch_dbottom;
-    g.setFont(Font(15.0f, Font::plain).withTypefaceStyle("Regular"));
+    int minviewcol = std::max(view.x / col_width, 0);
+    int minviewrow = std::max(view.y / row_height, 0);
+    int maxviewcol = (view.x + getWidth() - ct_width) / col_width;
+    int maxviewrow = (view.y + main_bottom_y) / row_height;
+    g.setFont(GetNormalFont());
     g.setColour(linecolor);
     g.drawLine(ct_width, 0, ct_width, main_bottom_y, 2);
     g.drawLine(ct_width, main_bottom_y, getWidth(), main_bottom_y, 2);
     LS_LOCK_READ();
-    for(int r = std::max(view.y / row_height, 0); r < ctSet.size() && 
-            r <= (view.y + main_bottom_y) / row_height; ++r){
+    for(int r = minviewrow; r < ctSet.size() && r <= maxviewrow; ++r){
         int y = r * row_height - view.y;
         if(y + row_height < main_bottom_y){
             g.setColour(linecolor);
@@ -92,8 +99,7 @@ void MatrixEditor::paint (Graphics& g) {
         g.drawText(ctSet[r]->GetName(), 1, y, ct_width - 1, row_height, Justification::centredLeft, false);
     }
     int colsmergefixid = 0, colsmergefixname = 0;
-    int maxviewcol = (view.x + getWidth() - ct_width) / col_width;
-    for(int c = std::max(view.x / col_width, 0); c < chSet.size() && c <= maxviewcol; ++c){
+    for(int c = minviewcol; c < chSet.size() && c <= maxviewcol; ++c){
         int fixid = chSet[c]->GetFixID();
         String fixname = chSet[c]->GetFixName();
         bool firstcolmergefixid = false, firstcolmergefixname = false;
@@ -136,6 +142,31 @@ void MatrixEditor::paint (Graphics& g) {
                       : colsmergefixid == 0 ? ch_bottom_y - row_height 
                       : ch_bottom_y - 2*row_height;
         g.drawVerticalLine(x + col_width, 0, lineend);
+        //
+        for(int r = minviewrow; r < ctSet.size() && r <= maxviewrow; ++r){
+            int y = r * row_height - view.y;
+            Phasor *phasor = chSet[c]->GetPhasorForController(ctSet[r], false);
+            if(phasor == nullptr) continue;
+            float magheight;
+            if(phasor->mag >= 0.0f){
+                magheight = (float)(row_height-2) * std::min(phasor->mag, 1.0f);
+                g.setColour(Colours::blue);
+                g.fillRect(x+1.0f, y+row_height-1-magheight, col_width-2.0f, magheight);
+            }else{
+                magheight = (float)(row_height-2) * -std::max(phasor->mag, -1.0f);
+                g.setColour(Colours::red);
+                g.fillRect(x+1.0f, y+magheight, col_width-2.0f, magheight);
+            }
+            float midx = x + (col_width / 2);
+            float midy = y + (row_height / 2);
+            float angle = 2.0f * M_PI * phasor->angle;
+            float fit_in_box = 0.8f * 0.5f * std::min(row_height, col_width);
+            float endx = midx + std::cos(angle) * fit_in_box;
+            float endy = midy - std::sin(angle) * fit_in_box;
+            g.setColour(Colours::white);
+            g.drawLine(midx, midy, endx, endy);
+            g.drawLine(endx-1.0f, endy-1.0f, endx+1.0f, endy+1.0f, 3); //Dot at end
+        }
     }
 }
 
@@ -165,12 +196,34 @@ void MatrixEditor::rowSelected(TextListModel* parent, int row) {
 }
 
 void MatrixEditor::mouseDown(const MouseEvent &event){
-    if(event.mods.isLeftButtonDown()){
+    if(isRightClick(event)){
+        if(event.x < ct_width || event.x >= getWidth()) return;
+        if(event.y < 0 || event.y >= getHeight() - ch_dbottom) return;
+        if(event.y >= getHeight() - main_dbottom){
+            //Right click in channels area
+            //TODO
+        }else{
+            //Right click in phasors area
+            int r = (event.y + view.y) / row_height;
+            int c = (event.x - ct_width + view.x) / col_width;
+            LS_LOCK_READ();
+            if(r < 0 || r >= ctSet.size()) return;
+            if(c < 0 || c >= chSet.size()) return;
+            Controller *ct = ctSet[r];
+            Channel *ch = chSet[c];
+            PhasorEditorStartup startup(ch->GetPhasorForController(ct, true), ch);
+            Point<int> corner(getScreenX() + c*col_width - view.x + ct_width + (col_width/2) - 70,
+                              getScreenY() + r*row_height - view.y + (row_height/2) - 70);
+            popup.show<PhasorEditor>(corner.x, corner.y, &startup);
+        }
+    }else if(event.mods.isLeftButtonDown()){
         viewdragstart = view;
     }
 }
 void MatrixEditor::mouseDrag(const MouseEvent &event){
-    if(event.mods.isLeftButtonDown()){
+    if(isRightClick(event)){
+        
+    }else if(event.mods.isLeftButtonDown()){
         view = viewdragstart - event.getOffsetFromDragStart();
         if(view.x < 0) view.x = 0;
         if(view.y < 0) view.y = 0;

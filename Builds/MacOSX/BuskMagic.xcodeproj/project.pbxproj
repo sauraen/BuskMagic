@@ -89,6 +89,10 @@
 			isa = PBXBuildFile;
 			fileRef = 2E299B4521733769C96122D7;
 		};
+		CE2A1F8BE71BE88792A4AB4C = {
+			isa = PBXBuildFile;
+			fileRef = D0087996AD33F7A7B0CB8086;
+		};
 		16FBF7251CA38AB7C3B2999F = {
 			isa = PBXBuildFile;
 			fileRef = 0931C17F4AB4A2340A912B7F;
@@ -323,6 +327,13 @@
 			lastKnownFileType = sourcecode.cpp.objcpp;
 			name = "include_juce_data_structures.mm";
 			path = "../../JuceLibraryCode/include_juce_data_structures.mm";
+			sourceTree = "SOURCE_ROOT";
+		};
+		2B683993EEC67CFBEC9D46CB = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = PhasorEditor.h;
+			path = ../../src/gui/Popup/PhasorEditor.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		2D192C8A1AEDBEC1F8A1C0A0 = {
@@ -675,6 +686,13 @@
 			path = System/Library/Frameworks/Carbon.framework;
 			sourceTree = SDKROOT;
 		};
+		D0087996AD33F7A7B0CB8086 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = PhasorEditor.cpp;
+			path = ../../src/gui/Popup/PhasorEditor.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		D4AB491514C324C5E966E8A7 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -800,6 +818,8 @@
 				0F894E3FFBBF28ACB2C62E55,
 				2E299B4521733769C96122D7,
 				45408F4C624AD637C00A5B87,
+				D0087996AD33F7A7B0CB8086,
+				2B683993EEC67CFBEC9D46CB,
 				F1D64539AA9299E723453500,
 			);
 			name = Popup;
@@ -1151,6 +1171,7 @@
 				D40E86353791E938A2C16BB1,
 				1A59EB4AE0469DEA13B4CC3A,
 				80BF05F443520E1F5F924122,
+				CE2A1F8BE71BE88792A4AB4C,
 				16FBF7251CA38AB7C3B2999F,
 				3057EB35B57670330D5511E3,
 				182FF3B58EFBCAE6F9B7C7E7,

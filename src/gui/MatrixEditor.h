@@ -21,9 +21,11 @@
 #include "JuceHeader.h"
 #include "Common.h"
 
-#include "MultiListBox.h"
 #include "ControllerSystem.h"
 #include "ChannelSystem.h"
+
+#include "gui/MultiListBox.h"
+#include "gui/Popup/PopupWindow.h"
 
 class MatrixEditor : public Component, public TextListModel::Listener {
 public:
@@ -53,6 +55,8 @@ private:
     std::unique_ptr<MultiListBox> mlbFixID;
     std::unique_ptr<MultiListBox> mlbFixName;
     std::unique_ptr<MultiListBox> mlbChName;
+    
+    PopupWindow popup;
     
     Array<Controller*> ctSet;
     Array<Channel*> chSet;
