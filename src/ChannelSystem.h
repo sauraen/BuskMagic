@@ -22,6 +22,7 @@
 #include "Common.h"
 
 class Controller;
+class Fixture;
 
 struct Phasor {
     Controller *src;
@@ -36,7 +37,7 @@ struct Phasor {
 
 class Channel {
 public:
-    Channel();
+    Channel(Fixture *parentornullptr);
     ~Channel();
     
     enum ChannelOp {
@@ -56,6 +57,9 @@ public:
     inline ChannelOp GetOp() const { return op; }
     inline void SetOp(ChannelOp o) { op = o; }
     
+    String GetFixName() const;
+    int GetFixID() const;
+    
     inline int NumPhasors() const { return phasors.size(); }
     Phasor *GetPhasor(int i) const;
     Phasor *GetPhasorForController(Controller *c, bool addIfNotPresent);
@@ -67,6 +71,8 @@ public:
     
     float Evaluate(float angle) const;
 private:
+    Fixture *parent;
+    
     String name, letters;
     float defaultvalue;
     ChannelOp op;

@@ -65,20 +65,20 @@ Fixture::Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16
         ValueTree param = def.getChild(p);
         String ptype = param.getProperty(idType, "");
         if(ptype == "Generic"){
-            Channel *gchan = new Channel();
+            Channel *gchan = new Channel(this);
             gchan->SetName(param.getProperty(idName, "Error"));
             gchan->SetLetters(param.getProperty(idLetters, "X"));
             gchan->SetDefaultValue(0.0f);
             gchan->SetOp(Channel::OpAdd);
             channels.add(gchan);
         }else if(ptype == "Color"){
-            Channel *hchan = new Channel();
+            Channel *hchan = new Channel(this);
             hchan->SetName("Hue - " + param.getProperty(idName, "Error").toString());
             hchan->SetLetters("H");
             hchan->SetDefaultValue(0.0f);
             hchan->SetOp(Channel::OpAdd);
             channels.add(hchan);
-            Channel *lchan = new Channel();
+            Channel *lchan = new Channel(this);
             lchan->SetName("Lightness - " + param.getProperty(idName, "Error").toString());
             lchan->SetLetters("L");
             lchan->SetDefaultValue(1.0f);

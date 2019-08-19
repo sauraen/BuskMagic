@@ -58,7 +58,8 @@ String Channel::OpGetDescription(ChannelOp o){
     }
 }
 
-Channel::Channel() : name("New channel"), letters("N"), defaultvalue(0.0f), 
+Channel::Channel(Fixture *parentornullptr) : parent(parentornullptr),
+    name("New channel"), letters("N"), defaultvalue(0.0f), 
     op(OpAdd), beingevaluated(false) {
     
 }
@@ -82,6 +83,15 @@ String Channel::GetLetters() const{
 void Channel::SetLetters(String newletters){
     LS_LOCK_WRITE();
     letters = newletters;
+}
+
+String Channel::GetFixName() const{
+    LS_LOCK_READ();
+    return parent == nullptr ? "Free channels" : parent->GetName();
+}
+int Channel::GetFixID() const{
+    LS_LOCK_READ();
+    return parent == nullptr ? -1 : parent->GetFixID();
 }
 
 Phasor *Channel::GetPhasor(int i) const {
@@ -247,7 +257,7 @@ namespace ChannelSystem {
     }
     Channel *AddFreeChannel(){
         LS_LOCK_WRITE();
-        Channel *ret = new Channel();
+        Channel *ret = new Channel(nullptr);
         freechannels.add(ret);
         RefreshMatrixEditor(true);
         return ret;

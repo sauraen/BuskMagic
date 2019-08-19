@@ -35,6 +35,10 @@ public:
     void paint (Graphics&) override;
     void resized() override;
     
+    void mouseDown(const MouseEvent &event) override;
+    void mouseDrag(const MouseEvent &event) override;
+    void mouseUp(const MouseEvent &event) override;
+    
     void rowSelected(TextListModel* parent, int row) override;
     
     void RefreshControllerFilters();
@@ -52,6 +56,9 @@ private:
     
     Array<Controller*> ctSet;
     Array<Channel*> chSet;
+    
+    Point<int> view;
+    Point<int> viewdragstart;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MatrixEditor)
 };

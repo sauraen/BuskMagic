@@ -58,18 +58,15 @@ public:
     }
     void deleteComp(Controller *ctrlr){
         ctrlr->RegisterComponent(nullptr);
-        for(int i=getNumChildComponents()-1; i>=0; --i){
-            Component *cmp = getChildComponent(i);
-            ControllerCmp *cc = dynamic_cast<ControllerCmp*>(cmp);
-            if(cc == nullptr) continue;
+        for(int i=ctrlr_cmps.size()-1; i>=0; --i){
+            ControllerCmp *cc = ctrlr_cmps[i];
             if(cc->GetController() != ctrlr) continue;
-            removeChildComponent(cmp);
-            delete cmp;
+            ctrlr_cmps.remove(i, true); //Deleting component removes it too
         }
         ControllerSystem::RemoveController(ctrlr);
     }
     void refreshComponents(){
-        ctrlr_cmps.clear(true);
+        ctrlr_cmps.clear(true); //Deleting each component also removes it
         for(int i=0; i<ControllerSystem::NumControllers(); ++i){
             addComp(ControllerSystem::GetController(i));
         }

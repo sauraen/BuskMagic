@@ -22,14 +22,22 @@
 #include "FixtureSystem.h"
 #include "ChannelSystem.h"
 
+#include <algorithm>
+
 MatrixEditor *MatrixEditor::mtxed_static = nullptr;
 
-static const int ct_width = 125;
-static const int ch_list_width = 150;
-static const int mtx_main_height_offset = 320;
-static const int mtx_ch_height_offset = 200;
+static const int row_height = 20;
+static const int col_width = 20;
 
-MatrixEditor::MatrixEditor() {
+static const int ct_width = 125;
+static const int ch_dbottom = 200;
+static const int ch_numrows = 5;
+static const int ch_height = ch_numrows * row_height;
+static const int main_dbottom = ch_dbottom + ch_height;
+
+static const int ch_listbox_width = 150;
+
+MatrixEditor::MatrixEditor() : view(0, 0) {
     jassert(mtxed_static == nullptr);
     mtxed_static = this;
     //
@@ -63,19 +71,113 @@ MatrixEditor::~MatrixEditor() {
 }
 
 void MatrixEditor::paint (Graphics& g) {
-    g.fillAll(Colours::orange);
+    g.fillAll(LFWindowColor());
+    Colour linecolor = Colours::darkgrey;
+    Colour textcolor = Colours::white;
+    int main_bottom_y = getHeight() - main_dbottom;
+    int ch_bottom_y = getHeight() - ch_dbottom;
+    g.setFont(Font(15.0f, Font::plain).withTypefaceStyle("Regular"));
+    g.setColour(linecolor);
+    g.drawLine(ct_width, 0, ct_width, main_bottom_y, 2);
+    g.drawLine(ct_width, main_bottom_y, getWidth(), main_bottom_y, 2);
+    LS_LOCK_READ();
+    for(int r = std::max(view.y / row_height, 0); r < ctSet.size() && 
+            r <= (view.y + main_bottom_y) / row_height; ++r){
+        int y = r * row_height - view.y;
+        if(y + row_height < main_bottom_y){
+            g.setColour(linecolor);
+            g.drawHorizontalLine(y + row_height, 0, getWidth());
+        }
+        g.setColour(textcolor);
+        g.drawText(ctSet[r]->GetName(), 1, y, ct_width - 1, row_height, Justification::centredLeft, false);
+    }
+    int colsmergefixid = 0, colsmergefixname = 0;
+    int maxviewcol = (view.x + getWidth() - ct_width) / col_width;
+    for(int c = std::max(view.x / col_width, 0); c < chSet.size() && c <= maxviewcol; ++c){
+        int fixid = chSet[c]->GetFixID();
+        String fixname = chSet[c]->GetFixName();
+        bool firstcolmergefixid = false, firstcolmergefixname = false;
+        if(colsmergefixid == 0){
+            for(int c2 = c+1; c2 < chSet.size() && c2 <= maxviewcol; ++c2){
+                if(chSet[c2]->GetFixID() != fixid) break;
+                ++colsmergefixid;
+                firstcolmergefixid = true;
+            }
+        }
+        if(colsmergefixname == 0){
+            for(int c2 = c+1; c2 < chSet.size() && c2 <= maxviewcol; ++c2){
+                if(chSet[c2]->GetFixName() != fixname) break;
+                ++colsmergefixname;
+                firstcolmergefixname = true;
+            }
+        }
+        int x = c * col_width - view.x + ct_width;
+        g.setColour(textcolor);
+        g.drawText(Channel::OpGetLetters(chSet[c]->GetOp()), x, main_bottom_y, 
+            col_width, row_height, Justification::centred, false);
+        g.drawText("X", x, main_bottom_y + row_height, 
+            col_width, row_height, Justification::centred, false);
+        g.drawText(chSet[c]->GetLetters(), x, main_bottom_y + 2*row_height, 
+            col_width, row_height, Justification::centred, false);
+        if(colsmergefixid == 0 || firstcolmergefixid){
+            g.drawText(String(fixid), x, main_bottom_y + 3*row_height, 
+                col_width * (colsmergefixid + 1), row_height, Justification::centred, false);
+        }else{
+            --colsmergefixid;
+        }
+        if(colsmergefixname == 0 || firstcolmergefixname){
+            g.drawText(fixname, x, ch_bottom_y - row_height, 
+                col_width * (colsmergefixname + 1), row_height, Justification::centred, false);
+        }else{
+            --colsmergefixname;
+        }
+        g.setColour(linecolor);
+        int lineend = colsmergefixname == 0 ? ch_bottom_y
+                      : colsmergefixid == 0 ? ch_bottom_y - row_height 
+                      : ch_bottom_y - 2*row_height;
+        g.drawVerticalLine(x + col_width, 0, lineend);
+    }
 }
 
 void MatrixEditor::resized() {
-    mlbCtType->setBounds(0, getHeight() - mtx_main_height_offset, ct_width, mtx_main_height_offset / 3);
-    mlbCtGroup->setBounds(0, getHeight() - (mtx_main_height_offset * 2 / 3), ct_width, mtx_main_height_offset / 3);
-    mlbCtName->setBounds(0, getHeight() - (mtx_main_height_offset / 3), ct_width, mtx_main_height_offset / 3);
-    mlbFixID->setBounds(ct_width, getHeight() - mtx_ch_height_offset, ch_list_width, mtx_ch_height_offset);
-    mlbFixName->setBounds(ct_width + ch_list_width, getHeight() - mtx_ch_height_offset, ch_list_width, mtx_ch_height_offset);
-    mlbChName->setBounds(ct_width + 2*ch_list_width, getHeight() - mtx_ch_height_offset, ch_list_width, mtx_ch_height_offset);
+    mlbCtType->setBounds(0, getHeight() - main_dbottom, ct_width, main_dbottom / 3);
+    mlbCtGroup->setBounds(0, getHeight() - (main_dbottom * 2 / 3), ct_width, main_dbottom / 3);
+    mlbCtName->setBounds(0, getHeight() - (main_dbottom / 3), ct_width, main_dbottom / 3);
+    mlbFixID->setBounds(ct_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
+    mlbFixName->setBounds(ct_width + ch_listbox_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
+    mlbChName->setBounds(ct_width + 2*ch_listbox_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
 }
 
 void MatrixEditor::rowSelected(TextListModel* parent, int row) {
+    if(parent == mlbCtType->lsm.get()){
+        RefreshVisibleControllerSet();
+    }else if(parent == mlbCtGroup->lsm.get()){
+        RefreshVisibleControllerSet();
+    }else if(parent == mlbCtName->lsm.get()){
+        RefreshVisibleControllerSet();
+    }else if(parent == mlbFixID->lsm.get()){
+        RefreshVisibleChannelSet();
+    }else if(parent == mlbFixName->lsm.get()){
+        RefreshVisibleChannelSet();
+    }else if(parent == mlbChName->lsm.get()){
+        RefreshVisibleChannelSet();
+    }
+}
+
+void MatrixEditor::mouseDown(const MouseEvent &event){
+    if(event.mods.isLeftButtonDown()){
+        viewdragstart = view;
+    }
+}
+void MatrixEditor::mouseDrag(const MouseEvent &event){
+    if(event.mods.isLeftButtonDown()){
+        view = viewdragstart - event.getOffsetFromDragStart();
+        if(view.x < 0) view.x = 0;
+        if(view.y < 0) view.y = 0;
+        repaint();
+    }
+}
+void MatrixEditor::mouseUp(const MouseEvent &event){
     
 }
 
@@ -128,6 +230,7 @@ void MatrixEditor::RefreshVisibleControllerSet(){
         if(!mlbCtName->isItemSelected(ctrlr->GetName())) continue;
         ctSet.add(ctrlr);
     }
+    repaint();
 }
 
 void MatrixEditor::RefreshVisibleChannelSet(){
@@ -150,4 +253,5 @@ void MatrixEditor::RefreshVisibleChannelSet(){
             chSet.add(ch);
         }
     }
+    repaint();
 }
