@@ -147,15 +147,13 @@ void MatrixEditor::paint (Graphics& g) {
             int y = r * row_height - view.y;
             Phasor *phasor = chSet[c]->GetPhasorForController(ctSet[r], false);
             if(phasor == nullptr) continue;
-            float magheight;
+            float magheight = (float)(row_height-2) * std::min(std::abs(phasor->mag), 1.0f);
             if(phasor->mag >= 0.0f){
-                magheight = (float)(row_height-2) * std::min(phasor->mag, 1.0f);
                 g.setColour(Colours::blue);
-                g.fillRect(x+1.0f, y+row_height-1-magheight, col_width-2.0f, magheight);
+                g.fillRect(x+1.0f, y+row_height-1.0f-magheight, col_width-2.0f, magheight);
             }else{
-                magheight = (float)(row_height-2) * -std::max(phasor->mag, -1.0f);
                 g.setColour(Colours::red);
-                g.fillRect(x+1.0f, y+magheight, col_width-2.0f, magheight);
+                g.fillRect(x+1.0f, y+1.0f, col_width-2.0f, magheight);
             }
             float midx = x + (col_width / 2);
             float midy = y + (row_height / 2);

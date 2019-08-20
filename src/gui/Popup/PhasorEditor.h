@@ -43,6 +43,10 @@ public:
     void buttonClicked(Button* buttonThatWasClicked) override;
     
     void globalMouseDrag(const MouseEvent &event);
+    void globalMouseUp(const MouseEvent &event);
+    
+    void mouseDrag(const MouseEvent &event) override;
+    void focusGained(FocusChangeType cause) override;
 
 private:
     Phasor *phasor;
@@ -55,10 +59,16 @@ private:
     public:
         GlobalMouseListener(PhasorEditor &p) : parent(p) {}
         void mouseDrag(const MouseEvent &event) { parent.globalMouseDrag(event); }
+        void mouseUp(const MouseEvent &event) { parent.globalMouseUp(event); }
     private:
         PhasorEditor &parent;
     };
     GlobalMouseListener gml;
+    bool initialDragDone;
+    
+    bool enteredMiddleZone;
+    float middleZoneAngleEntered;
+    bool negmagEntered;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PhasorEditor)
 };

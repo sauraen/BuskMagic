@@ -166,7 +166,7 @@ Patcher::Patcher ()
     txtAddQty->setScrollbarsShown (true);
     txtAddQty->setCaretVisible (true);
     txtAddQty->setPopupMenuEnabled (true);
-    txtAddQty->setText (TRANS("1"));
+    txtAddQty->setText (TRANS("4"));
 
     txtAddQty->setBounds (360, 488, 24, 24);
 
@@ -243,7 +243,7 @@ Patcher::Patcher ()
     txtAddChn->setScrollbarsShown (true);
     txtAddChn->setCaretVisible (true);
     txtAddChn->setPopupMenuEnabled (true);
-    txtAddChn->setText (TRANS("512"));
+    txtAddChn->setText (TRANS("1"));
 
     txtAddChn->setBounds (584, 488, 32, 24);
 
@@ -935,7 +935,7 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtAddQty" id="e2d209a05f07ec0b" memberName="txtAddQty"
-              virtualName="" explicitFocusOrder="0" pos="360 488 24 24" initialText="1"
+              virtualName="" explicitFocusOrder="0" pos="360 488 24 24" initialText="4"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
   <LABEL name="lblAddFixID" id="21a25c99119344c8" memberName="lblAddFixID"
@@ -965,7 +965,7 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtAddChn" id="83dfdec8b81e43ff" memberName="txtAddChn"
-              virtualName="" explicitFocusOrder="0" pos="584 488 32 24" initialText="512"
+              virtualName="" explicitFocusOrder="0" pos="584 488 32 24" initialText="1"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
   <LABEL name="lblAddName" id="99107f268414c8cd" memberName="lblAddName"
@@ -1045,3 +1045,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+
