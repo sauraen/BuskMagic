@@ -121,6 +121,10 @@
 			isa = PBXBuildFile;
 			fileRef = FD1180090C881E3443424B3D;
 		};
+		D3546F2CB119364535E95500 = {
+			isa = PBXBuildFile;
+			fileRef = DCE71C222A988056D29BF0DF;
+		};
 		C7EA9627119D6D6D886D6EB8 = {
 			isa = PBXBuildFile;
 			fileRef = 2FBFF8EE1333B830BF03EC5D;
@@ -420,6 +424,13 @@
 			path = ../../src/ControllerSystem.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		60460D52CB47B649B9E5D77B = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = TextListBox.h;
+			path = ../../src/gui/TextListBox.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		60F0A56E114CE913035A025B = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -700,6 +711,13 @@
 			path = ../../src/gui/FixParamEd/ColorMode/RGB.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		DCE71C222A988056D29BF0DF = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = TextListBox.cpp;
+			path = ../../src/gui/TextListBox.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		E4A89D5178CC4394A61ECF58 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -848,6 +866,8 @@
 				FD1180090C881E3443424B3D,
 				20679837855052ACD6FD3ACF,
 				1244CD3566D40BF6A1447627,
+				DCE71C222A988056D29BF0DF,
+				60460D52CB47B649B9E5D77B,
 				2FBFF8EE1333B830BF03EC5D,
 				0A70ABDFE06DC9DAF9636F1A,
 			);
@@ -1179,6 +1199,7 @@
 				373DBAE866ED8F17906C1266,
 				5CBD7F35C97B5078FD17F046,
 				92FE66EC0A061510F8D80AB5,
+				D3546F2CB119364535E95500,
 				C7EA9627119D6D6D886D6EB8,
 				1B790381B4E8DD68C64B60C6,
 				31F7E985A2A10E08753B340E,

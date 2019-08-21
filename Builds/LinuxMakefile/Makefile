@@ -86,6 +86,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/MIDISetup_7c6b09b2.o \
   $(JUCE_OBJDIR)/Patcher_67e4906b.o \
   $(JUCE_OBJDIR)/StatusBar_2cfd19f7.o \
+  $(JUCE_OBJDIR)/TextListBox_a5daddd6.o \
   $(JUCE_OBJDIR)/TextListModel_35ca1eb4.o \
   $(JUCE_OBJDIR)/ArtNetSystem_e2a73c9.o \
   $(JUCE_OBJDIR)/ChannelSystem_70c63d9c.o \
@@ -205,6 +206,11 @@ $(JUCE_OBJDIR)/Patcher_67e4906b.o: ../../src/gui/Patcher.cpp
 $(JUCE_OBJDIR)/StatusBar_2cfd19f7.o: ../../src/gui/StatusBar.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling StatusBar.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/TextListBox_a5daddd6.o: ../../src/gui/TextListBox.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling TextListBox.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/TextListModel_35ca1eb4.o: ../../src/gui/TextListModel.cpp

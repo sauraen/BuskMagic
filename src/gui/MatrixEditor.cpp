@@ -45,24 +45,28 @@ MatrixEditor::MatrixEditor() : view(0, 0) {
     jassert(mtxed_static == nullptr);
     mtxed_static = this;
     //
-    mlbCtType.reset(new MultiListBox(this, "Controller type"));
-    mlbCtGroup.reset(new MultiListBox(this, "Controller group"));
-    mlbCtName.reset(new MultiListBox(this, "Controller name"));
-    mlbFixID.reset(new MultiListBox(this, "Fixture ID"));
-    mlbFixName.reset(new MultiListBox(this, "Fixture name"));
-    mlbChName.reset(new MultiListBox(this, "Channel name"));
-    addAndMakeVisible(mlbCtType.get());
-    addAndMakeVisible(mlbCtGroup.get());
-    addAndMakeVisible(mlbCtName.get());
-    addAndMakeVisible(mlbFixID.get());
-    addAndMakeVisible(mlbFixName.get());
-    addAndMakeVisible(mlbChName.get());
+    lstCtType.reset(new TextListBox(true, "Controller type:"));
+    lstCtGroup.reset(new TextListBox(true, "Controller group:"));
+    lstCtName.reset(new TextListBox(true, "Controller name:"));
+    lstFixID.reset(new TextListBox(true, "Fixture ID:"));
+    lstFixName.reset(new TextListBox(true, "Fixture name:"));
+    lstChName.reset(new TextListBox(true, "Channel name:"));
+    addAndMakeVisible(lstCtType.get());
+    addAndMakeVisible(lstCtGroup.get());
+    addAndMakeVisible(lstCtName.get());
+    addAndMakeVisible(lstFixID.get());
+    addAndMakeVisible(lstFixName.get());
+    addAndMakeVisible(lstChName.get());
+    lstCtType->setListener(this);
+    lstCtGroup->setListener(this);
+    lstCtName->setListener(this);
+    lstFixID->setListener(this);
+    lstFixName->setListener(this);
+    lstChName->setListener(this);
     //
-    mlbCtType->lsm->add("Simple");
-    mlbCtType->lsm->add("Continuous");
-    mlbCtType->lst->updateContent();
-    mlbFixID->lsm->add("Free channels");
-    mlbFixID->lst->updateContent();
+    lstCtType->add("Simple");
+    lstCtType->add("Continuous");
+    lstFixID->add("Free channels");
     //
     RefreshControllerFilters();
     RefreshChannelFilters();
@@ -169,26 +173,26 @@ void MatrixEditor::paint (Graphics& g) {
 }
 
 void MatrixEditor::resized() {
-    mlbCtType->setBounds(0, getHeight() - main_dbottom, ct_width, main_dbottom / 3);
-    mlbCtGroup->setBounds(0, getHeight() - (main_dbottom * 2 / 3), ct_width, main_dbottom / 3);
-    mlbCtName->setBounds(0, getHeight() - (main_dbottom / 3), ct_width, main_dbottom / 3);
-    mlbFixID->setBounds(ct_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
-    mlbFixName->setBounds(ct_width + ch_listbox_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
-    mlbChName->setBounds(ct_width + 2*ch_listbox_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
+    lstCtType->setBounds(0, getHeight() - main_dbottom, ct_width, main_dbottom / 3);
+    lstCtGroup->setBounds(0, getHeight() - (main_dbottom * 2 / 3), ct_width, main_dbottom / 3);
+    lstCtName->setBounds(0, getHeight() - (main_dbottom / 3), ct_width, main_dbottom / 3);
+    lstFixID->setBounds(ct_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
+    lstFixName->setBounds(ct_width + ch_listbox_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
+    lstChName->setBounds(ct_width + 2*ch_listbox_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
 }
 
-void MatrixEditor::rowSelected(TextListModel* parent, int row) {
-    if(parent == mlbCtType->lsm.get()){
+void MatrixEditor::rowSelected(TextListBox* parent, int row) {
+    if(parent == lstCtType.get()){
         RefreshVisibleControllerSet();
-    }else if(parent == mlbCtGroup->lsm.get()){
+    }else if(parent == lstCtGroup.get()){
         RefreshVisibleControllerSet();
-    }else if(parent == mlbCtName->lsm.get()){
+    }else if(parent == lstCtName.get()){
         RefreshVisibleControllerSet();
-    }else if(parent == mlbFixID->lsm.get()){
+    }else if(parent == lstFixID.get()){
         RefreshVisibleChannelSet();
-    }else if(parent == mlbFixName->lsm.get()){
+    }else if(parent == lstFixName.get()){
         RefreshVisibleChannelSet();
-    }else if(parent == mlbChName->lsm.get()){
+    }else if(parent == lstChName.get()){
         RefreshVisibleChannelSet();
     }
 }
@@ -219,55 +223,49 @@ void MatrixEditor::mouseDown(const MouseEvent &event){
     }
 }
 void MatrixEditor::mouseDrag(const MouseEvent &event){
-    if(isRightClick(event)){
-        
-    }else if(event.mods.isLeftButtonDown()){
+    if(!isRightClick(event) && event.mods.isLeftButtonDown()){
         view = viewdragstart - event.getOffsetFromDragStart();
         if(view.x < 0) view.x = 0;
         if(view.y < 0) view.y = 0;
         repaint();
     }
 }
-void MatrixEditor::mouseUp(const MouseEvent &event){
-    
-}
 
 void MatrixEditor::RefreshControllerFilters(){
     LS_LOCK_WRITE();
-    Array<int> ctgroups;
-    DefaultElementComparator<int> sorter;
-    mlbCtName->lsm->clear();
+    StringArray ctgroups, ctnames;
     for(int c=0; c<ControllerSystem::NumControllers(); ++c){
         Controller *ctrlr = ControllerSystem::GetController(c);
-        mlbCtName->lsm->addIfNotPresent(ctrlr->GetName());
-        int g = ctrlr->GetGroup();
-        if(ctgroups.indexOfSorted(sorter, g) < 0) ctgroups.addSorted(sorter, g);
+        ctgroups.addIfNotAlreadyThere(String(ctrlr->GetGroup()));
+        ctnames.addIfNotAlreadyThere(ctrlr->GetName());
     }
-    mlbCtName->lst->updateContent();
-    mlbCtGroup->syncToSortedIntList(ctgroups, false);
+    ctgroups.sortNatural();
+    ctnames.sortNatural();
+    lstCtGroup->syncToSortedList(ctgroups);
+    lstCtName->syncToSortedList(ctnames);
 }
 
 void MatrixEditor::RefreshChannelFilters(){
     LS_LOCK_WRITE();
-    Array<int> ctfixids;
-    DefaultElementComparator<int> sorter;
-    mlbChName->lsm->clear();
+    StringArray fixids, fixnames, chnames;
     for(int c=0; c<ChannelSystem::NumFreeChannels(); ++c){
-        mlbChName->lsm->addIfNotPresent(ChannelSystem::GetFreeChannel(c)->GetName());
+        chnames.addIfNotAlreadyThere(ChannelSystem::GetFreeChannel(c)->GetName());
     }
-    mlbFixName->lsm->clear();
     for(int f=0; f<FixtureSystem::NumFixtures(); ++f){
         Fixture *fix = FixtureSystem::Fix(f);
-        mlbFixName->lsm->addIfNotPresent(fix->GetName());
-        int id = fix->GetFixID();
-        if(ctfixids.indexOfSorted(sorter, id) < 0) ctfixids.addSorted(sorter, id);
+        fixids.addIfNotAlreadyThere(String(fix->GetFixID()));
+        fixnames.addIfNotAlreadyThere(fix->GetName());
         for(int c=0; c<fix->GetNumChannels(); ++c){
-            mlbChName->lsm->addIfNotPresent(fix->GetChannel(c)->GetName());
+            chnames.addIfNotAlreadyThere(fix->GetChannel(c)->GetName());
         }
     }
-    mlbFixName->lst->updateContent();
-    mlbFixID->syncToSortedIntList(ctfixids, true);
-    mlbChName->lst->updateContent();
+    fixids.sortNatural();
+    fixnames.sortNatural();
+    chnames.sortNatural();
+    fixids.insert(0, "Free channels");
+    lstFixID->syncToSortedList(fixids, true);
+    lstFixName->syncToSortedList(fixnames);
+    lstChName->syncToSortedList(chnames);
 }
 
 
@@ -276,9 +274,9 @@ void MatrixEditor::RefreshVisibleControllerSet(){
     ctSet.clear();
     for(int c=0; c<ControllerSystem::NumControllers(); ++c){
         Controller *ctrlr = ControllerSystem::GetController(c);
-        if(!mlbCtType->isItemSelected(ctrlr->GetClassType())) continue;
-        if(!mlbCtGroup->isItemSelected(String(ctrlr->GetGroup()))) continue;
-        if(!mlbCtName->isItemSelected(ctrlr->GetName())) continue;
+        if(!lstCtType->isItemSelected(ctrlr->GetClassType())) continue;
+        if(!lstCtGroup->isItemSelected(String(ctrlr->GetGroup()))) continue;
+        if(!lstCtName->isItemSelected(ctrlr->GetName())) continue;
         ctSet.add(ctrlr);
     }
     repaint();
@@ -287,20 +285,20 @@ void MatrixEditor::RefreshVisibleControllerSet(){
 void MatrixEditor::RefreshVisibleChannelSet(){
     LS_LOCK_WRITE();
     chSet.clear();
-    if(mlbFixID->isItemSelected("Free channels")){
+    if(lstFixID->isItemSelected("Free channels")){
         for(int c=0; c<ChannelSystem::NumFreeChannels(); ++c){
             Channel *ch = ChannelSystem::GetFreeChannel(c);
-            if(!mlbChName->isItemSelected(ch->GetName())) continue;
+            if(!lstChName->isItemSelected(ch->GetName())) continue;
             chSet.add(ch);
         }
     }
     for(int f=0; f<FixtureSystem::NumFixtures(); ++f){
         Fixture *fix = FixtureSystem::Fix(f);
-        if(!mlbFixID->isItemSelected(String(fix->GetFixID()))) continue;
-        if(!mlbFixName->isItemSelected(fix->GetName())) continue;
+        if(!lstFixID->isItemSelected(String(fix->GetFixID()))) continue;
+        if(!lstFixName->isItemSelected(fix->GetName())) continue;
         for(int c=0; c<fix->GetNumChannels(); ++c){
             Channel *ch = fix->GetChannel(c);
-            if(!mlbChName->isItemSelected(ch->GetName())) continue;
+            if(!lstChName->isItemSelected(ch->GetName())) continue;
             chSet.add(ch);
         }
     }

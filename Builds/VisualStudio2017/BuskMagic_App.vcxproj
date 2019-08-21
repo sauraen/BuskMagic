@@ -156,6 +156,7 @@
     <ClCompile Include="..\..\src\gui\MIDISetup.cpp"/>
     <ClCompile Include="..\..\src\gui\Patcher.cpp"/>
     <ClCompile Include="..\..\src\gui\StatusBar.cpp"/>
+    <ClCompile Include="..\..\src\gui\TextListBox.cpp"/>
     <ClCompile Include="..\..\src\gui\TextListModel.cpp"/>
     <ClCompile Include="..\..\src\ArtNetSystem.cpp"/>
     <ClCompile Include="..\..\src\ChannelSystem.cpp"/>
@@ -200,6 +201,7 @@
     <ClInclude Include="..\..\src\gui\Patcher.h"/>
     <ClInclude Include="..\..\src\gui\StatusBar.h"/>
     <ClInclude Include="..\..\src\gui\SynthButton.h"/>
+    <ClInclude Include="..\..\src\gui\TextListBox.h"/>
     <ClInclude Include="..\..\src\gui\TextListModel.h"/>
     <ClInclude Include="..\..\src\ArtNetSystem.h"/>
     <ClInclude Include="..\..\src\ChannelSystem.h"/>

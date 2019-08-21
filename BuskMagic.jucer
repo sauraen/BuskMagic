@@ -69,6 +69,8 @@
         <FILE id="Z0eqzo" name="StatusBar.cpp" compile="1" resource="0" file="src/gui/StatusBar.cpp"/>
         <FILE id="yrj4Pb" name="StatusBar.h" compile="0" resource="0" file="src/gui/StatusBar.h"/>
         <FILE id="ijfYax" name="SynthButton.h" compile="0" resource="0" file="src/gui/SynthButton.h"/>
+        <FILE id="QpfB9w" name="TextListBox.cpp" compile="1" resource="0" file="src/gui/TextListBox.cpp"/>
+        <FILE id="EL1OzB" name="TextListBox.h" compile="0" resource="0" file="src/gui/TextListBox.h"/>
         <FILE id="YywxUI" name="TextListModel.cpp" compile="1" resource="0"
               file="src/gui/TextListModel.cpp"/>
         <FILE id="hPHz1t" name="TextListModel.h" compile="0" resource="0" file="src/gui/TextListModel.h"/>

@@ -24,10 +24,10 @@
 #include "ControllerSystem.h"
 #include "ChannelSystem.h"
 
-#include "gui/MultiListBox.h"
+#include "gui/TextListBox.h"
 #include "gui/Popup/PopupWindow.h"
 
-class MatrixEditor : public Component, public TextListModel::Listener {
+class MatrixEditor : public Component, public TextListBox::Listener {
 public:
     static MatrixEditor *mtxed_static; //Only one of these
 
@@ -39,9 +39,8 @@ public:
     
     void mouseDown(const MouseEvent &event) override;
     void mouseDrag(const MouseEvent &event) override;
-    void mouseUp(const MouseEvent &event) override;
     
-    void rowSelected(TextListModel* parent, int row) override;
+    void rowSelected(TextListBox* parent, int row) override;
     
     void RefreshControllerFilters();
     void RefreshChannelFilters();
@@ -49,12 +48,12 @@ public:
     void RefreshVisibleChannelSet();
     
 private:
-    std::unique_ptr<MultiListBox> mlbCtType;
-    std::unique_ptr<MultiListBox> mlbCtGroup;
-    std::unique_ptr<MultiListBox> mlbCtName;
-    std::unique_ptr<MultiListBox> mlbFixID;
-    std::unique_ptr<MultiListBox> mlbFixName;
-    std::unique_ptr<MultiListBox> mlbChName;
+    std::unique_ptr<TextListBox> lstCtType;
+    std::unique_ptr<TextListBox> lstCtGroup;
+    std::unique_ptr<TextListBox> lstCtName;
+    std::unique_ptr<TextListBox> lstFixID;
+    std::unique_ptr<TextListBox> lstFixName;
+    std::unique_ptr<TextListBox> lstChName;
     
     PopupWindow popup;
     
