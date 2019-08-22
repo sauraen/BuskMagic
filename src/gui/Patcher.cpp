@@ -426,10 +426,15 @@ Patcher::Patcher ()
 
     //[UserPreSize]
 
-    TextListModel::Initialize(lsmDir, lstDir, this, this, "Directory");
-    TextListModel::Initialize(lsmDefs, lstDefs, this, this, "Definitions");
-    TextListModel::Initialize(lsmFixtures, lstFixtures, this, this, "Fixtures");
+    lstDir.reset(new TextListBox(this));
+    lstDefs.reset(new TextListBox(this));
+    lstFixtures.reset(new TextListBox(this));
+    addAndMakeVisible(lstDir.get());
+    addAndMakeVisible(lstDefs.get());
+    addAndMakeVisible(lstFixtures.get());
+    lstDir->setSelectAddedItems(false);
     lstFixtures->setMultipleSelectionEnabled(true);
+    lstFixtures->setSelectAddedItems(false);
 
     lstDir->setBounds(0, 24, 288, 520);
     lstDefs->setBounds(312, 24, 312, 416);
@@ -497,11 +502,8 @@ Patcher::~Patcher()
     //[Destructor]. You can add your own custom destruction code here..
 
     lstDir = nullptr;
-    lsmDir = nullptr;
     lstDefs = nullptr;
-    lsmDefs = nullptr;
     lstFixtures = nullptr;
-    lsmFixtures = nullptr;
 
     //[/Destructor]
 }
@@ -548,7 +550,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_btnLoad] -- add your button handler code here..
         int r = lstDir->getLastRowSelected();
         if(r < 0) return;
-        File fxf = FixtureSystem::GetFixtureDirectory().getChildFile(lsmDir->get(r) + ".xml");
+        File fxf = FixtureSystem::GetFixtureDirectory().getChildFile(lstDir->get(r) + ".xml");
         if(!fxf.existsAsFile()){
             WarningBox("This file no longer exists.");
             fillDirBox();
@@ -560,8 +562,9 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
             fillDirBox();
             return;
         }
+        v.setProperty("inuse", false, nullptr); //Fixtures may be saved with this set!
         FixtureSystem::GetFixtureDefs().addChild(v, -1, nullptr);
-        fillDefsBox();
+        lstDefs->add(FixtureSystem::GetFixDefName(v));
         //[/UserButtonCode_btnLoad]
     }
     else if (buttonThatWasClicked == btnSave.get())
@@ -579,7 +582,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
         if(!xml->writeToFile(fc.getResult().withFileExtension("xml"), "<!-- BuskMagic Fixture File -->", "UTF-8", 80)){
             WarningBox("Could not save fixture file.");
         }else{
-            fillDefsBox();
+            fillDirBox();
         }
         //[/UserButtonCode_btnSave]
     }
@@ -592,7 +595,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
         v.setProperty(idProfile, "1-channel mode", nullptr);
         v.setProperty(idFootprint, 1, nullptr);
         FixtureSystem::GetFixtureDefs().addChild(v, -1, nullptr);
-        fillDefsBox();
+        lstDefs->add(FixtureSystem::GetFixDefName(v));
         //[/UserButtonCode_btnNewDef]
     }
     else if (buttonThatWasClicked == btnDeleteDef.get())
@@ -607,7 +610,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
             return;
         }
         FixtureSystem::GetFixtureDefs().removeChild(v, nullptr);
-        fillDefsBox();
+        lstDefs->remove(r);
         //[/UserButtonCode_btnDeleteDef]
     }
     else if (buttonThatWasClicked == btnDeleteFixture.get())
@@ -675,8 +678,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
             chn += footprint;
             fixid += 1;
         }
-        lsmDefs->set(r, FixtureSystem::GetFixDefName(def)); //In case first use, put (*)
-        lstDefs->repaintRow(r);
+        lstDefs->set(r, FixtureSystem::GetFixDefName(def)); //In case first use, put (*)
         fillFixturesBox();
         //[/UserButtonCode_btnAdd]
     }
@@ -693,8 +695,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
             int r = lstFixtures->getSelectedRow(i);
             Fixture *fix = FixtureSystem::Fix(r);
             fix->SetName(name);
-            lsmFixtures->set(r, fix->GetDescription());
-            lstFixtures->repaintRow(r);
+            lstFixtures->set(r, fix->GetDescription());
         }
         //[/UserButtonCode_btnSetName]
     }
@@ -712,8 +713,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
             int r = lstFixtures->getSelectedRow(i);
             Fixture *fix = FixtureSystem::Fix(r);
             fix->SetPatch(uni, fix->GetDMXChannel());
-            lsmFixtures->set(r, fix->GetDescription());
-            lstFixtures->repaintRow(r);
+            lstFixtures->set(r, fix->GetDescription());
         }
         //[/UserButtonCode_btnSetUni]
     }
@@ -737,8 +737,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
             }
             fix->SetPatch(fix->GetUniverse(), chn);
             chn += footprint;
-            lsmFixtures->set(r, fix->GetDescription());
-            lstFixtures->repaintRow(r);
+            lstFixtures->set(r, fix->GetDescription());
         }
         //[/UserButtonCode_btnSetChn]
     }
@@ -756,8 +755,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
             int r = lstFixtures->getSelectedRow(i);
             Fixture *fix = FixtureSystem::Fix(r);
             fix->SetFixID(fixid++);
-            lsmFixtures->set(r, fix->GetDescription());
-            lstFixtures->repaintRow(r);
+            lstFixtures->set(r, fix->GetDescription());
         }
         //[/UserButtonCode_btnSetFixID]
     }
@@ -783,22 +781,22 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void Patcher::rowSelected(TextListModel *parent, int row)
+void Patcher::rowSelected(TextListBox *parent, int row)
 {
-    if(parent == lsmDir.get()){
+    if(parent == lstDir.get()){
         //
-    }else if(parent == lsmDefs.get()){
+    }else if(parent == lstDefs.get()){
         //
-    }else if(parent == lsmFixtures.get()){
+    }else if(parent == lstFixtures.get()){
         refreshFixtureEditControls();
     }
 }
 
-void Patcher::rowDoubleClicked(TextListModel* parent, int row)
+void Patcher::rowDoubleClicked(TextListBox* parent, int row)
 {
-    if(parent == lsmDir.get()){
+    if(parent == lstDir.get()){
         //
-    }else if(parent == lsmDefs.get()){
+    }else if(parent == lstDefs.get()){
         if(row < 0) return;
         ValueTree v = FixtureSystem::GetFixtureDefs().getChild(row);
         if(!v.isValid()) return;
@@ -808,16 +806,15 @@ void Patcher::rowDoubleClicked(TextListModel* parent, int row)
         opts.componentToCentreAround = lstDefs.get();
         opts.resizable = false;
         opts.runModal();
-        fillDefsBox();
-    }else if(parent == lsmFixtures.get()){
+        lstDefs->set(row, FixtureSystem::GetFixDefName(v));
+    }else if(parent == lstFixtures.get()){
         //
     }
 }
 
 void Patcher::fillDirBox()
 {
-    lsmDir->clear();
-    lstDir->updateContent();
+    lstDir->clear();
     File dir = FixtureSystem::GetFixtureDirectory();
     if(!dir.isDirectory()) return;
     Array<File> fixs = dir.findChildFiles(File::findFiles, false, "*.xml");
@@ -825,30 +822,27 @@ void Patcher::fillDirBox()
     for(int i=0; i<fixs.size(); ++i){
         ValueTree v = VT_Load(fixs[i], "fixturedef");
         if(!v.isValid()) continue;
-        lsmDir->add(fixs[i].getFileNameWithoutExtension());
+        lstDir->add(fixs[i].getFileNameWithoutExtension());
     }
-    lstDir->updateContent();
 }
 
 void Patcher::fillDefsBox()
 {
-    lsmDefs->clear();
-    lstDefs->updateContent();
+    lstDefs->clear();
+    lstDefs->setSelectAddedItems(false);
     ValueTree defs = FixtureSystem::GetFixtureDefs();
     for(int i=0; i<defs.getNumChildren(); ++i){
-        lsmDefs->add(FixtureSystem::GetFixDefName(defs.getChild(i)));
+        lstDefs->add(FixtureSystem::GetFixDefName(defs.getChild(i)));
     }
-    lstDefs->updateContent();
+    lstDefs->setSelectAddedItems(true);
 }
 
 void Patcher::fillFixturesBox()
 {
-    lsmFixtures->clear();
-    lstFixtures->updateContent();
+    lstFixtures->clear();
     for(int i=0; i<FixtureSystem::NumFixtures(); ++i){
-        lsmFixtures->add(FixtureSystem::Fix(i)->GetDescription());
+        lstFixtures->add(FixtureSystem::Fix(i)->GetDescription());
     }
-    lstFixtures->updateContent();
 }
 
 void Patcher::refreshFixtureEditControls()
@@ -887,7 +881,7 @@ void Patcher::refreshFixtureEditControls()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Patcher" componentName=""
-                 parentClasses="public Component, public TextListModel::Listener"
+                 parentClasses="public Component, public TextListBox::Listener"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="960"
                  initialHeight="544">
@@ -1045,4 +1039,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

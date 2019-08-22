@@ -30,11 +30,12 @@ public:
         virtual void rowDoubleClicked(TextListBox* parent, int row);
     };
     
-    TextListBox(bool showAllNoneButtons = false, String headerCaption = "");
+    TextListBox(Listener *l, bool showAllNoneButtons = false, String headerCaption = "");
     ~TextListBox();
     
     int getNumRows() override;
     String get(int i);
+    int indexOf(String s);
     void set(int i, String s);
     
     void add(String s);

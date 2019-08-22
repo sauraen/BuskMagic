@@ -41,7 +41,7 @@
 
 #include "JuceHeader.h"
 #include "Common.h"
-#include "gui/TextListModel.h"
+#include "gui/TextListBox.h"
 //[/Headers]
 
 
@@ -55,7 +55,7 @@
                                                                     //[/Comments]
 */
 class ArtNetSetup  : public Component,
-                     public TextListModel::Listener,
+                     public TextListBox::Listener,
                      public TextEditor::Listener,
                      public Timer,
                      public Button::Listener
@@ -69,7 +69,7 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     void timerCallback() override;
 
-    void rowSelected(TextListModel *parent, int row) override;
+    void rowSelected(TextListBox *parent, int row) override;
     void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
     //[/UserMethods]
 
@@ -84,8 +84,7 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    std::unique_ptr<TextListModel> lsmDevices;
-    std::unique_ptr<ListBox> lstDevices;
+    std::unique_ptr<TextListBox> lstDevices;
     //[/UserVariables]
 
     //==============================================================================
@@ -132,4 +131,3 @@ private:
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

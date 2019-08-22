@@ -417,9 +417,9 @@ ArtNetSetup::ArtNetSetup ()
 
     //[UserPreSize]
 
-    TextListModel::Initialize(lsmDevices, lstDevices, this, this, "Devices");
-
-    lsmDevices->setFont(Font(Font::getDefaultMonospacedFontName(), 15.00f, Font::plain));
+    lstDevices.reset(new TextListBox(this));
+    addAndMakeVisible(lstDevices.get());
+    lstDevices->setFont(Font(Font::getDefaultMonospacedFontName(), 15.00f, Font::plain));
     lstDevices->setBounds(0, 48, 600, 136);
 
     txtShortName->addListener(this);
@@ -493,7 +493,6 @@ ArtNetSetup::~ArtNetSetup()
 
     //[Destructor]. You can add your own custom destruction code here..
     lstDevices = nullptr;
-    lsmDevices = nullptr;
 
     //[/Destructor]
 }
@@ -615,9 +614,11 @@ void ArtNetSetup::buttonClicked (Button* buttonThatWasClicked)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void ArtNetSetup::rowSelected(TextListModel *parent, int row){
-    if(parent == lsmDevices.get()){
-        ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(lstDevices->getLastRowSelected());
+void ArtNetSetup::rowSelected(TextListBox *parent, int row){
+    if(parent == lstDevices.get()){
+        int r = lstDevices->getLastRowSelected();
+        if(r < 0) return;
+        ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(r);
         if(dev == nullptr) return;
         txtIP->setText(dev->ip.toString());
         bool manual = dev->mode == ArtNetSystem::ArtNetDevice::Mode::manual;
@@ -694,21 +695,21 @@ void ArtNetSetup::textEditorTextChanged(TextEditor &editorThatWasChanged){
 }
 
 void ArtNetSetup::timerCallback(){
-    bool updateList = lsmDevices->getNumRows() != ArtNetSystem::NumDevices();
     int d = lstDevices->getLastRowSelected();
+    String oldselection = lstDevices->get(d);
     int i;
     for(i=0; i<ArtNetSystem::NumDevices(); ++i){
         String str = ArtNetSystem::GetDevice(i)->GetTableRow();
-        if(lsmDevices->getNumRows() <= i) lsmDevices->add(str);
-        else lsmDevices->set(i, str);
-        lstDevices->repaintRow(i);
+        if(lstDevices->getNumRows() <= i) lstDevices->add(str);
+        else lstDevices->set(i, str);
     }
-    for(; i<lsmDevices->getNumRows();){
-        lsmDevices->remove(i);
+    for(; i<lstDevices->getNumRows();){
+        lstDevices->remove(i);
     }
-    if(updateList){
-        lstDevices->updateContent();
-        if(d < ArtNetSystem::NumDevices()) lstDevices->selectRow(d);
+    int newrow = lstDevices->indexOf(oldselection);
+    if(newrow >= 0 && newrow != d){
+        lstDevices->selectRow(newrow);
+        d = newrow;
     }
     if(d < 0 || d >= ArtNetSystem::NumDevices()) return;
     ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(d);
@@ -748,7 +749,7 @@ void ArtNetSetup::timerCallback(){
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ArtNetSetup" componentName=""
-                 parentClasses="public Component, public TextListModel::Listener, public TextEditor::Listener, public Timer"
+                 parentClasses="public Component, public TextListBox::Listener, public TextEditor::Listener, public Timer"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="600"
                  initialHeight="330">
@@ -949,4 +950,3 @@ const int ArtNetSetup::artnet_logo_pngSize = 1613;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

@@ -102,6 +102,7 @@ namespace ArtNetSystem {
     ArtNetDevice *GetDevice(int d) {
         AS_LOCK_READ();
         if(d < 0 || d >= devices.size()){
+            std::cout << "ArtNetSystem asked for device " << d << " out of " << devices.size() << "!\n";
             jassertfalse;
             return nullptr;
         }

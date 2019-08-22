@@ -41,7 +41,7 @@
 
 #include "JuceHeader.h"
 #include "Common.h"
-#include "gui/TextListModel.h"
+#include "gui/TextListBox.h"
 //[/Headers]
 
 
@@ -55,7 +55,7 @@
                                                                     //[/Comments]
 */
 class FixtureEditor  : public Component,
-                       public TextListModel::Listener,
+                       public TextListBox::Listener,
                        public TextEditor::Listener,
                        public ComboBox::Listener,
                        public Button::Listener
@@ -67,7 +67,7 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void rowSelected(TextListModel *parent, int row) override;
+    void rowSelected(TextListBox *parent, int row) override;
     void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
 
     void fillParamsBox();
@@ -86,8 +86,7 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     ValueTree fixture, param;
 
-    std::unique_ptr<TextListModel> lsmParams;
-    std::unique_ptr<ListBox> lstParams;
+    std::unique_ptr<TextListBox> lstParams;
 
     std::unique_ptr<Component> parameditor;
     //[/UserVariables]
@@ -120,4 +119,3 @@ private:
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

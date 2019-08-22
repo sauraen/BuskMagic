@@ -45,24 +45,18 @@ MatrixEditor::MatrixEditor() : view(0, 0) {
     jassert(mtxed_static == nullptr);
     mtxed_static = this;
     //
-    lstCtType.reset(new TextListBox(true, "Controller type:"));
-    lstCtGroup.reset(new TextListBox(true, "Controller group:"));
-    lstCtName.reset(new TextListBox(true, "Controller name:"));
-    lstFixID.reset(new TextListBox(true, "Fixture ID:"));
-    lstFixName.reset(new TextListBox(true, "Fixture name:"));
-    lstChName.reset(new TextListBox(true, "Channel name:"));
+    lstCtType.reset(new TextListBox(this, true, "Controller type:"));
+    lstCtGroup.reset(new TextListBox(this, true, "Controller group:"));
+    lstCtName.reset(new TextListBox(this, true, "Controller name:"));
+    lstFixID.reset(new TextListBox(this, true, "Fixture ID:"));
+    lstFixName.reset(new TextListBox(this, true, "Fixture name:"));
+    lstChName.reset(new TextListBox(this, true, "Channel name:"));
     addAndMakeVisible(lstCtType.get());
     addAndMakeVisible(lstCtGroup.get());
     addAndMakeVisible(lstCtName.get());
     addAndMakeVisible(lstFixID.get());
     addAndMakeVisible(lstFixName.get());
     addAndMakeVisible(lstChName.get());
-    lstCtType->setListener(this);
-    lstCtGroup->setListener(this);
-    lstCtName->setListener(this);
-    lstFixID->setListener(this);
-    lstFixName->setListener(this);
-    lstChName->setListener(this);
     //
     lstCtType->add("Simple");
     lstCtType->add("Continuous");

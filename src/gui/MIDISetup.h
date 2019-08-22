@@ -41,7 +41,7 @@
 
 #include "JuceHeader.h"
 #include "Common.h"
-#include "gui/TextListModel.h"
+#include "gui/TextListBox.h"
 //[/Headers]
 
 
@@ -55,7 +55,7 @@
                                                                     //[/Comments]
 */
 class MIDISetup  : public Component,
-                   public TextListModel::Listener,
+                   public TextListBox::Listener,
                    public Button::Listener
 {
 public:
@@ -65,8 +65,7 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void rowSelected(TextListModel* parent, int row) override;
-    void rowDoubleClicked(TextListModel* parent, int row) override;
+    void rowSelected(TextListBox* parent, int row) override;
 
     void refreshLists();
     //[/UserMethods]
@@ -79,14 +78,10 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    std::unique_ptr<TextListModel> lsmInDevices;
-    std::unique_ptr<ListBox> lstInDevices;
-    std::unique_ptr<TextListModel> lsmInPorts;
-    std::unique_ptr<ListBox> lstInPorts;
-    std::unique_ptr<TextListModel> lsmOutDevices;
-    std::unique_ptr<ListBox> lstOutDevices;
-    std::unique_ptr<TextListModel> lsmOutPorts;
-    std::unique_ptr<ListBox> lstOutPorts;
+    std::unique_ptr<TextListBox> lstInDevices;
+    std::unique_ptr<TextListBox> lstInPorts;
+    std::unique_ptr<TextListBox> lstOutDevices;
+    std::unique_ptr<TextListBox> lstOutPorts;
     //[/UserVariables]
 
     //==============================================================================
@@ -110,4 +105,3 @@ private:
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

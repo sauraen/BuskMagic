@@ -163,11 +163,19 @@ MIDISetup::MIDISetup ()
 
     //[UserPreSize]
 
-    TextListModel::Initialize(lsmInDevices, lstInDevices, this, this, "InDevices");
-    TextListModel::Initialize(lsmInPorts, lstInPorts, this, this, "InPorts");
-    TextListModel::Initialize(lsmOutDevices, lstOutDevices, this, this, "OutDevices");
-    TextListModel::Initialize(lsmOutPorts, lstOutPorts, this, this, "OutPorts");
-
+    lstInDevices.reset(new TextListBox(this));
+    lstInPorts.reset(new TextListBox(this));
+    lstOutDevices.reset(new TextListBox(this));
+    lstOutPorts.reset(new TextListBox(this));
+    addAndMakeVisible(lstInDevices.get());
+    addAndMakeVisible(lstInPorts.get());
+    addAndMakeVisible(lstOutDevices.get());
+    addAndMakeVisible(lstOutPorts.get());
+    lstInDevices->setSelectAddedItems(false);
+    lstInPorts->setSelectAddedItems(false);
+    lstOutDevices->setSelectAddedItems(false);
+    lstOutPorts->setSelectAddedItems(false);
+    
     lstInDevices->setBounds(0, 24, 176, 152);
     lstInPorts->setBounds(224, 24, 176, 152);
     lstOutDevices->setBounds(0, 208, 176, 152);
@@ -204,13 +212,9 @@ MIDISetup::~MIDISetup()
 
     //[Destructor]. You can add your own custom destruction code here..
     lstInDevices = nullptr;
-    lsmInDevices = nullptr;
     lstInPorts = nullptr;
-    lsmInPorts = nullptr;
     lstOutDevices = nullptr;
-    lsmOutDevices = nullptr;
     lstOutPorts = nullptr;
-    lsmOutPorts = nullptr;
     //[/Destructor]
 }
 
@@ -268,7 +272,7 @@ void MIDISetup::buttonClicked (Button* buttonThatWasClicked)
             return;
         }
         int d = lstInDevices->getLastRowSelected();
-        if(d < 0 || d >= lsmInDevices->getNumRows()){
+        if(d < 0 || d >= lstInDevices->getNumRows()){
             WarningBox("Please select a valid input device to assign.");
             return;
         }
@@ -328,7 +332,7 @@ void MIDISetup::buttonClicked (Button* buttonThatWasClicked)
             return;
         }
         int d = lstOutDevices->getLastRowSelected();
-        if(d < 0 || d >= lsmOutDevices->getNumRows()){
+        if(d < 0 || d >= lstOutDevices->getNumRows()){
             WarningBox("Please select a valid output device to assign.");
             return;
         }
@@ -371,56 +375,36 @@ void MIDISetup::buttonClicked (Button* buttonThatWasClicked)
 
 void MIDISetup::refreshLists(){
     StringArray indevices = MidiInput::getDevices();
-    lsmInDevices->clear();
-    lstInDevices->updateContent();
+    lstInDevices->clear();
     for(int i=0; i<indevices.size(); ++i){
-        lsmInDevices->add(indevices[i]);
+        lstInDevices->add(indevices[i]);
     }
-    lstInDevices->updateContent();
     //
-    lsmInPorts->clear();
-    lstInPorts->updateContent();
+    lstInPorts->clear();
     for(int i=0; i<MIDISystem::NumInPorts(); ++i){
-        lsmInPorts->add(String(i+1) + ": " + MIDISystem::InPortDeviceName(i));
+        lstInPorts->add(String(i+1) + ": " + MIDISystem::InPortDeviceName(i));
     }
-    lstInPorts->updateContent();
     //
     StringArray outdevices = MidiOutput::getDevices();
-    lsmOutDevices->clear();
-    lstOutDevices->updateContent();
+    lstOutDevices->clear();
     for(int i=0; i<outdevices.size(); ++i){
-        lsmOutDevices->add(outdevices[i]);
+        lstOutDevices->add(outdevices[i]);
     }
-    lstOutDevices->updateContent();
     //
-    lsmOutPorts->clear();
-    lstOutPorts->updateContent();
+    lstOutPorts->clear();
     for(int i=0; i<MIDISystem::NumOutPorts(); ++i){
-        lsmOutPorts->add(String(i+1) + ": " + MIDISystem::OutPortDeviceName(i));
-    }
-    lstOutPorts->updateContent();
-}
-
-void MIDISetup::rowSelected(TextListModel* parent, int row){
-    if(parent == lsmInDevices.get()){
-
-    }else if(parent == lsmInPorts.get()){
-
-    }else if(parent == lsmOutDevices.get()){
-
-    }else if(parent == lsmOutPorts.get()){
-
+        lstOutPorts->add(String(i+1) + ": " + MIDISystem::OutPortDeviceName(i));
     }
 }
 
-void MIDISetup::rowDoubleClicked(TextListModel* parent, int row){
-    if(parent == lsmInDevices.get()){
+void MIDISetup::rowSelected(TextListBox* parent, int row){
+    if(parent == lstInDevices.get()){
 
-    }else if(parent == lsmInPorts.get()){
+    }else if(parent == lstInPorts.get()){
 
-    }else if(parent == lsmOutDevices.get()){
+    }else if(parent == lstOutDevices.get()){
 
-    }else if(parent == lsmOutPorts.get()){
+    }else if(parent == lstOutPorts.get()){
 
     }
 }
@@ -438,7 +422,7 @@ void MIDISetup::rowDoubleClicked(TextListModel* parent, int row){
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="MIDISetup" componentName=""
-                 parentClasses="public Component, public TextListModel::Listener"
+                 parentClasses="public Component, public TextListBox::Listener"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="400"
                  initialHeight="360">
@@ -496,4 +480,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

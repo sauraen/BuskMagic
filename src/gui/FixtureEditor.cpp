@@ -263,8 +263,8 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
 
     //[UserPreSize]
 
-    TextListModel::Initialize(lsmParams, lstParams, this, this, "Params");
-
+    lstParams.reset(new TextListBox(this));
+    addAndMakeVisible(lstParams.get());
     lstParams->setBounds(0, 120, 184, 264);
 
     txtManufacturer->addListener(this);
@@ -322,7 +322,6 @@ FixtureEditor::~FixtureEditor()
 
     //[Destructor]. You can add your own custom destruction code here..
     lstParams = nullptr;
-    lsmParams = nullptr;
     //[/Destructor]
 }
 
@@ -386,9 +385,7 @@ void FixtureEditor::buttonClicked (Button* buttonThatWasClicked)
         param.setProperty(idName, t + typecountstr, nullptr);
         param.setProperty(idLetters, t.substring(0, 1) + typecountstr, nullptr);
         fixture.addChild(param, -1, nullptr);
-        lsmParams->add(getParamDesc(param));
-        lstParams->updateContent();
-        lstParams->selectRow(fixture.indexOf(param));
+        lstParams->add(getParamDesc(param));
         //[/UserButtonCode_btnAddParam]
     }
     else if (buttonThatWasClicked == btnRemoveParam.get())
@@ -400,10 +397,10 @@ void FixtureEditor::buttonClicked (Button* buttonThatWasClicked)
                 "Cannot remove parameters from fixtures which are in use.");
             return;
         }
+        int i = fixture.indexOf(param);
         fixture.removeChild(param, nullptr);
         param = ValueTree();
-        fillParamsBox();
-        lstParams->deselectAllRows();
+        lstParams->remove(i);
         refreshParamControls();
         //[/UserButtonCode_btnRemoveParam]
     }
@@ -419,9 +416,8 @@ void FixtureEditor::buttonClicked (Button* buttonThatWasClicked)
         int i = fixture.indexOf(param);
         if(i == 0) return;
         fixture.moveChild(i, i-1, nullptr);
-        lsmParams->set(i-1, getParamDesc(param));
-        lsmParams->set(i, getParamDesc(fixture.getChild(i)));
-        lstParams->updateContent();
+        lstParams->set(i-1, getParamDesc(param));
+        lstParams->set(i, getParamDesc(fixture.getChild(i)));
         lstParams->selectRow(fixture.indexOf(param));
         //[/UserButtonCode_btnParamUp]
     }
@@ -437,9 +433,8 @@ void FixtureEditor::buttonClicked (Button* buttonThatWasClicked)
         int i = fixture.indexOf(param);
         if(i == fixture.getNumChildren() - 1) return;
         fixture.moveChild(i, i+1, nullptr);
-        lsmParams->set(i+1, getParamDesc(param));
-        lsmParams->set(i, getParamDesc(fixture.getChild(i)));
-        lstParams->updateContent();
+        lstParams->set(i+1, getParamDesc(param));
+        lstParams->set(i, getParamDesc(fixture.getChild(i)));
         lstParams->selectRow(fixture.indexOf(param));
         //[/UserButtonCode_btnParamDown]
     }
@@ -452,9 +447,9 @@ void FixtureEditor::buttonClicked (Button* buttonThatWasClicked)
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void FixtureEditor::rowSelected(TextListModel *parent, int row)
+void FixtureEditor::rowSelected(TextListBox *parent, int row)
 {
-    if(parent == lsmParams.get()){
+    if(parent == lstParams.get()){
         param = fixture.getChild(row);
         refreshParamControls();
     }
@@ -479,27 +474,25 @@ void FixtureEditor::textEditorTextChanged(TextEditor &editorThatWasChanged)
         if(text.length() == 0) turnRed = true;
         param.setProperty(idName, text, nullptr);
         int i = fixture.indexOf(param);
-        lsmParams->set(i, getParamDesc(param));
-        lstParams->repaintRow(i);
+        lstParams->set(i, getParamDesc(param));
     }else if(&editorThatWasChanged == txtPLetters.get()){
         if(!param.isValid()) return;
         if(text.length() == 0 || text.length() > 2) turnRed = true;
         param.setProperty(idLetters, text, nullptr);
         int i = fixture.indexOf(param);
-        lsmParams->set(i, getParamDesc(param));
-        lstParams->repaintRow(i);
+        lstParams->set(i, getParamDesc(param));
     }
     TEXTCHANGEDHANDLER_POST;
 }
 
 void FixtureEditor::fillParamsBox()
 {
-    lsmParams->clear();
-    lstParams->updateContent();
+    lstParams->clear();
+    lstParams->setSelectAddedItems(false);
     for(int i=0; i<fixture.getNumChildren(); ++i){
-        lsmParams->add(getParamDesc(fixture.getChild(i)));
+        lstParams->add(getParamDesc(fixture.getChild(i)));
     }
-    lstParams->updateContent();
+    lstParams->setSelectAddedItems(true);
 }
 
 void FixtureEditor::refreshParamControls()
@@ -543,7 +536,7 @@ String FixtureEditor::getParamDesc(ValueTree prm)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="FixtureEditor" componentName=""
-                 parentClasses="public Component, public TextListModel::Listener, public TextEditor::Listener"
+                 parentClasses="public Component, public TextListBox::Listener, public TextEditor::Listener"
                  constructorParams="ValueTree fxt" variableInitialisers="fixture(fxt)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="344" initialHeight="408">

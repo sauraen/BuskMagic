@@ -92,8 +92,10 @@ Fixture::~Fixture() {
 }
 
 String Fixture::GetDescription() const {
-    return String(fixid) + ": " + hex(uni) + "." + String(chn) + ": " + name + " (" 
-        + def.getProperty(idManufacturer, "(Manu)").toString() + " "
+    return String(fixid) + ": " 
+        + hex(uni) + "." + String(chn) + "-" 
+        + String(chn + (int)def.getProperty(idFootprint, 1) - 1) + ": " 
+        + name + " (" + def.getProperty(idManufacturer, "(Manu)").toString() + " "
         + def.getProperty(idName, "(Name)").toString() + ")";
 }
 

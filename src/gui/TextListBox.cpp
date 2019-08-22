@@ -20,10 +20,11 @@
 
 void TextListBox::Listener::rowDoubleClicked(TextListBox* parent, int row) {}
 
-TextListBox::TextListBox(bool showAllNoneButtons, String headerCaption) 
-        : ListBox("TextListBox", this), listener(nullptr), font(15.0f), selectonadd(true) {
+TextListBox::TextListBox(Listener *l, bool showAllNoneButtons, String headerCaption) 
+        : ListBox("TextListBox", this), listener(l), font(15.0f), selectonadd(true) {
     setMultipleSelectionEnabled(showAllNoneButtons);
     setClickingTogglesRowSelection(showAllNoneButtons);
+    setRowSelectedOnMouseDown(true);
     setRowHeight(16);
     setOutlineThickness(1);
     setColour(ListBox::outlineColourId, Colours::lightgrey);
@@ -31,6 +32,7 @@ TextListBox::TextListBox(bool showAllNoneButtons, String headerCaption)
     if(!headerCaption.isEmpty()){
         Label *lbl = new Label("lblName", headerCaption);
         lbl->setSize(100, 16);
+        lbl->setColour(Label::backgroundColourId, LFWindowColor());
         setHeaderComponent(lbl); //gets deleted automatically
     }
     //
@@ -69,6 +71,9 @@ int TextListBox::getNumRows(){
 String TextListBox::get(int i){
     return strings[i];
 }
+int TextListBox::indexOf(String s){
+    return strings.indexOf(s);
+}
 void TextListBox::set(int i, String s){
     strings.set(i, s);
     repaintRow(i);
@@ -94,7 +99,7 @@ static void InsertInSparseSet(SparseSet<int> &ss, int i, bool select){
             ss.removeRange({range.getStart(), range.getStart()+1});
         }else if(range.getEnd() >= i){
             ss.addRange({range.getEnd(), range.getEnd()+1});
-            if(select) ss.removeRange({i, i+1});
+            if(!select) ss.removeRange({i, i+1});
             return;
         }else{
             break;
@@ -110,7 +115,8 @@ static void RemoveInSparseSet(SparseSet<int> &ss, int i){
             lastend = range.getEnd();
             continue;
         }else if(range.getStart() <= i){
-            ss.removeRange({range.getEnd(), range.getEnd()+1});
+            ss.removeRange({range.getEnd()-1, range.getEnd()});
+            if(range.getStart()+1 == range.getEnd()) --r; //Just deleted a range
         }else{
             ss.addRange({range.getStart()-1, range.getStart()});
             ss.removeRange({range.getEnd()-1, range.getEnd()});
@@ -139,22 +145,26 @@ void TextListBox::clear(){
 }
 
 void TextListBox::syncToSortedList(StringArray in, bool ignoreFirst){
-    int l = ignoreFirst ? 1 : 0;
-    int a = l;
-    while(l < strings.size() || a < in.size()){
-        if(l >= strings.size()){
-            add(in[a++]);
-            ++l;
-        }else if(a >= in.size()){
-            remove(l);
+    int s = ignoreFirst ? 1 : 0;
+    int i = s;
+    while(i < in.size() || s < strings.size()){
+        if(i >= in.size()){
+            remove(s);
+        }else if(s >= strings.size()){
+            add(in[i++]);
+            ++s;
         }else{
-            int cmpres = strings[a].compareNatural(in[l]);
-            if(cmpres < 0){
-                insert(l++, in[a++]);
+            int cmpres = in[i].compareNatural(strings[s]);
+            if(cmpres != 0 && i+1 < in.size() && s+1 < strings.size()
+                    && in[i+1].compareNatural(strings[s+1]) == 0){
+                set(s, in[i]);
+                ++i; ++s;
+            }else if(cmpres < 0){
+                insert(s++, in[i++]);
             }else if(cmpres > 0){
-                remove(l);
+                remove(s);
             }else{
-                ++a; ++l;
+                ++i; ++s;
             }
         }
     }

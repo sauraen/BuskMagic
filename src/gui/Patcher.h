@@ -41,7 +41,7 @@
 
 #include "JuceHeader.h"
 #include "Common.h"
-#include "gui/TextListModel.h"
+#include "gui/TextListBox.h"
 //[/Headers]
 
 
@@ -55,7 +55,7 @@
                                                                     //[/Comments]
 */
 class Patcher  : public Component,
-                 public TextListModel::Listener,
+                 public TextListBox::Listener,
                  public Button::Listener
 {
 public:
@@ -65,8 +65,8 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void rowSelected(TextListModel *parent, int row) override;
-    void rowDoubleClicked(TextListModel* parent, int row) override;
+    void rowSelected(TextListBox *parent, int row) override;
+    void rowDoubleClicked(TextListBox *parent, int row) override;
 
     void fillDirBox();
     void fillDefsBox();
@@ -82,12 +82,9 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    std::unique_ptr<TextListModel> lsmDir;
-    std::unique_ptr<ListBox> lstDir;
-    std::unique_ptr<TextListModel> lsmDefs;
-    std::unique_ptr<ListBox> lstDefs;
-    std::unique_ptr<TextListModel> lsmFixtures;
-    std::unique_ptr<ListBox> lstFixtures;
+    std::unique_ptr<TextListBox> lstDir;
+    std::unique_ptr<TextListBox> lstDefs;
+    std::unique_ptr<TextListBox> lstFixtures;
     //[/UserVariables]
 
     //==============================================================================
@@ -136,4 +133,3 @@ private:
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

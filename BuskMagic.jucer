@@ -63,7 +63,6 @@
         <FILE id="PhOVeI" name="MatrixEditor.h" compile="0" resource="0" file="src/gui/MatrixEditor.h"/>
         <FILE id="UvwTXt" name="MIDISetup.cpp" compile="1" resource="0" file="src/gui/MIDISetup.cpp"/>
         <FILE id="mYeBXE" name="MIDISetup.h" compile="0" resource="0" file="src/gui/MIDISetup.h"/>
-        <FILE id="CQIZOf" name="MultiListBox.h" compile="0" resource="0" file="src/gui/MultiListBox.h"/>
         <FILE id="owp8Tw" name="Patcher.cpp" compile="1" resource="0" file="src/gui/Patcher.cpp"/>
         <FILE id="TN16vv" name="Patcher.h" compile="0" resource="0" file="src/gui/Patcher.h"/>
         <FILE id="Z0eqzo" name="StatusBar.cpp" compile="1" resource="0" file="src/gui/StatusBar.cpp"/>
@@ -71,9 +70,6 @@
         <FILE id="ijfYax" name="SynthButton.h" compile="0" resource="0" file="src/gui/SynthButton.h"/>
         <FILE id="QpfB9w" name="TextListBox.cpp" compile="1" resource="0" file="src/gui/TextListBox.cpp"/>
         <FILE id="EL1OzB" name="TextListBox.h" compile="0" resource="0" file="src/gui/TextListBox.h"/>
-        <FILE id="YywxUI" name="TextListModel.cpp" compile="1" resource="0"
-              file="src/gui/TextListModel.cpp"/>
-        <FILE id="hPHz1t" name="TextListModel.h" compile="0" resource="0" file="src/gui/TextListModel.h"/>
       </GROUP>
       <FILE id="XoowRq" name="ArtNetSystem.cpp" compile="1" resource="0"
             file="src/ArtNetSystem.cpp"/>

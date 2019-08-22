@@ -33,23 +33,26 @@ MIDISetting::MIDISetting(const MIDISetting &other)
       note(other.note), vel(other.vel) {}
 
 String MIDISetting::GetHelpText(){
-    return "MIDI setting text looks like P.C.CmdType.N.V\n"
-           "where P is the port; C is the channel (1-16);\n"
-           "CmdType is: NoteOff, NoteOn, PolyAft, CC, Prog,\n"
-           "ChnAft, or PitchB; N is the note or CC number;\n"
-           "and V is the velocity or value.\n"
+    return "MIDI setting text: P.C.CmdType.N.V\n"
+           "-- P: port\n"
+           "-- C: channel (1-16)\n"
+           "-- CmdType: NoteOff, NoteOn, PolyAft, CC, Prog,\n"
+           "            ChnAft, or PitchB\n"
+           "-- N: note or CC number\n"
+           "-- V: velocity or value\n"
+           "X in a field means \"any\"\n"
            "\n"
-           "Type X in place of P, C, N, or V to mean \"any\"\n"
-           "for that field. E.g. 1.X.NoteOn.60.X means port 1,\n"
-           "any channel, note on command, note 60, any velocity.\n"
-           "You can also type H or L in the velocity field to mean\n"
-           "\"high\" (64-127) or \"low\" (0-63).\n"
-           "Outputs cannot contain X, H, or L--the actual value\n"
-           "must be specified.\n"
-           "\n"
-           "Note that Prog only has N (no V), and both ChnAft and\n"
-           "PitchB only have V (no N). Continuous controllers do not\n"
-           "specify V, as this is the value of the controller.";
+           "Examples:\n"
+           "1.X.NoteOff.60.X -- for a button input\n"
+           "2.5.NoteOn.72.H -- for a button input (H = high = 64-127,\n"
+           "                   L = low = 0-63)\n"
+           "X.X.CC.70 -- for a continuous input (note: no V, V will\n"
+           "             be the continuous value)\n"
+           "2.16.PolyAft.80.113 -- for a strange-but-legal button output\n"
+           "                       (X/H/L not allowed in outputs)\n"
+           "X.1.Prog.5 -- for a button input or output (Prog has no V)\n"
+           "X.1.ChnAft -- for a continuous input or output (ChnAft has no N)\n"
+           "X.1.PitchB -- for a continuous input or output (PitchB has no N)";
 }
 
 String MIDISetting::GetStr() {
@@ -240,7 +243,8 @@ namespace MIDISystem {
     static MIDISystemCallback callback;
     
     void Init(){
-        //nothing for now
+        AddInPort();
+        AddOutPort();
     }
     void Finalize(){
         for(int i=0; i<inports.size(); ++i){
