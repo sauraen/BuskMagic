@@ -160,6 +160,13 @@ MIDISetup::MIDISetup ()
 
     btnUnassignOutPort->setBounds (184, 280, 32, 24);
 
+    btnRefresh.reset (new TextButton ("btnRefresh"));
+    addAndMakeVisible (btnRefresh.get());
+    btnRefresh->setButtonText (TRANS("Refresh"));
+    btnRefresh->addListener (this);
+
+    btnRefresh->setBounds (136, 0, 63, 24);
+
 
     //[UserPreSize]
 
@@ -175,7 +182,7 @@ MIDISetup::MIDISetup ()
     lstInPorts->setSelectAddedItems(false);
     lstOutDevices->setSelectAddedItems(false);
     lstOutPorts->setSelectAddedItems(false);
-    
+
     lstInDevices->setBounds(0, 24, 176, 152);
     lstInPorts->setBounds(224, 24, 176, 152);
     lstOutDevices->setBounds(0, 208, 176, 152);
@@ -208,6 +215,7 @@ MIDISetup::~MIDISetup()
     btnRemoveOutPort = nullptr;
     btnAssignOutPort = nullptr;
     btnUnassignOutPort = nullptr;
+    btnRefresh = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -364,6 +372,12 @@ void MIDISetup::buttonClicked (Button* buttonThatWasClicked)
         refreshLists();
         //[/UserButtonCode_btnUnassignOutPort]
     }
+    else if (buttonThatWasClicked == btnRefresh.get())
+    {
+        //[UserButtonCode_btnRefresh] -- add your button handler code here..
+        refreshLists();
+        //[/UserButtonCode_btnRefresh]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -471,6 +485,9 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="btnUnassignOutPort" id="ddb085d7e4d50770" memberName="btnUnassignOutPort"
               virtualName="" explicitFocusOrder="0" pos="184 280 32 24" buttonText="X"
               connectedEdges="4" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="btnRefresh" id="610e07b057c90797" memberName="btnRefresh"
+              virtualName="" explicitFocusOrder="0" pos="136 0 63 24" buttonText="Refresh"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -480,3 +497,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

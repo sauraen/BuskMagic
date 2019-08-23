@@ -29,6 +29,7 @@ PhasorEditor::PhasorEditor(void *data) : gml(*this) {
     Desktop::getInstance().addGlobalMouseListener(&gml);
     initialDragDone = false;
     enteredMiddleZone = false;
+    exitOnUp = true;
     //
     txtMag.reset(new TextEditor("txtMag"));
     addAndMakeVisible(txtMag.get());
@@ -56,6 +57,7 @@ PhasorEditor::PhasorEditor(void *data) : gml(*this) {
     txtAngle->setBounds(44, 172, 64, 24);
     txtAngle->setText(String(phasor->angle, 2));
     //
+    setWantsKeyboardFocus(true);
     setSize(140, 268);
 }
 
@@ -123,13 +125,56 @@ void PhasorEditor::buttonClicked (Button* buttonThatWasClicked){
     
 }
 
+void PhasorEditor::closeEditor(){
+    if(MatrixEditor::mtxed_static != nullptr) MatrixEditor::mtxed_static->grabKeyboardFocus();
+}
+
 void PhasorEditor::globalMouseUp(const MouseEvent &event){
     initialDragDone = true;
+    if(exitOnUp) closeEditor();
 }
 
 void PhasorEditor::globalMouseDrag(const MouseEvent &event){
     if(initialDragDone) return;
     mouseDrag(event);
+}
+
+bool PhasorEditor::keyPressed(const KeyPress &key){
+    if(!initialDragDone){
+        int keycode = key.getKeyCode();
+        if(keycode == KeyPress::escapeKey){
+            closeEditor();
+            return true;
+        }else if(keycode == '0' || keycode == KeyPress::numberPad0){
+            phasor->mag = 0.0f;
+            phasor->angle = 0.0f;
+            closeEditor();
+        }else if(keycode == '1' || keycode == KeyPress::numberPad1){
+            phasor->mag = 1.0f;
+            phasor->angle = 0.0f;
+            closeEditor();
+        }else if(keycode == '5' || keycode == KeyPress::numberPad5){
+            phasor->mag = 0.5f;
+            phasor->angle = 0.0f;
+            closeEditor();
+        }else if(keycode == '9' || keycode == KeyPress::numberPad9){
+            phasor->mag = 1.0f;
+            phasor->angle = 0.25f;
+            closeEditor();
+        }else if(keycode == '8' || keycode == KeyPress::numberPad8){
+            phasor->mag = 1.0f;
+            phasor->angle = 0.5f;
+            closeEditor();
+        }else if(keycode == '7' || keycode == KeyPress::numberPad7){
+            phasor->mag = 1.0f;
+            phasor->angle = 0.75f;
+            closeEditor();
+        }else{
+            exitOnUp = false;
+            return true;
+        }
+    }
+    return false;
 }
     
 void PhasorEditor::mouseDrag(const MouseEvent &event){

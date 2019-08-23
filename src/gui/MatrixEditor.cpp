@@ -157,11 +157,19 @@ void MatrixEditor::paint (Graphics& g) {
             float midy = y + (row_height / 2);
             float angle = 2.0f * M_PI * phasor->angle;
             float fit_in_box = 0.8f * 0.5f * std::min(row_height, col_width);
+            if(std::abs(phasor->mag) < 0.0001f) fit_in_box = 0.0f;
             float endx = midx + std::cos(angle) * fit_in_box;
             float endy = midy - std::sin(angle) * fit_in_box;
-            g.setColour(Colours::white);
+            g.setColour(phasor->mag >= 0.0f ? Colours::white : Colours::darkgrey);
             g.drawLine(midx, midy, endx, endy);
             g.drawLine(endx-1.0f, endy-1.0f, endx+1.0f, endy+1.0f, 3); //Dot at end
+            if(phasor->mag < 0.0f){
+                endx = 2.0f*midx - endx;
+                endy = 2.0f*midy - endy;
+                g.setColour(Colours::white);
+                g.drawLine(midx, midy, endx, endy);
+                g.drawLine(endx-1.0f, endy-1.0f, endx+1.0f, endy+1.0f, 3);
+            }
         }
     }
 }

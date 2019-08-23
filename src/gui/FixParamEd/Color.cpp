@@ -191,6 +191,9 @@ void Color::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
             VT_RemoveChildWithName(param, idYellow);
             if(colormode == "RGB" || colormode == "RGBW"){
                 VT_RemoveChildWithName(param, idAmber);
+            }else{
+                //Red huemix changes between amber and non-amber, so re-init it
+                VT_RemoveChildWithName(param, idRed);
             }
             if(colormode == "RGB" || colormode == "RGBA"){
                 VT_RemoveChildWithName(param, idWhite);
@@ -291,4 +294,3 @@ END_JUCER_METADATA
 }
 
 //[/EndFile]
-

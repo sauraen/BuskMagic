@@ -97,6 +97,7 @@ private:
     std::unique_ptr<TextButton> btnRemoveOutPort;
     std::unique_ptr<TextButton> btnAssignOutPort;
     std::unique_ptr<TextButton> btnUnassignOutPort;
+    std::unique_ptr<TextButton> btnRefresh;
 
 
     //==============================================================================
@@ -105,3 +106,4 @@ private:
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

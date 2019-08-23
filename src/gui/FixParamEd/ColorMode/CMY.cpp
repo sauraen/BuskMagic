@@ -86,7 +86,7 @@ CMY::CMY (ValueTree prm)
     txtHueMY->setScrollbarsShown (true);
     txtHueMY->setCaretVisible (true);
     txtHueMY->setPopupMenuEnabled (true);
-    txtHueMY->setText (TRANS("0.00"));
+    txtHueMY->setText (String());
 
     txtHueMY->setBounds (104, 24, 56, 24);
 
@@ -109,7 +109,7 @@ CMY::CMY (ValueTree prm)
     txtHueY->setScrollbarsShown (true);
     txtHueY->setCaretVisible (true);
     txtHueY->setPopupMenuEnabled (true);
-    txtHueY->setText (TRANS("0.25"));
+    txtHueY->setText (String());
 
     txtHueY->setBounds (104, 48, 56, 24);
 
@@ -144,7 +144,7 @@ CMY::CMY (ValueTree prm)
     txtHueYC->setScrollbarsShown (true);
     txtHueYC->setCaretVisible (true);
     txtHueYC->setPopupMenuEnabled (true);
-    txtHueYC->setText (TRANS("0.50"));
+    txtHueYC->setText (String());
 
     txtHueYC->setBounds (104, 72, 56, 24);
 
@@ -167,7 +167,7 @@ CMY::CMY (ValueTree prm)
     txtHueC->setScrollbarsShown (true);
     txtHueC->setCaretVisible (true);
     txtHueC->setPopupMenuEnabled (true);
-    txtHueC->setText (TRANS("0.625"));
+    txtHueC->setText (String());
 
     txtHueC->setBounds (104, 96, 56, 24);
 
@@ -202,7 +202,7 @@ CMY::CMY (ValueTree prm)
     txtHueCM->setScrollbarsShown (true);
     txtHueCM->setCaretVisible (true);
     txtHueCM->setPopupMenuEnabled (true);
-    txtHueCM->setText (TRANS("0.75"));
+    txtHueCM->setText (String());
 
     txtHueCM->setBounds (104, 120, 56, 24);
 
@@ -225,7 +225,7 @@ CMY::CMY (ValueTree prm)
     txtHueM->setScrollbarsShown (true);
     txtHueM->setCaretVisible (true);
     txtHueM->setPopupMenuEnabled (true);
-    txtHueM->setText (TRANS("0.875"));
+    txtHueM->setText (String());
 
     txtHueM->setBounds (104, 144, 56, 24);
 
@@ -263,12 +263,12 @@ CMY::CMY (ValueTree prm)
     txtDMXC->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idCyan, nullptr)));
     txtDMXM->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idMagenta, nullptr)));
     txtDMXY->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idYellow, nullptr)));
-    txtHueC->setText(String((float)VT_GetChildProperty(param, idCyan, "hue", 0.625f), 3));
-    txtHueCM->setText(String((float)VT_GetChildProperty(param, idCyan, "huemix", 0.75f), 3));
-    txtHueM->setText(String((float)VT_GetChildProperty(param, idMagenta, "hue", 0.875f), 3));
-    txtHueMY->setText(String((float)VT_GetChildProperty(param, idMagenta, "huemix", 0.0f), 3));
-    txtHueY->setText(String((float)VT_GetChildProperty(param, idYellow, "hue", 0.25f), 3));
-    txtHueYC->setText(String((float)VT_GetChildProperty(param, idYellow, "huemix", 0.5f), 3));
+    txtHueC->setText(String((float)VT_GetChildProperty(param, idCyan, idHue, 0.625f), 3));
+    txtHueCM->setText(String((float)VT_GetChildProperty(param, idCyan, idHueMix, 0.75f), 3));
+    txtHueM->setText(String((float)VT_GetChildProperty(param, idMagenta, idHue, 0.875f), 3));
+    txtHueMY->setText(String((float)VT_GetChildProperty(param, idMagenta, idHueMix, 0.0f), 3));
+    txtHueY->setText(String((float)VT_GetChildProperty(param, idYellow, idHue, 0.25f), 3));
+    txtHueYC->setText(String((float)VT_GetChildProperty(param, idYellow, idHueMix, 0.5f), 3));
 
     //[/Constructor]
 }
@@ -343,22 +343,22 @@ void CMY::textEditorTextChanged(TextEditor &editorThatWasChanged)
             dmx_normal, dmx_fine, dmx_ultra);
     }else if(&editorThatWasChanged == txtHueC.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idCyan, "hue", decval);
+        else VT_SetChildProperty(param, idCyan, idHue, decval);
     }else if(&editorThatWasChanged == txtHueCM.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idCyan, "huemix", decval);
+        else VT_SetChildProperty(param, idCyan, idHueMix, decval);
     }else if(&editorThatWasChanged == txtHueM.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idMagenta, "hue", decval);
+        else VT_SetChildProperty(param, idMagenta, idHue, decval);
     }else if(&editorThatWasChanged == txtHueMY.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idMagenta, "huemix", decval);
+        else VT_SetChildProperty(param, idMagenta, idHueMix, decval);
     }else if(&editorThatWasChanged == txtHueY.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idYellow, "hue", decval);
+        else VT_SetChildProperty(param, idYellow, idHue, decval);
     }else if(&editorThatWasChanged == txtHueYC.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idYellow, "huemix", decval);
+        else VT_SetChildProperty(param, idYellow, idHueMix, decval);
     }
     TEXTCHANGEDHANDLER_POST;
 }
@@ -389,18 +389,16 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="24 144 72 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <TEXTEDITOR name="txtHueMY" id="ea26a466b5e37632" memberName="txtHueMY" virtualName=""
-              explicitFocusOrder="0" pos="104 24 56 24" initialText="0.00"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 24 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblMY" id="d5801027ede5aabd" memberName="lblMY" virtualName=""
          explicitFocusOrder="0" pos="0 24 104 24" edTextCol="ff000000"
          edBkgCol="0" labelText="M+Y (Red):" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtHueY" id="69717f9b2bef903" memberName="txtHueY" virtualName=""
-              explicitFocusOrder="0" pos="104 48 56 24" initialText="0.25"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 48 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblY" id="181bac7d94b8484e" memberName="lblY" virtualName=""
          explicitFocusOrder="0" pos="0 48 23 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Y:" editableSingleClick="0" editableDoubleClick="0"
@@ -410,18 +408,16 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="24 48 72 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <TEXTEDITOR name="txtHueYC" id="e303282fc8afe509" memberName="txtHueYC" virtualName=""
-              explicitFocusOrder="0" pos="104 72 56 24" initialText="0.50"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 72 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblYC" id="4fe7d4a4da0dd757" memberName="lblYC" virtualName=""
          explicitFocusOrder="0" pos="0 72 104 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Y+C (Green):" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtHueC" id="c241147e133d676e" memberName="txtHueC" virtualName=""
-              explicitFocusOrder="0" pos="104 96 56 24" initialText="0.625"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 96 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblC" id="d32fe5ac40f01595" memberName="lblC" virtualName=""
          explicitFocusOrder="0" pos="0 96 23 24" edTextCol="ff000000"
          edBkgCol="0" labelText="C:" editableSingleClick="0" editableDoubleClick="0"
@@ -431,18 +427,16 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="24 96 72 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <TEXTEDITOR name="txtHueCM" id="135f6bd2f86e9a29" memberName="txtHueCM" virtualName=""
-              explicitFocusOrder="0" pos="104 120 56 24" initialText="0.75"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 120 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblCM" id="a838fb38874abaf9" memberName="lblCM" virtualName=""
          explicitFocusOrder="0" pos="0 120 104 24" edTextCol="ff000000"
          edBkgCol="0" labelText="C+M (Blue):" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtHueM" id="3fead027864ef25f" memberName="txtHueM" virtualName=""
-              explicitFocusOrder="0" pos="104 144 56 24" initialText="0.875"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 144 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblDescription" id="805bbb1ad803a595" memberName="lblDescription"
          virtualName="" explicitFocusOrder="0" pos="24 0 128 24" edTextCol="ff000000"
          edBkgCol="0" labelText="DMX             Hue" editableSingleClick="0"

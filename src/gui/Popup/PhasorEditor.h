@@ -47,6 +47,7 @@ public:
     
     void mouseDrag(const MouseEvent &event) override;
     void focusGained(FocusChangeType cause) override;
+    bool keyPressed(const KeyPress &key) override;
 
 private:
     Phasor *phasor;
@@ -64,11 +65,13 @@ private:
         PhasorEditor &parent;
     };
     GlobalMouseListener gml;
-    bool initialDragDone;
+    bool initialDragDone, exitOnUp;
     
     bool enteredMiddleZone;
     float middleZoneAngleEntered;
     bool negmagEntered;
+    
+    void closeEditor();
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PhasorEditor)
 };

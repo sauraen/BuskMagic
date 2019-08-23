@@ -179,6 +179,7 @@ inline var VT_GetChildProperty(ValueTree v, Identifier cname, Identifier pname, 
     return v.getOrCreateChildWithName(cname, nullptr).getProperty(pname, defval);
 }
 inline void VT_SetChildProperty(ValueTree v, Identifier cname, Identifier pname, const var &value){
+    //std::cout << "Setting " << cname.toString() << " " << pname.toString() << " to " << value.toString() << "\n"; //TODO XXX
     v.getOrCreateChildWithName(cname, nullptr).setProperty(pname, value, nullptr);
 }
 inline void VT_RemoveChildWithName(ValueTree v, Identifier name){

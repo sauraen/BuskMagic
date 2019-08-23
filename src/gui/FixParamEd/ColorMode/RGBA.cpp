@@ -86,7 +86,7 @@ RGBA::RGBA (ValueTree prm)
     txtHueR->setScrollbarsShown (true);
     txtHueR->setCaretVisible (true);
     txtHueR->setPopupMenuEnabled (true);
-    txtHueR->setText (TRANS("0.00"));
+    txtHueR->setText (String());
 
     txtHueR->setBounds (104, 24, 56, 24);
 
@@ -109,7 +109,7 @@ RGBA::RGBA (ValueTree prm)
     txtHueRA->setScrollbarsShown (true);
     txtHueRA->setCaretVisible (true);
     txtHueRA->setPopupMenuEnabled (true);
-    txtHueRA->setText (TRANS("0.10"));
+    txtHueRA->setText (String());
 
     txtHueRA->setBounds (104, 48, 56, 24);
 
@@ -144,7 +144,7 @@ RGBA::RGBA (ValueTree prm)
     txtHueG->setScrollbarsShown (true);
     txtHueG->setCaretVisible (true);
     txtHueG->setPopupMenuEnabled (true);
-    txtHueG->setText (TRANS("0.50"));
+    txtHueG->setText (String());
 
     txtHueG->setBounds (104, 120, 56, 24);
 
@@ -167,7 +167,7 @@ RGBA::RGBA (ValueTree prm)
     txtHueGB->setScrollbarsShown (true);
     txtHueGB->setCaretVisible (true);
     txtHueGB->setPopupMenuEnabled (true);
-    txtHueGB->setText (TRANS("0.625"));
+    txtHueGB->setText (String());
 
     txtHueGB->setBounds (104, 144, 56, 24);
 
@@ -202,7 +202,7 @@ RGBA::RGBA (ValueTree prm)
     txtHueB->setScrollbarsShown (true);
     txtHueB->setCaretVisible (true);
     txtHueB->setPopupMenuEnabled (true);
-    txtHueB->setText (TRANS("0.75"));
+    txtHueB->setText (String());
 
     txtHueB->setBounds (104, 168, 56, 24);
 
@@ -225,7 +225,7 @@ RGBA::RGBA (ValueTree prm)
     txtHueBR->setScrollbarsShown (true);
     txtHueBR->setCaretVisible (true);
     txtHueBR->setPopupMenuEnabled (true);
-    txtHueBR->setText (TRANS("0.875"));
+    txtHueBR->setText (String());
 
     txtHueBR->setBounds (104, 192, 56, 24);
 
@@ -271,7 +271,7 @@ RGBA::RGBA (ValueTree prm)
     txtHueA->setScrollbarsShown (true);
     txtHueA->setCaretVisible (true);
     txtHueA->setPopupMenuEnabled (true);
-    txtHueA->setText (TRANS("0.20"));
+    txtHueA->setText (String());
 
     txtHueA->setBounds (104, 72, 56, 24);
 
@@ -294,7 +294,7 @@ RGBA::RGBA (ValueTree prm)
     txtHueAG->setScrollbarsShown (true);
     txtHueAG->setCaretVisible (true);
     txtHueAG->setPopupMenuEnabled (true);
-    txtHueAG->setText (TRANS("0.32"));
+    txtHueAG->setText (String());
 
     txtHueAG->setBounds (104, 96, 56, 24);
 
@@ -325,14 +325,14 @@ RGBA::RGBA (ValueTree prm)
     txtDMXA->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idAmber, nullptr)));
     txtDMXG->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idGreen, nullptr)));
     txtDMXB->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idBlue, nullptr)));
-    txtHueR->setText(String((float)VT_GetChildProperty(param, idRed, "hue", 0.0f), 3));
-    txtHueRA->setText(String((float)VT_GetChildProperty(param, idRed, "huemix", 0.1f), 3));
-    txtHueA->setText(String((float)VT_GetChildProperty(param, idAmber, "hue", 0.2f), 3));
-    txtHueAG->setText(String((float)VT_GetChildProperty(param, idAmber, "huemix", 0.32f), 3));
-    txtHueG->setText(String((float)VT_GetChildProperty(param, idGreen, "hue", 0.50f), 3));
-    txtHueGB->setText(String((float)VT_GetChildProperty(param, idGreen, "huemix", 0.625f), 3));
-    txtHueB->setText(String((float)VT_GetChildProperty(param, idBlue, "hue", 0.75f), 3));
-    txtHueBR->setText(String((float)VT_GetChildProperty(param, idBlue, "huemix", 0.875f), 3));
+    txtHueR->setText(String((float)VT_GetChildProperty(param, idRed, idHue, 0.0f), 3));
+    txtHueRA->setText(String((float)VT_GetChildProperty(param, idRed, idHueMix, 0.1f), 3));
+    txtHueA->setText(String((float)VT_GetChildProperty(param, idAmber, idHue, 0.2f), 3));
+    txtHueAG->setText(String((float)VT_GetChildProperty(param, idAmber, idHueMix, 0.32f), 3));
+    txtHueG->setText(String((float)VT_GetChildProperty(param, idGreen, idHue, 0.50f), 3));
+    txtHueGB->setText(String((float)VT_GetChildProperty(param, idGreen, idHueMix, 0.625f), 3));
+    txtHueB->setText(String((float)VT_GetChildProperty(param, idBlue, idHue, 0.75f), 3));
+    txtHueBR->setText(String((float)VT_GetChildProperty(param, idBlue, idHueMix, 0.875f), 3));
 
     //[/Constructor]
 }
@@ -416,28 +416,28 @@ void RGBA::textEditorTextChanged(TextEditor &editorThatWasChanged)
             dmx_normal, dmx_fine, dmx_ultra);
     }else if(&editorThatWasChanged == txtHueR.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idRed, "hue", decval);
+        else VT_SetChildProperty(param, idRed, idHue, decval);
     }else if(&editorThatWasChanged == txtHueRA.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idRed, "huemix", decval);
+        else VT_SetChildProperty(param, idRed, idHueMix, decval);
     }else if(&editorThatWasChanged == txtHueA.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idAmber, "hue", decval);
+        else VT_SetChildProperty(param, idAmber, idHue, decval);
     }else if(&editorThatWasChanged == txtHueAG.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idAmber, "huemix", decval);
+        else VT_SetChildProperty(param, idAmber, idHueMix, decval);
     }else if(&editorThatWasChanged == txtHueG.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idGreen, "hue", decval);
+        else VT_SetChildProperty(param, idGreen, idHue, decval);
     }else if(&editorThatWasChanged == txtHueGB.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idGreen, "huemix", decval);
+        else VT_SetChildProperty(param, idGreen, idHueMix, decval);
     }else if(&editorThatWasChanged == txtHueB.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idBlue, "hue", decval);
+        else VT_SetChildProperty(param, idBlue, idHue, decval);
     }else if(&editorThatWasChanged == txtHueBR.get()){
         if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idBlue, "huemix", decval);
+        else VT_SetChildProperty(param, idBlue, idHueMix, decval);
     }
     TEXTCHANGEDHANDLER_POST;
 }
@@ -468,18 +468,16 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="24 24 72 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <TEXTEDITOR name="txtHueR" id="ea26a466b5e37632" memberName="txtHueR" virtualName=""
-              explicitFocusOrder="0" pos="104 24 56 24" initialText="0.00"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 24 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblRA" id="d5801027ede5aabd" memberName="lblRA" virtualName=""
          explicitFocusOrder="0" pos="0 48 104 24" edTextCol="ff000000"
          edBkgCol="0" labelText="R+A (Orange):" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtHueRA" id="69717f9b2bef903" memberName="txtHueRA" virtualName=""
-              explicitFocusOrder="0" pos="104 48 56 24" initialText="0.10"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 48 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblG" id="181bac7d94b8484e" memberName="lblG" virtualName=""
          explicitFocusOrder="0" pos="0 120 23 24" edTextCol="ff000000"
          edBkgCol="0" labelText="G:" editableSingleClick="0" editableDoubleClick="0"
@@ -489,18 +487,16 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="24 120 72 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <TEXTEDITOR name="txtHueG" id="e303282fc8afe509" memberName="txtHueG" virtualName=""
-              explicitFocusOrder="0" pos="104 120 56 24" initialText="0.50"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 120 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblGB" id="4fe7d4a4da0dd757" memberName="lblGB" virtualName=""
          explicitFocusOrder="0" pos="0 144 104 24" edTextCol="ff000000"
          edBkgCol="0" labelText="G+B (Cyan):" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtHueGB" id="c241147e133d676e" memberName="txtHueGB" virtualName=""
-              explicitFocusOrder="0" pos="104 144 56 24" initialText="0.625"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 144 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblB" id="d32fe5ac40f01595" memberName="lblB" virtualName=""
          explicitFocusOrder="0" pos="0 168 23 24" edTextCol="ff000000"
          edBkgCol="0" labelText="B:" editableSingleClick="0" editableDoubleClick="0"
@@ -510,18 +506,16 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="24 168 72 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <TEXTEDITOR name="txtHueB" id="135f6bd2f86e9a29" memberName="txtHueB" virtualName=""
-              explicitFocusOrder="0" pos="104 168 56 24" initialText="0.75"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 168 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblBR" id="a838fb38874abaf9" memberName="lblBR" virtualName=""
          explicitFocusOrder="0" pos="0 192 104 24" edTextCol="ff000000"
          edBkgCol="0" labelText="B+R (Magenta):" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtHueBR" id="3fead027864ef25f" memberName="txtHueBR" virtualName=""
-              explicitFocusOrder="0" pos="104 192 56 24" initialText="0.875"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 192 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblDescription" id="805bbb1ad803a595" memberName="lblDescription"
          virtualName="" explicitFocusOrder="0" pos="24 0 128 24" edTextCol="ff000000"
          edBkgCol="0" labelText="DMX             Hue" editableSingleClick="0"
@@ -536,18 +530,16 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="24 72 72 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <TEXTEDITOR name="txtHueA" id="5495ef2fdaea0c9c" memberName="txtHueA" virtualName=""
-              explicitFocusOrder="0" pos="104 72 56 24" initialText="0.20"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 72 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblAG" id="396d5ec9acdc2688" memberName="lblAG" virtualName=""
          explicitFocusOrder="0" pos="0 96 104 24" edTextCol="ff000000"
          edBkgCol="0" labelText="A+G (YellowGr):" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtHueAG" id="a1cd12ee21b1909" memberName="txtHueAG" virtualName=""
-              explicitFocusOrder="0" pos="104 96 56 24" initialText="0.32"
-              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
-              caret="1" popupmenu="1"/>
+              explicitFocusOrder="0" pos="104 96 56 24" initialText="" multiline="0"
+              retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

@@ -81,7 +81,7 @@ Fixture::Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16
             Channel *lchan = new Channel(this);
             lchan->SetName("Lightness - " + param.getProperty(idName, "Error").toString());
             lchan->SetLetters("L");
-            lchan->SetDefaultValue(1.0f);
+            lchan->SetDefaultValue(0.0f);
             lchan->SetOp(Channel::OpAdd);
             channels.add(lchan);
         }
@@ -195,6 +195,7 @@ void Fixture::Evaluate(uint8_t *uniarray){
             float lightness = channels[c++]->Evaluate(0.0f);
             if(lightness < 0.0f) lightness = 0.0f;
             if(lightness > 1.5f) lightness = 1.5f;
+            std::cout << "Lightness " << lightness << "\n";
             String colormode = param.getProperty(idColorMode, "RGB");
             const float eps = 0.000001f;
             if(colormode != "CMY"){

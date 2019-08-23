@@ -239,6 +239,12 @@ namespace ArtNetSystem {
         AS_LOCK_READ();
         ArtNetDevice *dev = devices[d];
         if(dev == nullptr) return;
+        //Change local knowledge of universes, in case device doesn't respond
+        dev->net = net;
+        dev->subnet = subnet;
+        for(int i=0; i<4; ++i) dev->inuni[i] = inuni[i];
+        for(int i=0; i<4; ++i) dev->outuni[i] = outuni[i];
+        //Send ArtAddress to ask device to change its mapping
         uint8_t *data = new uint8_t[95];
         data[0] = 0x80 | net;
         data[1] = dev->bindindex;
@@ -267,9 +273,10 @@ namespace ArtNetSystem {
                 for(int i=0; i<4; ++i){
                     if(dev->map_outuni[i] == (universe & 0xF)){
                         flag = true;
-                        send_universe = ((uint16_t)dev->net << 8) 
-                                        | (dev->subnet << 4)
-                                        | (dev->outuni[i]);
+                        send_universe = (uint16_t)dev->net << 8;
+                        send_universe |= dev->subnet << 4;
+                        send_universe |= dev->outuni[i] <= 0xF ? 
+                            dev->outuni[i] : dev->map_outuni[i];
                         break;
                     }
                 }
