@@ -52,6 +52,7 @@ public:
 private:
     Phasor *phasor;
     Channel *channel;
+    bool invalidated;
     
     std::unique_ptr<TextEditor> txtMag;
     std::unique_ptr<TextEditor> txtAngle;
@@ -70,6 +71,8 @@ private:
     bool enteredMiddleZone;
     float middleZoneAngleEntered;
     bool negmagEntered;
+    
+    static int snapangles;
     
     void closeEditor();
     

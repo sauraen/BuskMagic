@@ -123,6 +123,11 @@ void Channel::RemovePhasor(int i){
     phasors.remove(i);
 }
 
+void Channel::RemovePhasor(Phasor *ph){
+    LS_LOCK_WRITE();
+    phasors.removeObject(ph, true);
+}
+
 void Channel::RemovePhasorForController(Controller *c){
     LS_LOCK_WRITE();
     for(int i=phasors.size()-1; i>=0; --i){

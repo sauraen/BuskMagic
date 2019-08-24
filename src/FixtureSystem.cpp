@@ -195,7 +195,6 @@ void Fixture::Evaluate(uint8_t *uniarray){
             float lightness = channels[c++]->Evaluate(0.0f);
             if(lightness < 0.0f) lightness = 0.0f;
             if(lightness > 1.5f) lightness = 1.5f;
-            std::cout << "Lightness " << lightness << "\n";
             String colormode = param.getProperty(idColorMode, "RGB");
             const float eps = 0.000001f;
             if(colormode != "CMY"){

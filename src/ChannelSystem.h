@@ -72,6 +72,7 @@ public:
     Phasor *GetPhasorForController(Controller *c, bool addIfNotPresent);
     
     void RemovePhasor(int i);
+    void RemovePhasor(Phasor *ph);
     void RemovePhasorForController(Controller *c);
     
     void SortPhasors();

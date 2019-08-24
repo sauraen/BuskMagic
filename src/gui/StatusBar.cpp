@@ -19,7 +19,7 @@
 #include "StatusBar.h"
 
 StatusBar::StatusBar() : Label("StatusBar"){
-    setText("BuskMagic Status Text", dontSendNotification);
+    setText("Sample Text", dontSendNotification);
 }
 
 StatusBar::~StatusBar(){

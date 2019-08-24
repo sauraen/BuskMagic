@@ -21,10 +21,13 @@
 #include "ChannelSystem.h"
 #include "gui/MatrixEditor.h"
 
+int PhasorEditor::snapangles = 7;
+
 PhasorEditor::PhasorEditor(void *data) : gml(*this) {
     PhasorEditorStartup *startup = (PhasorEditorStartup*)data;
     phasor = startup->phasor;
     channel = startup->channel;
+    invalidated = false;
     //
     Desktop::getInstance().addGlobalMouseListener(&gml);
     initialDragDone = false;
@@ -58,7 +61,7 @@ PhasorEditor::PhasorEditor(void *data) : gml(*this) {
     txtAngle->setText(String(phasor->angle, 2));
     //
     setWantsKeyboardFocus(true);
-    setSize(140, 268);
+    setSize(140, 220);
 }
 
 PhasorEditor::~PhasorEditor() {
@@ -67,6 +70,7 @@ PhasorEditor::~PhasorEditor() {
 }
 
 void PhasorEditor::focusGained(FocusChangeType cause){
+    if(invalidated) return;
     if(initialDragDone) return;
     Point<float> mouse = phasor->GetEditorXY() + getScreenPosition().toFloat();
     Desktop::getInstance().getMainMouseSource().setScreenPosition(mouse);
@@ -74,12 +78,15 @@ void PhasorEditor::focusGained(FocusChangeType cause){
 }
 
 void PhasorEditor::paint (Graphics& g) {
+    if(invalidated) return;
     g.fillAll(LFWindowColor());
     g.setFont(GetNormalFont());
     //
     g.setColour(Colours::darkgrey);
-    g.drawHorizontalLine(70, 0, 140);
-    g.drawVerticalLine(70, 0, 140);
+    for(int i=0; i<snapangles; ++i){
+        float angle = 2.0f * M_PI * (float)i / (float)snapangles;
+        g.drawLine(70, 70, 70 + 100*std::cos(angle), 70 + 100*std::sin(angle));
+    }
     g.drawEllipse(20, 20, 100, 100, 2);
     Point<float> end = phasor->GetEditorXY();
     if(phasor->mag < 0.0f){
@@ -93,8 +100,10 @@ void PhasorEditor::paint (Graphics& g) {
     g.fillEllipse(end.x-3, end.y-3, 7, 7);
     //
     g.setColour(Colours::white);
-    g.drawText("Mag:",   1, 148, 64, 24, Justification::centredLeft, false);
-    g.drawText("Angle:", 1, 172, 64, 24, Justification::centredLeft, false);
+    g.drawText("Mag:",   1, 148, 44, 24, Justification::centredLeft, false);
+    g.drawText("Angle:", 1, 172, 44, 24, Justification::centredLeft, false);
+    g.setColour(Colours::darkgrey);
+    g.drawText("Try: Shift, Delete, #s", 1, 196, 140, 24, Justification::centredLeft, false);
 }
 
 void PhasorEditor::resized() {
@@ -102,6 +111,7 @@ void PhasorEditor::resized() {
 }
 
 void PhasorEditor::textEditorTextChanged(TextEditor &editorThatWasChanged){
+    if(invalidated) return;
     TEXTCHANGEDHANDLER_PRE;
     if(&editorThatWasChanged == txtMag.get()){
         if(!isdec){
@@ -140,44 +150,47 @@ void PhasorEditor::globalMouseDrag(const MouseEvent &event){
 }
 
 bool PhasorEditor::keyPressed(const KeyPress &key){
+    if(invalidated) return false;
+    int keycode = key.getKeyCode();
+    if(keycode == KeyPress::escapeKey){
+        closeEditor();
+        return true;
+    }else if(keycode == KeyPress::deleteKey || keycode == KeyPress::backspaceKey){
+        invalidated = true;
+        channel->RemovePhasor(phasor);
+        closeEditor();
+        return true;
+    }else if(keycode == '0' || keycode == KeyPress::numberPad0){
+        phasor->mag = 0.0f;
+        phasor->angle = 0.0f;
+        closeEditor();
+        return true;
+    }else if(keycode == '1' || keycode == KeyPress::numberPad1){
+        phasor->mag = 1.0f;
+        phasor->angle = 0.0f;
+        closeEditor();
+        return true;
+    }else if(keycode == '2' || keycode == KeyPress::numberPad2){
+        phasor->mag = 0.5f;
+        phasor->angle = 0.0f;
+        closeEditor();
+        return true;
+    }else if((keycode >= '3' && keycode <= '9') 
+            || (keycode >= KeyPress::numberPad3 && keycode <= KeyPress::numberPad9)){
+        snapangles = (keycode >= '3' && keycode <= '9') ? (keycode - '0')
+                   : (keycode - KeyPress::numberPad0);
+        repaint();
+        return true;
+    }
     if(!initialDragDone){
-        int keycode = key.getKeyCode();
-        if(keycode == KeyPress::escapeKey){
-            closeEditor();
-            return true;
-        }else if(keycode == '0' || keycode == KeyPress::numberPad0){
-            phasor->mag = 0.0f;
-            phasor->angle = 0.0f;
-            closeEditor();
-        }else if(keycode == '1' || keycode == KeyPress::numberPad1){
-            phasor->mag = 1.0f;
-            phasor->angle = 0.0f;
-            closeEditor();
-        }else if(keycode == '5' || keycode == KeyPress::numberPad5){
-            phasor->mag = 0.5f;
-            phasor->angle = 0.0f;
-            closeEditor();
-        }else if(keycode == '9' || keycode == KeyPress::numberPad9){
-            phasor->mag = 1.0f;
-            phasor->angle = 0.25f;
-            closeEditor();
-        }else if(keycode == '8' || keycode == KeyPress::numberPad8){
-            phasor->mag = 1.0f;
-            phasor->angle = 0.5f;
-            closeEditor();
-        }else if(keycode == '7' || keycode == KeyPress::numberPad7){
-            phasor->mag = 1.0f;
-            phasor->angle = 0.75f;
-            closeEditor();
-        }else{
-            exitOnUp = false;
-            return true;
-        }
+        exitOnUp = false;
+        return true;
     }
     return false;
 }
     
 void PhasorEditor::mouseDrag(const MouseEvent &event){
+    if(invalidated) return;
     if(!isRightClick(event)) return;
     Point<float> center = (getScreenPosition() + Point<int>(70, 70)).toFloat();
     Point<float> end = event.getScreenPosition().toFloat();
@@ -219,7 +232,16 @@ void PhasorEditor::mouseDrag(const MouseEvent &event){
         angle += 0.5f;
     }
     if(angle < 0.0f) angle += 1.0f;
-    if(angle > 1.0f) angle -= 1.0f;
+    if(angle >= 1.0f) angle -= 1.0f;
+    if(!event.mods.isShiftDown()){
+        const float snapradius_mag = 0.08f;
+        const float snapradius_angle = 0.02f;
+        float snapped_mag = 1.0f;
+        if(std::abs(mag - snapped_mag) <= snapradius_mag) mag = snapped_mag;
+        float snapped_angle = std::floor((angle * (float)snapangles) + 0.5) / (float)snapangles;
+        if(std::abs(angle - snapped_angle) <= snapradius_angle) angle = snapped_angle;
+        if(angle >= 1.0f) angle -= 1.0f;
+    }
     phasor->mag = mag;
     phasor->angle = angle;
     txtMag->setText(String(phasor->mag, 2));
