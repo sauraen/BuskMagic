@@ -187,7 +187,9 @@ MIDISetup::MIDISetup ()
     lstInPorts->setBounds(224, 24, 176, 152);
     lstOutDevices->setBounds(0, 208, 176, 152);
     lstOutPorts->setBounds(224, 208, 176, 152);
-
+    
+    setOpaque(true);
+    
     //[/UserPreSize]
 
     setSize (400, 360);
@@ -497,4 +499,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

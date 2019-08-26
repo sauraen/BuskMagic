@@ -439,7 +439,9 @@ Patcher::Patcher ()
     lstDir->setBounds(0, 24, 288, 520);
     lstDefs->setBounds(312, 24, 312, 416);
     lstFixtures->setBounds(648, 24, 312, 368);
-
+    
+    setOpaque(true);
+    
     //[/UserPreSize]
 
     setSize (960, 544);

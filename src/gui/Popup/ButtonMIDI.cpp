@@ -218,7 +218,9 @@ ButtonMIDI::ButtonMIDI (void *data)
     txtToggle->setText(controller->GetMIDISettingStr(Controller::en_toggle));
     txtOutOn->setText(controller->GetMIDISettingStr(Controller::en_out_on));
     txtOutOff->setText(controller->GetMIDISettingStr(Controller::en_out_off));
-
+    
+    setOpaque(true);
+    
     //[/UserPreSize]
 
     setSize (224, 120);
@@ -410,4 +412,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

@@ -273,7 +273,9 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
     txtDMX->addListener(this);
     txtPName->addListener(this);
     txtPLetters->addListener(this);
-
+    
+    setOpaque(true);
+    
     //[/UserPreSize]
 
     setSize (344, 408);

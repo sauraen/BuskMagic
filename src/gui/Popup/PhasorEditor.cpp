@@ -61,6 +61,7 @@ PhasorEditor::PhasorEditor(void *data) : gml(*this) {
     txtAngle->setText(String(phasor->angle, 2));
     //
     setWantsKeyboardFocus(true);
+    setOpaque(true);
     setSize(140, 220);
 }
 

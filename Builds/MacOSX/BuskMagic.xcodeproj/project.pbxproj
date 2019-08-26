@@ -371,6 +371,13 @@
 			path = ../../src/gui/FixParamEd/Color.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		4048D40018BFE2DCD1F81EA7 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = FreeChannelEditor.h;
+			path = ../../src/gui/Popup/FreeChannelEditor.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		427353EBFDA1166B7D705B14 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -504,6 +511,13 @@
 			path = ../../src/gui/MIDISetup.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		92D2ACE3BACAAD2A621791D9 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ChannelOpEditor.h;
+			path = ../../src/gui/Popup/ChannelOpEditor.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		93CF012DE4E760859BB52754 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -579,6 +593,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = MainWindow.h;
 			path = ../../src/MainWindow.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		B21E8081B663250B2444160E = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = DefaultValueEditor.h;
+			path = ../../src/gui/Popup/DefaultValueEditor.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		B5F1FB9F187E24A131C3CC0C = {
@@ -805,8 +826,11 @@
 			children = (
 				F1B30C9518AAC26F86A7ECC5,
 				2433B2D434465D09377B18E0,
+				92D2ACE3BACAAD2A621791D9,
 				C6FCEE11B25065F7DF37E15B,
 				07C45221ACD8DA57FA5FC5EE,
+				B21E8081B663250B2444160E,
+				4048D40018BFE2DCD1F81EA7,
 				C1F78A505311F253F124B629,
 				0F894E3FFBBF28ACB2C62E55,
 				2E299B4521733769C96122D7,

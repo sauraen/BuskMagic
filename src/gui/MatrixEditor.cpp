@@ -24,6 +24,9 @@
 
 #include "gui/Popup/PopupWindow.h"
 #include "gui/Popup/PhasorEditor.h"
+#include "gui/Popup/DefaultValueEditor.h"
+#include "gui/Popup/FreeChannelEditor.h"
+#include "gui/Popup/ChannelOpEditor.h"
 
 #include <algorithm>
 #include <cmath>
@@ -44,6 +47,7 @@ static const int ch_listbox_width = 150;
 MatrixEditor::MatrixEditor() : view(0, 0) {
     jassert(mtxed_static == nullptr);
     mtxed_static = this;
+    setOpaque(true);
     //
     lstCtType.reset(new TextListBox(this, true, "Controller type:"));
     lstCtGroup.reset(new TextListBox(this, true, "Controller group:"));
@@ -57,6 +61,10 @@ MatrixEditor::MatrixEditor() : view(0, 0) {
     addAndMakeVisible(lstFixID.get());
     addAndMakeVisible(lstFixName.get());
     addAndMakeVisible(lstChName.get());
+    //
+    btnAddFree.reset(new TextButton("Add Free Chn."));
+    addAndMakeVisible(btnAddFree.get());
+    btnAddFree->addListener(this);
     //
     lstCtType->add("Simple");
     lstCtType->add("Continuous");
@@ -72,6 +80,13 @@ MatrixEditor::~MatrixEditor() {
     mtxed_static = nullptr;
 }
 
+int MatrixEditor::GetColX(int c){
+    return c * col_width - view.x + ct_width;
+}
+int MatrixEditor::GetRowY(int r){
+    return r * row_height - view.y + row_height;
+}
+
 void MatrixEditor::paint (Graphics& g) {
     g.fillAll(LFWindowColor());
     Colour linecolor = Colours::darkgrey;
@@ -81,21 +96,28 @@ void MatrixEditor::paint (Graphics& g) {
     int minviewcol = std::max(view.x / col_width, 0);
     int minviewrow = std::max(view.y / row_height, 0);
     int maxviewcol = (view.x + getWidth() - ct_width) / col_width;
-    int maxviewrow = (view.y + main_bottom_y) / row_height;
+    int maxviewrow = (view.y + main_bottom_y - row_height) / row_height;
     g.setFont(GetNormalFont());
     g.setColour(linecolor);
     g.drawLine(ct_width, 0, ct_width, main_bottom_y, 2);
+    g.drawLine(0, row_height, getWidth(), row_height, 2);
     g.drawLine(ct_width, main_bottom_y, getWidth(), main_bottom_y, 2);
+    g.drawText("Phasor Matrix", 1, 0, ct_width - 1, row_height, Justification::centredLeft, false);
     LS_LOCK_READ();
+    //Rows = controllers
+    g.saveState();
+    g.reduceClipRegion(0, row_height, getWidth(), main_bottom_y - row_height);
     for(int r = minviewrow; r < ctSet.size() && r <= maxviewrow; ++r){
-        int y = r * row_height - view.y;
-        if(y + row_height < main_bottom_y){
-            g.setColour(linecolor);
-            g.drawHorizontalLine(y + row_height, 0, getWidth());
-        }
+        int y = GetRowY(r);
+        g.setColour(linecolor);
+        g.drawHorizontalLine(y + row_height, 0, getWidth());
         g.setColour(textcolor);
         g.drawText(ctSet[r]->GetName(), 1, y, ct_width - 1, row_height, Justification::centredLeft, false);
     }
+    g.restoreState();
+    //Columns = channels
+    g.saveState();
+    g.reduceClipRegion(ct_width, 0, getWidth() - ct_width, ch_bottom_y);
     int colsmergefixid = 0, colsmergefixname = 0;
     for(int c = minviewcol; c < chSet.size() && c <= maxviewcol; ++c){
         int fixid = chSet[c]->GetFixID();
@@ -115,8 +137,10 @@ void MatrixEditor::paint (Graphics& g) {
                 firstcolmergefixname = true;
             }
         }
-        int x = c * col_width - view.x + ct_width;
+        int x = GetColX(c);
         g.setColour(textcolor);
+        g.drawText(String(chSet[c]->GetDefaultValue(), 2), x, 0,
+            col_width, row_height, Justification::centred, false);
         g.drawText(Channel::OpGetLetters(chSet[c]->GetOp()), x, main_bottom_y, 
             col_width, row_height, Justification::centred, false);
         g.drawText("X", x, main_bottom_y + row_height, 
@@ -124,7 +148,7 @@ void MatrixEditor::paint (Graphics& g) {
         g.drawText(chSet[c]->GetLetters(), x, main_bottom_y + 2*row_height, 
             col_width, row_height, Justification::centred, false);
         if(colsmergefixid == 0 || firstcolmergefixid){
-            g.drawText(String(fixid), x, main_bottom_y + 3*row_height, 
+            g.drawText(fixid < 0 ? "-" : String(fixid), x, main_bottom_y + 3*row_height, 
                 col_width * (colsmergefixid + 1), row_height, Justification::centred, false);
         }else{
             --colsmergefixid;
@@ -140,9 +164,15 @@ void MatrixEditor::paint (Graphics& g) {
                       : colsmergefixid == 0 ? ch_bottom_y - row_height 
                       : ch_bottom_y - 2*row_height;
         g.drawVerticalLine(x + col_width, 0, lineend);
-        //
+    }
+    g.restoreState();
+    //Cells = phasors
+    g.saveState();
+    g.reduceClipRegion(ct_width, row_height, getWidth()-ct_width, main_bottom_y - row_height);
+    for(int c = minviewcol; c < chSet.size() && c <= maxviewcol; ++c){
+        int x = GetColX(c);
         for(int r = minviewrow; r < ctSet.size() && r <= maxviewrow; ++r){
-            int y = r * row_height - view.y;
+            int y = GetRowY(r);
             Phasor *phasor = chSet[c]->GetPhasorForController(ctSet[r], false);
             if(phasor == nullptr) continue;
             float magheight = (float)(row_height-2) * std::min(std::abs(phasor->mag), 1.0f);
@@ -172,15 +202,17 @@ void MatrixEditor::paint (Graphics& g) {
             }
         }
     }
+    g.restoreState();
 }
 
 void MatrixEditor::resized() {
-    lstCtType->setBounds(0, getHeight() - main_dbottom, ct_width, main_dbottom / 3);
-    lstCtGroup->setBounds(0, getHeight() - (main_dbottom * 2 / 3), ct_width, main_dbottom / 3);
-    lstCtName->setBounds(0, getHeight() - (main_dbottom / 3), ct_width, main_dbottom / 3);
+    lstCtType->setBounds(0, getHeight() - main_dbottom, ct_width, main_dbottom*2/8);
+    lstCtGroup->setBounds(0, getHeight() - (main_dbottom*6/8), ct_width, main_dbottom*3/8);
+    lstCtName->setBounds(0, getHeight() - (main_dbottom*3/8), ct_width, main_dbottom*3/8);
     lstFixID->setBounds(ct_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
     lstFixName->setBounds(ct_width + ch_listbox_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
     lstChName->setBounds(ct_width + 2*ch_listbox_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
+    btnAddFree->setBounds(ct_width + 3*ch_listbox_width + 8, getHeight() - ch_dbottom, 100, 24);
 }
 
 void MatrixEditor::rowSelected(TextListBox* parent, int row) {
@@ -199,25 +231,56 @@ void MatrixEditor::rowSelected(TextListBox* parent, int row) {
     }
 }
 
+void MatrixEditor::buttonClicked(Button *buttonThatWasClicked) {
+    if(buttonThatWasClicked == btnAddFree.get()){
+        ChannelSystem::AddFreeChannel();
+        if(!lstFixID->isRowSelected(0)){
+            lstFixID->selectRow(0, false, false);
+        }
+    }
+}
+
 void MatrixEditor::mouseDown(const MouseEvent &event){
+    int r = (event.y + view.y - row_height) / row_height;
+    int c = (event.x - ct_width + view.x) / col_width;
+    int esx = getScreenX() + event.x;
+    int esy = getScreenY() + event.y;
     if(isRightClick(event)){
         if(event.x < ct_width || event.x >= getWidth()) return;
         if(event.y < 0 || event.y >= getHeight() - ch_dbottom) return;
+        LS_LOCK_READ();
+        if(c < 0 || c >= chSet.size()) return;
+        Channel *ch = chSet[c];
         if(event.y >= getHeight() - main_dbottom){
             //Right click in channels area
-            //TODO
+            r = (event.y - (getHeight() - main_dbottom)) / row_height;
+            if(r == 0){
+                //Operator
+                popup.show<ChannelOpEditor>(esx, esy, ch);
+            }else if(r == 1){
+                //Output value
+                return;
+            }else if(r == 2){
+                //Letters
+                if(ch->GetFixID() != -1) return; //Only for free channels
+                popup.show<FreeChannelEditor>(esx, esy, ch);
+            }else if(r == 3){
+                //Fixture ID
+                return;
+            }else if(r == 4){
+                //Fixture name
+                return;
+            }
+        }else if(event.y <= row_height){
+            //Right click in default value
+            popup.show<DefaultValueEditor>(esx, esy, ch);
         }else{
             //Right click in phasors area
-            int r = (event.y + view.y) / row_height;
-            int c = (event.x - ct_width + view.x) / col_width;
-            LS_LOCK_READ();
             if(r < 0 || r >= ctSet.size()) return;
-            if(c < 0 || c >= chSet.size()) return;
             Controller *ct = ctSet[r];
-            Channel *ch = chSet[c];
             PhasorEditorStartup startup(ch->GetPhasorForController(ct, true), ch);
             Point<int> corner(getScreenX() + c*col_width - view.x + ct_width + (col_width/2) - 70,
-                              getScreenY() + r*row_height - view.y + (row_height/2) - 70);
+                              getScreenY() + r*row_height - view.y + row_height + (row_height/2) - 70);
             popup.show<PhasorEditor>(corner.x, corner.y, &startup);
         }
     }else if(event.mods.isLeftButtonDown()){
@@ -227,6 +290,10 @@ void MatrixEditor::mouseDown(const MouseEvent &event){
 void MatrixEditor::mouseDrag(const MouseEvent &event){
     if(!isRightClick(event) && event.mods.isLeftButtonDown()){
         view = viewdragstart - event.getOffsetFromDragStart();
+        int maxx = chSet.size() * col_width - (getWidth() - ct_width);
+        int maxy = ctSet.size() * row_height - (getHeight() - main_dbottom - row_height);
+        if(view.x > maxx) view.x = maxx;
+        if(view.y > maxy) view.y = maxy;
         if(view.x < 0) view.x = 0;
         if(view.y < 0) view.y = 0;
         repaint();

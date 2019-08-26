@@ -50,7 +50,7 @@ public:
     enum ChannelOp {
         OpPrioTop, OpPrioBottom, 
         OpPrioMax, OpPrioMin, OpPrioMaxWDefault, OpPrioMinWDefault,
-        OpAdd, OpMultiply
+        OpAdd, OpMultiply, NUM_OPS
     };
     static String OpGetLetters(ChannelOp o);
     static String OpGetDescription(ChannelOp o);

@@ -27,6 +27,7 @@
 class MainWindowComponent : public Component {
 public:
     MainWindowComponent() {
+        setOpaque(true);
         mtxEditor.reset(new MatrixEditor());
         addAndMakeVisible(mtxEditor.get());
         barStatus.reset(new StatusBar());

@@ -27,7 +27,7 @@
 #include "gui/TextListBox.h"
 #include "gui/Popup/PopupWindow.h"
 
-class MatrixEditor : public Component, public TextListBox::Listener {
+class MatrixEditor : public Component, public TextListBox::Listener, public Button::Listener {
 public:
     static MatrixEditor *mtxed_static; //Only one of these
 
@@ -41,6 +41,7 @@ public:
     void mouseDrag(const MouseEvent &event) override;
     
     void rowSelected(TextListBox* parent, int row) override;
+    void buttonClicked(Button *buttonThatWasClicked) override;
     
     void RefreshControllerFilters();
     void RefreshChannelFilters();
@@ -54,6 +55,7 @@ private:
     std::unique_ptr<TextListBox> lstFixID;
     std::unique_ptr<TextListBox> lstFixName;
     std::unique_ptr<TextListBox> lstChName;
+    std::unique_ptr<TextButton> btnAddFree;
     
     PopupWindow popup;
     
@@ -62,6 +64,8 @@ private:
     
     Point<int> view;
     Point<int> viewdragstart;
+    int GetColX(int c);
+    int GetRowY(int r);
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MatrixEditor)
 };

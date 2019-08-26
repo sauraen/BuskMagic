@@ -185,7 +185,10 @@
     <ClInclude Include="..\..\src\gui\FixParamEd\Color.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\Generic.h"/>
     <ClInclude Include="..\..\src\gui\Popup\ButtonMIDI.h"/>
+    <ClInclude Include="..\..\src\gui\Popup\ChannelOpEditor.h"/>
     <ClInclude Include="..\..\src\gui\Popup\CtrlrEditor.h"/>
+    <ClInclude Include="..\..\src\gui\Popup\DefaultValueEditor.h"/>
+    <ClInclude Include="..\..\src\gui\Popup\FreeChannelEditor.h"/>
     <ClInclude Include="..\..\src\gui\Popup\KnobMIDI.h"/>
     <ClInclude Include="..\..\src\gui\Popup\MagicValueEditor.h"/>
     <ClInclude Include="..\..\src\gui\Popup\PhasorEditor.h"/>

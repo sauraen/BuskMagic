@@ -252,6 +252,8 @@ CMY::CMY (ValueTree prm)
     txtHueMY->addListener(this);
     txtHueY->addListener(this);
     txtHueYC->addListener(this);
+    
+    setOpaque(true);
 
     //[/UserPreSize]
 
@@ -453,4 +455,3 @@ END_JUCER_METADATA
 }}
 
 //[/EndFile]
-

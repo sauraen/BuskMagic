@@ -84,7 +84,9 @@ ControllerWindow::ControllerWindow ()
     if(isMac()){
         lblInstructions->setText("Ctrl" + lblInstructions->getText().substring(5), dontSendNotification);
     }
-
+    
+    setOpaque(true);
+    
     //[/UserPreSize]
 
     setSize (800, 600);
@@ -211,4 +213,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

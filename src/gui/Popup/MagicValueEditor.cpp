@@ -37,6 +37,8 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "ChannelSystem.h"
+
 //[/Headers]
 
 #include "MagicValueEditor.h"
@@ -81,10 +83,14 @@ MagicValueEditor::MagicValueEditor (void *data)
     txtLiteral->setEscapeAndReturnKeysConsumed(false);
     txtLiteral->addListener(this);
 
-    //TODO
+    for(int i=0; i<ChannelSystem::NumFreeChannels(); ++i){
+        cbxChannel->addItem(ChannelSystem::GetFreeChannel(i)->GetName(), i+2);
+    }
     cbxChannel->setText("^ Non-magic");
     txtLiteral->setText(String(magic->GetLiteral(), 2));
-
+    
+    setOpaque(true);
+    
     //[/UserPreSize]
 
     setSize (120, 48);
@@ -136,12 +142,17 @@ void MagicValueEditor::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == cbxChannel.get())
     {
         //[UserComboBoxCode_cbxChannel] -- add your combo box handling code here..
-        if(cbxChannel->getText() == "^ Non-magic"){
+        if(cbxChannel->getSelectedId() == 1){
             txtLiteral->setEnabled(true);
             magic->SetChannel(nullptr);
         }else{
             txtLiteral->setEnabled(false);
-            //TODO
+            int ch = cbxChannel->getSelectedId() - 2;
+            if(ch >= ChannelSystem::NumFreeChannels()){
+                jassertfalse;
+                return;
+            }
+            magic->SetChannel(ChannelSystem::GetFreeChannel(ch));
         }
         //[/UserComboBoxCode_cbxChannel]
     }
@@ -197,4 +208,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

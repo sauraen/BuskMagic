@@ -34,6 +34,7 @@ class ControllerCmp : public Component
 {
 public:
     ControllerCmp(Controller *c) : controller(c), texty(10){
+        setOpaque(true);
         controller->RegisterComponent(this);
         btnEnable.reset(new EnableButton(controller));
         addAndMakeVisible(btnEnable.get());

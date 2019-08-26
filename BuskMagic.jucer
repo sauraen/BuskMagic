@@ -35,8 +35,14 @@
         <GROUP id="{6322B70C-AD27-4F6C-ACFF-D700AC80132F}" name="Popup">
           <FILE id="T0XZY8" name="ButtonMIDI.cpp" compile="1" resource="0" file="src/gui/Popup/ButtonMIDI.cpp"/>
           <FILE id="hfVJsC" name="ButtonMIDI.h" compile="0" resource="0" file="src/gui/Popup/ButtonMIDI.h"/>
+          <FILE id="BjZDnG" name="ChannelOpEditor.h" compile="0" resource="0"
+                file="src/gui/Popup/ChannelOpEditor.h"/>
           <FILE id="ljzNSe" name="CtrlrEditor.cpp" compile="1" resource="0" file="src/gui/Popup/CtrlrEditor.cpp"/>
           <FILE id="QJsAMu" name="CtrlrEditor.h" compile="0" resource="0" file="src/gui/Popup/CtrlrEditor.h"/>
+          <FILE id="EnaWst" name="DefaultValueEditor.h" compile="0" resource="0"
+                file="src/gui/Popup/DefaultValueEditor.h"/>
+          <FILE id="QVYH4u" name="FreeChannelEditor.h" compile="0" resource="0"
+                file="src/gui/Popup/FreeChannelEditor.h"/>
           <FILE id="PdYUSN" name="KnobMIDI.cpp" compile="1" resource="0" file="src/gui/Popup/KnobMIDI.cpp"/>
           <FILE id="dKximt" name="KnobMIDI.h" compile="0" resource="0" file="src/gui/Popup/KnobMIDI.h"/>
           <FILE id="wmx0ve" name="MagicValueEditor.cpp" compile="1" resource="0"

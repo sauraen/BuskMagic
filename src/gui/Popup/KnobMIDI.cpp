@@ -192,7 +192,9 @@ KnobMIDI::KnobMIDI (void *data)
     txtGotoLo->setText(ccontroller->GetMIDISettingStr(Controller::ct_goto_lo));
     txtGotoHi->setText(ccontroller->GetMIDISettingStr(Controller::ct_goto_hi));
     txtOut->setText(ccontroller->GetMIDISettingStr(Controller::ct_out));
-
+    
+    setOpaque(true);
+    
     //[/UserPreSize]
 
     setSize (256, 96);
@@ -371,4 +373,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

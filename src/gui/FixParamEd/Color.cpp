@@ -110,7 +110,9 @@ Color::Color (ValueTree prm)
 
     //[UserPreSize]
     txtDMXW->addListener(this);
-
+    
+    setOpaque(true);
+    
     //[/UserPreSize]
 
     setSize (160, 264);

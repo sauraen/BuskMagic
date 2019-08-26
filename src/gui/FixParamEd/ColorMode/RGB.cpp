@@ -252,7 +252,9 @@ RGB::RGB (ValueTree prm)
     txtHueGB->addListener(this);
     txtHueB->addListener(this);
     txtHueBR->addListener(this);
-
+    
+    setOpaque(true);
+    
     //[/UserPreSize]
 
     setSize (160, 216);
@@ -453,4 +455,3 @@ END_JUCER_METADATA
 }}
 
 //[/EndFile]
-

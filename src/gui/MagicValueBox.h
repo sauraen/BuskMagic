@@ -29,6 +29,7 @@ class MagicValueBox : public Component
 {
 public:
     MagicValueBox(MagicValue *mval) : magic(mval) {
+        setOpaque(true);
         setSize(32, 16);
     }
     

@@ -433,7 +433,9 @@ ArtNetSetup::ArtNetSetup ()
     txtMapSub->addListener(this);
     txtMapInputs->addListener(this);
     txtMapOutputs->addListener(this);
-
+    
+    setOpaque(true);
+    
     //[/UserPreSize]
 
     setSize (600, 330);

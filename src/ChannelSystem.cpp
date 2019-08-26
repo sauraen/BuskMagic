@@ -46,12 +46,12 @@ String Channel::OpGetLetters(ChannelOp o){
 
 String Channel::OpGetDescription(ChannelOp o){
     switch(o){
-    case OpPrioTop: return CharPointer_UTF8 ("\xe2\x86\x91 Top Priority");
-    case OpPrioBottom: return CharPointer_UTF8 ("\xe2\x86\x93 Bottom Priority");
+    case OpPrioTop: return CharPointer_UTF8 ("Top Priority");
+    case OpPrioBottom: return CharPointer_UTF8 ("Bottom Priority");
     case OpPrioMax: return "Maximum Value (HTP)";
     case OpPrioMin: return "minimum value";
-    case OpPrioMaxWDefault: return "Maximum Value (Including Default)";
-    case OpPrioMinWDefault: return "minimum value (including default)";
+    case OpPrioMaxWDefault: return "Maximum Value (Incl. Default)";
+    case OpPrioMinWDefault: return "minimum value (incl. default)";
     case OpAdd: return "Add";
     case OpMultiply: return "Multiply";
     default: jassertfalse; return "Error";

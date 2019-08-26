@@ -95,6 +95,8 @@ Generic::Generic (ValueTree prm)
     //[UserPreSize]
 
     txtDMX->addListener(this);
+    
+    setOpaque(true);
 
     //[/UserPreSize]
 
@@ -200,4 +202,3 @@ END_JUCER_METADATA
 }
 
 //[/EndFile]
-

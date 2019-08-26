@@ -24,7 +24,9 @@
 class PopupWindow : public Component
 {
 public:
-    PopupWindow() {}
+    PopupWindow() {
+        setOpaque(true);
+    }
 
     ~PopupWindow() {
         contents = nullptr;

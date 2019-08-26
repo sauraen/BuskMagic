@@ -26,12 +26,17 @@ class ControllerCanvas : public Component
 {
 public:
     ControllerCanvas() {
+        setOpaque(true);
         setSize(2000, 2000);
         refreshComponents();
     }
 
     ~ControllerCanvas() {
         
+    }
+    
+    void paint(Graphics &g) override {
+        g.fillAll(LFWindowColor());
     }
     
     void mouseDown(const MouseEvent &event) override {
