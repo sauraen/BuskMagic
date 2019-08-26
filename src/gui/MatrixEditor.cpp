@@ -47,6 +47,8 @@ static const int ch_listbox_width = 150;
 MatrixEditor::MatrixEditor() : view(0, 0) {
     jassert(mtxed_static == nullptr);
     mtxed_static = this;
+    drag_ct = -1;
+    drag_dest = -1;
     setOpaque(true);
     //
     lstCtType.reset(new TextListBox(this, true, "Controller type:"));
@@ -111,8 +113,13 @@ void MatrixEditor::paint (Graphics& g) {
         int y = GetRowY(r);
         g.setColour(linecolor);
         g.drawHorizontalLine(y + row_height, 0, getWidth());
-        g.setColour(textcolor);
+        g.setColour(drag_ct == r ? linecolor : textcolor);
         g.drawText(ctSet[r]->GetName(), 1, y, ct_width - 1, row_height, Justification::centredLeft, false);
+    }
+    if(drag_dest >= 0){
+        int y = GetRowY(drag_dest);
+        g.setColour(textcolor);
+        g.drawLine(0, y, ct_width, y, 5);
     }
     g.restoreState();
     //Columns = channels
@@ -246,7 +253,15 @@ void MatrixEditor::mouseDown(const MouseEvent &event){
     int esx = getScreenX() + event.x;
     int esy = getScreenY() + event.y;
     if(isRightClick(event)){
-        if(event.x < ct_width || event.x >= getWidth()) return;
+        if(event.x < ct_width){
+            if(event.y < row_height) return;
+            if(r < 0 || r >= ctSet.size()) return;
+            drag_ct = r;
+            drag_dest = r;
+            setMouseCursor(MouseCursor::UpDownResizeCursor);
+            return;
+        }
+        if(event.x >= getWidth()) return;
         if(event.y < 0 || event.y >= getHeight() - ch_dbottom) return;
         LS_LOCK_READ();
         if(c < 0 || c >= chSet.size()) return;
@@ -288,7 +303,16 @@ void MatrixEditor::mouseDown(const MouseEvent &event){
     }
 }
 void MatrixEditor::mouseDrag(const MouseEvent &event){
-    if(!isRightClick(event) && event.mods.isLeftButtonDown()){
+    if(isRightClick(event)){
+        if(drag_ct >= 0){
+            int r = (event.y + view.y - row_height/2) / row_height;
+            if(r < 0 || r > ctSet.size()) return;
+            if(drag_dest != r){
+                drag_dest = r;
+                repaint();
+            }
+        }
+    }else if(event.mods.isLeftButtonDown()){
         view = viewdragstart - event.getOffsetFromDragStart();
         int maxx = chSet.size() * col_width - (getWidth() - ct_width);
         int maxy = ctSet.size() * row_height - (getHeight() - main_dbottom - row_height);
@@ -297,6 +321,24 @@ void MatrixEditor::mouseDrag(const MouseEvent &event){
         if(view.x < 0) view.x = 0;
         if(view.y < 0) view.y = 0;
         repaint();
+    }
+}
+void MatrixEditor::mouseUp(const MouseEvent &event){
+    if(isRightClick(event)){
+        if(drag_ct >= 0){
+            setMouseCursor(MouseCursor::NormalCursor);
+            if(drag_dest == drag_ct || drag_dest == drag_ct + 1){
+                drag_ct = -1; //Don't move it
+            }else if(drag_dest > drag_ct){
+                --drag_dest;
+            }
+            if(drag_ct >= 0 && drag_dest >= 0){
+                ControllerSystem::ChangeControllerOrder(drag_ct, drag_dest);
+            }
+            drag_ct = -1;
+            drag_dest = -1;
+            repaint();
+        }
     }
 }
 

@@ -69,6 +69,7 @@ endif
 
 OBJECTS_APP := \
   $(JUCE_OBJDIR)/ControllerCmps_e940cc52.o \
+  $(JUCE_OBJDIR)/ImageImporter_9dee1ece.o \
   $(JUCE_OBJDIR)/CMY_3f3eb7e2.o \
   $(JUCE_OBJDIR)/RGB_4d3b0060.o \
   $(JUCE_OBJDIR)/RGBA_5b18822b.o \
@@ -119,6 +120,11 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : $(OBJECTS_APP) $(RESOURCES)
 $(JUCE_OBJDIR)/ControllerCmps_e940cc52.o: ../../src/gui/Controller/ControllerCmps.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling ControllerCmps.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/ImageImporter_9dee1ece.o: ../../src/gui/Controller/ImageImporter.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ImageImporter.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/CMY_3f3eb7e2.o: ../../src/gui/FixParamEd/ColorMode/CMY.cpp

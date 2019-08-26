@@ -53,6 +53,10 @@
 			isa = PBXBuildFile;
 			fileRef = 2228834872E4324176A77A1D;
 		};
+		A2388BD606A8CE3795A82AB1 = {
+			isa = PBXBuildFile;
+			fileRef = 7B3C80714475D7D2865F9DBA;
+		};
 		2BAFB1621A32991C31661EA7 = {
 			isa = PBXBuildFile;
 			fileRef = 02770169291CC96028A6A80D;
@@ -451,6 +455,13 @@
 			path = ../../src/gui/ControllerWindow.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		7B3C80714475D7D2865F9DBA = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ImageImporter.cpp;
+			path = ../../src/gui/Controller/ImageImporter.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		7CEE8785EA0060A68A8B3F67 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -689,6 +700,13 @@
 			path = ../../src/gui/Popup/PhasorEditor.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		D02E0645E90B27402926E369 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ImageImporter.h;
+			path = ../../src/gui/Controller/ImageImporter.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		D4AB491514C324C5E966E8A7 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -781,6 +799,8 @@
 				2228834872E4324176A77A1D,
 				B5F1FB9F187E24A131C3CC0C,
 				14239FE32F0D5A5B9B9D48BB,
+				7B3C80714475D7D2865F9DBA,
+				D02E0645E90B27402926E369,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -1166,6 +1186,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D8CD718C1F02EA85BBFACE8,
+				A2388BD606A8CE3795A82AB1,
 				2BAFB1621A32991C31661EA7,
 				721DC1B30D75271A15160103,
 				385D9AA52F61E814428DC61F,

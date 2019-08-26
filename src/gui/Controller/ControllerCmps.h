@@ -33,7 +33,7 @@ class ControllerCanvas;
 class ControllerCmp : public Component
 {
 public:
-    ControllerCmp(Controller *c) : controller(c), texty(10){
+    ControllerCmp(Controller *c) : controller(c), texty(10), textwidth(64){
         setOpaque(true);
         controller->RegisterComponent(this);
         btnEnable.reset(new EnableButton(controller));
@@ -51,7 +51,7 @@ public:
         g.fillAll(controller->GetGroupColor());
         g.setColour(controller->GetGroupColor().getBrightness() > 0.5f ? Colours::black : Colours::white);
         g.setFont (10.0f);
-        g.drawMultiLineText(controller->GetName(), 2, texty, getWidth() - 2, Justification::centred);
+        g.drawMultiLineText(controller->GetName(), 2, texty, textwidth - 2, Justification::centred);
     }
     
     void mouseDown(const MouseEvent &event) override {
@@ -68,6 +68,7 @@ public:
 protected:
     Controller *controller;
     int texty;
+    int textwidth;
     std::unique_ptr<EnableButton> btnEnable;
 private:
     Point<int> dragbegin_local;
@@ -85,8 +86,9 @@ public:
         addAndMakeVisible(boxValue.get());
         boxValue->setTopLeftPosition(16, 4);
         btnEnable->setTopLeftPosition(8, 24);
-        texty = 70;
         setSize(64, 88);
+        texty = 70;
+        textwidth = getWidth();
     }
     ~SimpleControllerCmp() {}
     
@@ -116,8 +118,9 @@ public:
         boxHi->setTopLeftPosition(44, 56);
         
         btnEnable->setTopLeftPosition(16, 76);
-        texty = 120;
         setSize(80, 136);
+        texty = 120;
+        textwidth = getWidth();
     }
     ~ContinuousControllerCmp() {}
     
@@ -135,4 +138,116 @@ private:
     std::unique_ptr<MagicValueBox> boxHi;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ContinuousControllerCmp)
+};
+
+class ModulatorControllerCmp : public ControllerCmp, public Button::Listener
+{
+public:
+    ModulatorControllerCmp(ModulatorController *mc)
+        : ControllerCmp(mc), mcontroller(mc){
+        boxLo->reset(new MagicValueBox(mc->GetLoValue()));
+        boxHi->reset(new MagicValueBox(mc->GetHiValue()));
+        boxPW->reset(new MagicValueBox(mc->GetPWValue()));
+        boxT ->reset(new MagicValueBox(mc->GetTValue()));
+        addAndMakeVisible(boxLo.get());
+        addAndMakeVisible(boxHi.get());
+        addAndMakeVisible(boxPW.get());
+        addAndMakeVisible(boxT.get());
+        boxLo->setTopLeftPosition(100, 50);
+        boxHi->setTopLeftPosition(100, 24);
+        boxPW->setTopLeftPosition(80, 80);
+        boxT ->setTopLeftPosition(150, 8);
+        
+        imgCosine = ImageCache::getFromMemory(imgCosine_data, imgCosine_size);
+        imgTriangle = ImageCache::getFromMemory(imgTriangle_data, imgTriangle_size);
+        imgNoise = ImageCache::getFromMemory(imgNoise_data, imgNoise_size);
+        imgPulse = ImageCache::getFromMemory(imgPulse_data, imgPulse_size);
+        imgSawF = ImageCache::getFromMemory(imgSawF_data, imgSawF_size);
+        imgSawR = ImageCache::getFromMemory(imgSawR_data, imgSawR_size);
+        btnCosine->reset(new ImageButton());
+        btnTriangle->reset(new ImageButton());
+        btnNoise->reset(new ImageButton());
+        btnPulse->reset(new ImageButton());
+        btnSawF->reset(new ImageButton());
+        btnSawR->reset(new ImageButton());
+        addAndMakeVisible(btnCosine.get());
+        addAndMakeVisible(btnTriangle.get());
+        addAndMakeVisible(btnNoise.get());
+        addAndMakeVisible(btnPulse.get());
+        addAndMakeVisible(btnSawF.get());
+        addAndMakeVisible(btnSawR.get());
+        const uint32_t normalColor = 0x00000000;
+        const uint32_t overColor   = 0xFFFFFF30;
+        const uint32_t downColor   = 0x0080FF70;
+        btnCosine->setImages(true, false, true, imgCosine, 1.0f, normalColor,
+                                                imgCosine, 1.0f, overColor,
+                                                imgCosine, 1.0f, downColor, 0.0f);
+        btnTriangle->setImages(true, false, true, imgTriangle, 1.0f, normalColor,
+                                                  imgTriangle, 1.0f, overColor,
+                                                  imgTriangle, 1.0f, downColor, 0.0f);
+        btnNoise->setImages(true, false, true, imgNoise, 1.0f, normalColor,
+                                               imgNoise, 1.0f, overColor,
+                                               imgNoise, 1.0f, downColor, 0.0f);
+        btnPulse->setImages(true, false, true, imgPulse, 1.0f, normalColor,
+                                               imgPulse, 1.0f, overColor,
+                                               imgPulse, 1.0f, downColor, 0.0f);
+        btnSawF->setImages(true, false, true, imgSawF, 1.0f, normalColor,
+                                              imgSawF, 1.0f, overColor,
+                                              imgSawF, 1.0f, downColor, 0.0f);
+        btnSawR->setImages(true, false, true, imgSawR, 1.0f, normalColor,
+                                              imgSawR, 1.0f, overColor,
+                                              imgSawR, 1.0f, downColor, 0.0f);
+        const int shape_x = 50, shape_y = 4;
+        btnCosine->  setPosition(shape_x,    shape_y);
+        btnTriangle->setPosition(shape_x,    shape_y+24);
+        btnNoise->   setPosition(shape_x,    shape_y+48);
+        btnPulse->   setPosition(shape_x+36, shape_y);
+        btnSawF->    setPosition(shape_x+36, shape_y+24);
+        btnSawR->    setPosition(shape_x+36, shape_y+48);
+            
+        btnEnable->setTopLeftPosition(8, 36);
+        setSize(300, 300);
+        texty = 8;
+        textwidth = 64;
+    }
+    ~ModulatorControllerCmp() {}
+    
+private:
+    ModulatorController *mcontroller;
+    
+    std::unique_ptr<MagicValueBox> boxLo;
+    std::unique_ptr<MagicValueBox> boxHi;
+    std::unique_ptr<MagicValueBox> boxPW;
+    std::unique_ptr<MagicValueBox> boxT;
+    
+    std::unique_ptr<ImageButton> btnCosine;
+    std::unique_ptr<ImageButton> btnTriangle;
+    std::unique_ptr<ImageButton> btnNoise;
+    std::unique_ptr<ImageButton> btnPulse;
+    std::unique_ptr<ImageButton> btnSawF;
+    std::unique_ptr<ImageButton> btnSawR;
+    Image imgCosine;
+    Image imgTriangle;
+    Image imgNoise;
+    Image imgPulse;
+    Image imgSawF;
+    Image imgSawR;
+    static const char *imgCosine_data;
+    static const char *imgTriangle_data;
+    static const char *imgNoise_data;
+    static const char *imgPulse_data;
+    static const char *imgSawF_data;
+    static const char *imgSawR_data;
+    static const int imgCosine_size;
+    static const int imgTriangle_size;
+    static const int imgNoise_size;
+    static const int imgPulse_size;
+    static const int imgSawF_size;
+    static const int imgSawR_size;
+    
+    std::unique_ptr<ToggleButton> optMeasure;
+    std::unique_ptr<ToggleButton> optBeat;
+    std::unique_ptr<ToggleButton> optSecond;
+        
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ModulatorControllerCmp)
 };

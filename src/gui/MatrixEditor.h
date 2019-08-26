@@ -39,6 +39,7 @@ public:
     
     void mouseDown(const MouseEvent &event) override;
     void mouseDrag(const MouseEvent &event) override;
+    void mouseUp(const MouseEvent &event) override;
     
     void rowSelected(TextListBox* parent, int row) override;
     void buttonClicked(Button *buttonThatWasClicked) override;
@@ -66,6 +67,8 @@ private:
     Point<int> viewdragstart;
     int GetColX(int c);
     int GetRowY(int r);
+    
+    int drag_ct, drag_dest;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MatrixEditor)
 };

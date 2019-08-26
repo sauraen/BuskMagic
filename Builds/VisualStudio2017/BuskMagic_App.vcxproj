@@ -139,6 +139,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\gui\Controller\ControllerCmps.cpp"/>
+    <ClCompile Include="..\..\src\gui\Controller\ImageImporter.cpp"/>
     <ClCompile Include="..\..\src\gui\FixParamEd\ColorMode\CMY.cpp"/>
     <ClCompile Include="..\..\src\gui\FixParamEd\ColorMode\RGB.cpp"/>
     <ClCompile Include="..\..\src\gui\FixParamEd\ColorMode\RGBA.cpp"/>
@@ -178,6 +179,7 @@
     <ClInclude Include="..\..\src\gui\Controller\ControllerCanvas.h"/>
     <ClInclude Include="..\..\src\gui\Controller\ControllerCmps.h"/>
     <ClInclude Include="..\..\src\gui\Controller\EnableButton.h"/>
+    <ClInclude Include="..\..\src\gui\Controller\ImageImporter.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\CMY.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\RGB.h"/>
     <ClInclude Include="..\..\src\gui\FixParamEd\ColorMode\RGBA.h"/>

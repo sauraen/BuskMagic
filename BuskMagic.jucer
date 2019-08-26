@@ -17,6 +17,9 @@
           <FILE id="pszktd" name="ControllerCmps.h" compile="0" resource="0"
                 file="src/gui/Controller/ControllerCmps.h"/>
           <FILE id="ew8nq6" name="EnableButton.h" compile="0" resource="0" file="src/gui/Controller/EnableButton.h"/>
+          <FILE id="X8kEhO" name="ImageImporter.cpp" compile="1" resource="0"
+                file="src/gui/Controller/ImageImporter.cpp"/>
+          <FILE id="Eg6p1z" name="ImageImporter.h" compile="0" resource="0" file="src/gui/Controller/ImageImporter.h"/>
         </GROUP>
         <GROUP id="{4CB0A50E-33FE-3C70-22DC-DD556346E829}" name="FixParamEd">
           <GROUP id="{98B8B823-C6F0-66C8-ADE3-A5178A6019B3}" name="ColorMode">

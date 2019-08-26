@@ -110,9 +110,11 @@ void Controller::SetGroupColor(Colour col){
     groupColor = col;
     if(group > 0){
         for(int i=0; i<ControllerSystem::NumControllers(); ++i){
-            if(ControllerSystem::GetController(i)->group == group){
-                ControllerSystem::GetController(i)->groupColor = groupColor;
-            }
+            Controller *ctrlr = ControllerSystem::GetController(i);
+            if(ctrlr == this) continue;
+            if(ctrlr->group != group) continue;
+            ctrlr->groupColor = groupColor;
+            ctrlr->RefreshComponent();
         }
         ControllerCanvas *canvas = GetCanvas();
         if(canvas != nullptr) canvas->repaint();
@@ -127,6 +129,16 @@ void Controller::SetEnabled(bool en){
     enabled = en;
     if(enabled){
         midisettings[en_out_on]->SendMsg();
+        if(group > 0){
+            for(int i=0; i<ControllerSystem::NumControllers(); ++i){
+                Controller *ctrlr = ControllerSystem::GetController(i);
+                if(ctrlr == this) continue;
+                if(ctrlr->group != group) continue;
+                if(!ctrlr->IsEnabled()) continue;
+                ctrlr->SetEnabled(false);
+                ctrlr->RefreshComponent();
+            }
+        }
     }else{
         midisettings[en_out_off]->SendMsg();
     }
@@ -136,24 +148,11 @@ void Controller::SetEnabled(bool en){
 void Controller::HandleMIDI(int port, MidiMessage msg){
     LS_LOCK_READ();
     if(midisettings[en_on]->Matches(port, msg)){
-        if(enabled) return;
-        enabled = true;
-        midisettings[en_out_on]->SendMsg();
-        RefreshComponent();
+        SetEnabled(true);
     }else if(midisettings[en_off]->Matches(port, msg)){
-        if(!enabled) return;
-        enabled = false;
-        midisettings[en_out_off]->SendMsg();
-        RefreshComponent();
+        SetEnabled(false);
     }else if(midisettings[en_toggle]->Matches(port, msg)){
-        if(enabled){
-            enabled = false;
-            midisettings[en_out_off]->SendMsg();
-        }else{
-            enabled = true;
-            midisettings[en_out_on]->SendMsg();
-        }
-        RefreshComponent();
+        SetEnabled(!enabled);
     }
 }
 

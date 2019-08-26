@@ -433,9 +433,9 @@ ArtNetSetup::ArtNetSetup ()
     txtMapSub->addListener(this);
     txtMapInputs->addListener(this);
     txtMapOutputs->addListener(this);
-    
+
     setOpaque(true);
-    
+
     //[/UserPreSize]
 
     setSize (600, 330);
@@ -952,3 +952,4 @@ const int ArtNetSetup::artnet_logo_pngSize = 1613;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+
