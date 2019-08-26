@@ -1,27 +1,4 @@
 /*
-  ==============================================================================
-
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Projucer version: 5.4.3
-
-  ------------------------------------------------------------------------------
-
-  The Projucer is part of the JUCE library.
-  Copyright (c) 2017 - ROLI Ltd.
-
-  ==============================================================================
-*/
-
-#pragma once
-
-//[Headers]     -- You can add your own extra header files here --
-
-/*
 * BuskMagic - Live lighting control system
 * Copyright (C) 2019 Sauraen
 *
@@ -43,52 +20,89 @@
 #include "Common.h"
 
 #include "ControllerSystem.h"
-//[/Headers]
+#include "ChannelSystem.h"
 
+#include "gui/TextListBox.h"
 
-
-//==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Projucer.
-
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
-class MagicValueEditor  : public Component,
-                          public TextEditor::Listener,
-                          public ComboBox::Listener
+class MagicValueEditor : public Component, public TextEditor::Listener, 
+        public TextListBox::Listener
 {
 public:
-    //==============================================================================
-    MagicValueEditor (void *data);
-    ~MagicValueEditor();
+    MagicValueEditor(void *data) : magic((MagicValue*)data) {
+        txtLiteral.reset(new TextEditor ("txtLiteral"));
+        addAndMakeVisible(txtLiteral.get());
+        txtLiteral->setMultiLine(false);
+        txtLiteral->setReturnKeyStartsNewLine(false);
+        txtLiteral->setEscapeAndReturnKeysConsumed(false);
+        txtLiteral->setReadOnly(false);
+        txtLiteral->setScrollbarsShown(true);
+        txtLiteral->setCaretVisible(true);
+        txtLiteral->setPopupMenuEnabled(true);
+        txtLiteral->addListener(this);
+        txtLiteral->setText(String(magic->GetLiteral(), 2));
+    
+        lstChannel.reset(new TextListBox(this));
+        addAndMakeVisible(lstChannel.get());
+        lstChannel->setSelectAddedItems(false);
+        lstChannel->add("^ Non-magic");
+        for(int i=0; i<ChannelSystem::NumFreeChannels(); ++i){
+            Channel *ch = ChannelSystem::GetFreeChannel(i);
+            lstChannel->add(ch->GetName());
+            if(ch == magic->GetChannel()) lstChannel->selectRow(i+1);
+        }
+        if(magic->GetChannel() == nullptr){
+            lstChannel->selectRow(0);
+        }else{
+            txtLiteral->setEnabled(false);
+        }
+        
+        setOpaque(true);
+        setSize(120, 200);
+    }
+    
+    ~MagicValueEditor(){
+        txtLiteral = nullptr;
+        lstChannel = nullptr;
+    }
 
-    //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
-    void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
-    //[/UserMethods]
-
-    void paint (Graphics& g) override;
-    void resized() override;
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
-
-
+    void paint(Graphics& g) override{
+        g.fillAll(LFWindowColor());
+    }
+    
+    void resized() override{
+        txtLiteral->setBounds (0, 0, 48, 24);
+        lstChannel->setBounds (0, 24, 120, 176);
+    }
+    
+    void rowSelected(TextListBox *parent, int row) override {
+        if (parent == lstChannel.get()) {
+            if(row == 0){
+                txtLiteral->setEnabled(true);
+                magic->SetChannel(nullptr);
+            }else{
+                txtLiteral->setEnabled(false);
+                if(row - 1 >= ChannelSystem::NumFreeChannels()){
+                    jassertfalse;
+                    return;
+                }
+                magic->SetChannel(ChannelSystem::GetFreeChannel(row - 1));
+            }
+        }
+    }
+    void textEditorTextChanged(TextEditor &editorThatWasChanged) override{
+        TEXTCHANGEDHANDLER_PRE;
+        if(&editorThatWasChanged == txtLiteral.get()){
+            if(!isdec) turnRed = true;
+            else magic->SetLiteral(decval);
+        }
+        TEXTCHANGEDHANDLER_POST;
+    }
 
 private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
     MagicValue *magic;
-    //[/UserVariables]
-
-    //==============================================================================
+    
     std::unique_ptr<TextEditor> txtLiteral;
-    std::unique_ptr<ComboBox> cbxChannel;
+    std::unique_ptr<TextListBox> lstChannel;
 
-
-    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MagicValueEditor)
 };
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
-

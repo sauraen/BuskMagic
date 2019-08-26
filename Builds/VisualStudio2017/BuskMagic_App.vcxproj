@@ -147,7 +147,6 @@
     <ClCompile Include="..\..\src\gui\Popup\ButtonMIDI.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\CtrlrEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\KnobMIDI.cpp"/>
-    <ClCompile Include="..\..\src\gui\Popup\MagicValueEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\PhasorEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\ArtNetSetup.cpp"/>
     <ClCompile Include="..\..\src\gui\ControllerWindow.cpp"/>

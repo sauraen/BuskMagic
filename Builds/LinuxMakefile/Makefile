@@ -77,7 +77,6 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/ButtonMIDI_c4f5be4a.o \
   $(JUCE_OBJDIR)/CtrlrEditor_540c3ce7.o \
   $(JUCE_OBJDIR)/KnobMIDI_76846a0e.o \
-  $(JUCE_OBJDIR)/MagicValueEditor_5e9a82c8.o \
   $(JUCE_OBJDIR)/PhasorEditor_1cb2b851.o \
   $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o \
   $(JUCE_OBJDIR)/ControllerWindow_e8832740.o \
@@ -160,11 +159,6 @@ $(JUCE_OBJDIR)/CtrlrEditor_540c3ce7.o: ../../src/gui/Popup/CtrlrEditor.cpp
 $(JUCE_OBJDIR)/KnobMIDI_76846a0e.o: ../../src/gui/Popup/KnobMIDI.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling KnobMIDI.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
-
-$(JUCE_OBJDIR)/MagicValueEditor_5e9a82c8.o: ../../src/gui/Popup/MagicValueEditor.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling MagicValueEditor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/PhasorEditor_1cb2b851.o: ../../src/gui/Popup/PhasorEditor.cpp

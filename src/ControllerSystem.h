@@ -35,7 +35,7 @@ public:
     inline bool IsMagic() const { return chan != nullptr; }
     inline float GetLiteral() const { return mugglevalue; }
     void SetLiteral(float v);
-    inline void *GetChannel() const { return chan; }
+    inline Channel *GetChannel() const { return chan; }
     void SetChannel(Channel *ch);
     
     String GetText();

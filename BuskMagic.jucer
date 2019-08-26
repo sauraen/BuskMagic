@@ -45,8 +45,6 @@
                 file="src/gui/Popup/FreeChannelEditor.h"/>
           <FILE id="PdYUSN" name="KnobMIDI.cpp" compile="1" resource="0" file="src/gui/Popup/KnobMIDI.cpp"/>
           <FILE id="dKximt" name="KnobMIDI.h" compile="0" resource="0" file="src/gui/Popup/KnobMIDI.h"/>
-          <FILE id="wmx0ve" name="MagicValueEditor.cpp" compile="1" resource="0"
-                file="src/gui/Popup/MagicValueEditor.cpp"/>
           <FILE id="klKozR" name="MagicValueEditor.h" compile="0" resource="0"
                 file="src/gui/Popup/MagicValueEditor.h"/>
           <FILE id="UyBGjC" name="PhasorEditor.cpp" compile="1" resource="0"

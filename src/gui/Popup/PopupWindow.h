@@ -55,7 +55,7 @@ public:
         setVisible(false);
         removeFromDesktop();
     }
-
+    
     void focusOfChildComponentChanged(FocusChangeType cause) override {
         if(hasKeyboardFocus(true)) return;
         reset();
