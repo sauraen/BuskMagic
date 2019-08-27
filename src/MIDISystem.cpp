@@ -268,7 +268,7 @@ namespace MIDISystem {
         return ValueTree();
     }
     
-    int NumInPorts() { return inports.size(); }
+    int NumInPorts() { return (int)inports.size(); }
     void AddInPort() { inports.push_back(MIDIInPort()); }
     void RemoveInPort(int p){
         if(p < 0 || p >= inports.size()) return;
@@ -305,7 +305,7 @@ namespace MIDISystem {
         inports[p].devnum = -1;
     }
     
-    int NumOutPorts() { return outports.size(); }
+    int NumOutPorts() { return (int)outports.size(); }
     void AddOutPort() { outports.push_back(MIDIOutPort()); }
     void RemoveOutPort(int p){
         if(p < 0 || p >= outports.size()) return;

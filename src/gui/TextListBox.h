@@ -25,7 +25,8 @@ class TextListBox : public ListBox, ListBoxModel, Button::Listener
 {
 public:
     class Listener{
-        public:
+    public:
+        virtual ~Listener() {}
         virtual void rowSelected(TextListBox* parent, int row)=0;
         virtual void rowDoubleClicked(TextListBox* parent, int row);
     };

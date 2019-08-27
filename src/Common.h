@@ -132,6 +132,12 @@ inline void InfoBox(String text){
 
 #define TEXTCHANGEDHANDLER_POST \
     TurnRed(&editorThatWasChanged, turnRed); \
+    ignoreUnused(isint); \
+    ignoreUnused(val); \
+    ignoreUnused(ishex); \
+    ignoreUnused(hexval); \
+    ignoreUnused(isdec); \
+    ignoreUnused(decval); \
     REQUIRESEMICOLON
 
 #define FROMLOOKANDFEEL(colorType) \
@@ -171,7 +177,7 @@ inline Colour ShowColorChooserWindow(Colour initcolor, Component *optionalparent
     opts.dialogTitle = "BuskMagic - Select a color\n";
     opts.content.set(colsel.get(), false);
     opts.componentToCentreAround = optionalparent;
-    int ret = opts.runModal();
+    opts.runModal();
     return colsel->getCurrentColour();
 }
 

@@ -31,8 +31,8 @@ static void RefreshMatrixEditor(bool invalidate){
     if(invalidate) MatrixEditor::mtxed_static->RefreshVisibleControllerSet();
 }
 
-MagicValue::MagicValue(Controller *parent) 
-    : controller(parent), mugglevalue(0.0f), chan(nullptr) {}
+MagicValue::MagicValue(Controller *parent, float litvalue) 
+    : controller(parent), mugglevalue(litvalue), chan(nullptr) {}
 MagicValue::MagicValue(const MagicValue &other, Controller *newparent) 
     : controller(newparent), mugglevalue(other.mugglevalue), chan(other.chan) {}
 void MagicValue::SetLiteral(float v) { 
@@ -54,9 +54,10 @@ void MagicValue::RefreshComponent(){
 }
 
 Controller::Controller() 
-    : pos(0,0), color(Colours::red), nostate(false),
-      name("New Controller Blah blah"), group(0), groupColor(Colours::lightgrey),
-      enabled(false)
+    : pos(0,0), nostate(false), 
+      name("New Controller Blah blah"), group(0), 
+      color(Colours::red), groupColor(Colours::lightgrey),
+      enabled(false), component(nullptr)
 {
     midisettings.add(new MIDISetting(false, false)); //en_on
     midisettings.add(new MIDISetting(false, false)); //en_off
@@ -67,8 +68,9 @@ Controller::Controller()
 
 Controller::~Controller() {}
 Controller::Controller(const Controller &other)
-    : pos(other.pos + Point<int>(100,100)), color(other.color), nostate(other.nostate), 
-      name(other.name + " 2"), group(other.group), groupColor(other.groupColor),
+    : pos(other.pos + Point<int>(100,100)), nostate(other.nostate), 
+      name(other.name + " 2"), group(other.group), 
+      color(other.color), groupColor(other.groupColor),
       enabled(false), component(nullptr)
 {
     for(int i=0; i<other.midisettings.size(); ++i){
@@ -200,7 +202,7 @@ float SimpleController::Evaluate(float angle) const {
 }
 
 ContinuousController::ContinuousController() 
-    : Controller(), lovalue(this), hivalue(this), knob(0.0f) {
+    : Controller(), lovalue(this), hivalue(this, 1.0f), knob(0.0f) {
     midisettings.add(new MIDISetting(false, true )); //ct_in
     midisettings.add(new MIDISetting(false, false)); //ct_goto_lo
     midisettings.add(new MIDISetting(false, false)); //ct_goto_hi
@@ -275,18 +277,22 @@ namespace ControllerSystem {
         }
         return ctrlrs[i];
     }
-    SimpleController *AddSimpleController(){
+    void AddController(Controller *c){
         LS_LOCK_WRITE();
-        SimpleController *sc = new SimpleController();
-        ctrlrs.add(sc);
+        if(ctrlrs.size() >= 1){
+            c->pos = ctrlrs[ctrlrs.size()-1]->pos + Point<int>(100, 100);
+        }
+        ctrlrs.add(c);
         RefreshMatrixEditor(true);
+    }
+    SimpleController *AddSimpleController(){
+        SimpleController *sc = new SimpleController();
+        AddController(sc);
         return sc;
     }
     ContinuousController *AddContinuousController(){
-        LS_LOCK_WRITE();
         ContinuousController *cc = new ContinuousController();
-        ctrlrs.add(cc);
-        RefreshMatrixEditor(true);
+        AddController(cc);
         return cc;
     }
     Controller *DuplicateController(Controller *orig){

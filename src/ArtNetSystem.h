@@ -53,7 +53,6 @@ namespace ArtNetSystem {
         String longname;
         String nodereport;
         
-        void UpdateFromArtPollReply(const uint8_t *data, size_t len);
         String GetTableRow();
         String GetDescription();
         

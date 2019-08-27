@@ -28,7 +28,7 @@ class Channel;
 
 class MagicValue {
 public:
-    MagicValue(Controller *parent);
+    MagicValue(Controller *parent, float litvalue = 0.0f);
     ~MagicValue() {}
     MagicValue(const MagicValue &other, Controller *newparent);
     

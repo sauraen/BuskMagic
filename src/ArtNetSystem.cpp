@@ -89,8 +89,9 @@ namespace ArtNetSystem {
     
     ArtNetDevice::ArtNetDevice() : mode(Mode::manual), style(Style::node),
         status{0xFF, 0xFF}, oem(0x0000), esta(0x4F4E), fw(0x0000),
-        net(0x00), subnet(0x0), map_net(0x00), map_subnet(0x0), map(false), 
+        net(0x00), subnet(0x0), 
         inuni{0x7F, 0x7F, 0x7F, 0x7F}, outuni{0x7F, 0x7F, 0x7F, 0x7F},
+        map(false), map_net(0x00), map_subnet(0x0), 
         map_inuni{0x7F, 0x7F, 0x7F, 0x7F}, map_outuni{0x7F, 0x7F, 0x7F, 0x7F},
         bindindex(0), artdmx_sequence(1),
         shortname("<Short name>"), 
@@ -191,7 +192,7 @@ namespace ArtNetSystem {
     static DatagramSocket *sendsock = nullptr;
     
     static void SendArtNet(IPAddress dest, uint16_t opcode, const uint8_t *data, 
-            size_t dlen, bool packetHasProtVer = true, 
+            int dlen, bool packetHasProtVer = true, 
             ArtNetDevice *optionalDevForStatus = nullptr){
         int hlen = packetHasProtVer ? 12 : 10;
         uint8_t *buf = new uint8_t[hlen+dlen];
@@ -458,7 +459,7 @@ namespace ArtNetSystem {
         ArtNetReceiver() : Thread("ArtNetReceiver") {}
         virtual ~ArtNetReceiver() {}
         virtual void run() override {
-            const size_t maxpacketsize = 1024;
+            const int maxpacketsize = 1024;
             uint8_t *packetbuf = new uint8_t[maxpacketsize];
             DatagramSocket recvsock(false);
             recvsock.bindToPort(0x1936);

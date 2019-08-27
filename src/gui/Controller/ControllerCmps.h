@@ -55,11 +55,11 @@ public:
     }
     
     void mouseDown(const MouseEvent &event) override {
-        if(event.mods.isLeftButtonDown()){
+        if(isRightClick(event)){
+            popup.show<CtrlrEditor>(event.getScreenX(), event.getScreenY(), controller);
+        }else if(event.mods.isLeftButtonDown()){
             dragbegin_local = event.getMouseDownPosition();
             beginDragAutoRepeat(20);
-        }else if(isRightClick(event)){
-            popup.show<CtrlrEditor>(event.getScreenX(), event.getScreenY(), controller);
         }
     }
     
