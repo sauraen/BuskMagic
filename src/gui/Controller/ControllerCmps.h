@@ -140,6 +140,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ContinuousControllerCmp)
 };
 
+/*
 class ModulatorControllerCmp : public ControllerCmp, public Button::Listener
 {
 public:
@@ -251,3 +252,4 @@ private:
         
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ModulatorControllerCmp)
 };
+*/
