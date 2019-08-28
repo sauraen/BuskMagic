@@ -206,7 +206,11 @@ ButtonMIDI::ButtonMIDI (void *data)
     txtToggle->setEscapeAndReturnKeysConsumed(false);
     txtOutOn->setEscapeAndReturnKeysConsumed(false);
     txtOutOff->setEscapeAndReturnKeysConsumed(false);
-
+    txtOn->setSelectAllWhenFocused(true);
+    txtOff->setSelectAllWhenFocused(true);
+    txtToggle->setSelectAllWhenFocused(true); TODO finish this
+    txtOutOn->setSelectAllWhenFocused(true);
+    txtOutOff->setSelectAllWhenFocused(true);
     txtOn->addListener(this);
     txtOff->addListener(this);
     txtToggle->addListener(this);
@@ -218,9 +222,9 @@ ButtonMIDI::ButtonMIDI (void *data)
     txtToggle->setText(controller->GetMIDISettingStr(Controller::en_toggle));
     txtOutOn->setText(controller->GetMIDISettingStr(Controller::en_out_on));
     txtOutOff->setText(controller->GetMIDISettingStr(Controller::en_out_off));
-    
+
     setOpaque(true);
-    
+
     //[/UserPreSize]
 
     setSize (224, 120);

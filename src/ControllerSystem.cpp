@@ -1,17 +1,17 @@
 /*
 * BuskMagic - Live lighting control system
 * Copyright (C) 2019 Sauraen
-* 
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-* 
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-* 
+*
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
@@ -31,16 +31,16 @@ static void RefreshMatrixEditor(bool invalidate){
     if(invalidate) MatrixEditor::mtxed_static->RefreshVisibleControllerSet();
 }
 
-MagicValue::MagicValue(Controller *parent, float litvalue) 
+MagicValue::MagicValue(Controller *parent, float litvalue)
     : controller(parent), mugglevalue(litvalue), chan(nullptr) {}
-MagicValue::MagicValue(const MagicValue &other, Controller *newparent) 
+MagicValue::MagicValue(const MagicValue &other, Controller *newparent)
     : controller(newparent), mugglevalue(other.mugglevalue), chan(other.chan) {}
-void MagicValue::SetLiteral(float v) { 
+void MagicValue::SetLiteral(float v) {
     mugglevalue = v;
     RefreshComponent();
 }
 void MagicValue::SetChannel(Channel *ch) {
-    chan = ch; 
+    chan = ch;
     RefreshComponent();
 }
 String MagicValue::GetText(){
@@ -53,9 +53,11 @@ void MagicValue::RefreshComponent(){
     controller->RefreshComponent();
 }
 
-Controller::Controller() 
-    : pos(0,0), nostate(false), 
-      name("New Controller Blah blah"), group(0), 
+////////////////////////////////////////////////////////////////////////////////
+
+Controller::Controller()
+    : pos(0,0), nostate(false),
+      name("New Controller Blah blah"), group(0),
       color(Colours::red), groupColor(Colours::lightgrey),
       enabled(false), component(nullptr)
 {
@@ -68,8 +70,8 @@ Controller::Controller()
 
 Controller::~Controller() {}
 Controller::Controller(const Controller &other)
-    : pos(other.pos + Point<int>(100,100)), nostate(other.nostate), 
-      name(other.name + " 2"), group(other.group), 
+    : pos(other.pos + Point<int>(100,100)), nostate(other.nostate),
+      name(other.name + " 2"), group(other.group),
       color(other.color), groupColor(other.groupColor),
       enabled(false), component(nullptr)
 {
@@ -191,17 +193,28 @@ ControllerCanvas *Controller::GetCanvas(){
     return canvas;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 SimpleController::SimpleController() : Controller(), value(this) {}
 SimpleController::~SimpleController() {}
 SimpleController::SimpleController(const SimpleController &other)
     : Controller(other), value(other.value, this) {}
+Controller *SimpleController::clone() const{
+    return new SimpleController(*this);
+}
 
 float SimpleController::Evaluate(float angle) const {
     //LS_LOCK_READ(); //Not locking because channel evaluation will lock
     return value.Evaluate(angle);
 }
 
-ContinuousController::ContinuousController() 
+void SimpleController::RemoveAllMagicValuesForChannel(const Channel *chn){
+    if(value.GetChannel() == chn) value.SetChannel(nullptr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+ContinuousController::ContinuousController()
     : Controller(), lovalue(this), hivalue(this, 1.0f), knob(0.0f) {
     midisettings.add(new MIDISetting(false, true )); //ct_in
     midisettings.add(new MIDISetting(false, false)); //ct_goto_lo
@@ -211,8 +224,11 @@ ContinuousController::ContinuousController()
 
 ContinuousController::~ContinuousController() {}
 ContinuousController::ContinuousController(const ContinuousController &other)
-    : Controller(other), lovalue(other.lovalue, this), 
+    : Controller(other), lovalue(other.lovalue, this),
       hivalue(other.hivalue, this), knob(other.knob) {}
+Controller *ContinuousController::clone() const{
+    return new ContinuousController(*this);
+}
 
 void ContinuousController::SetKnob(float k){
     LS_LOCK_WRITE();
@@ -264,10 +280,47 @@ float ContinuousController::Evaluate(float angle) const {
     return (l * (1.0f - knob)) + (h * knob);
 }
 
+void ContinuousController::RemoveAllMagicValuesForChannel(const Channel *chn){
+    if(lovalue.GetChannel() == chn) lovalue.SetChannel(nullptr);
+    if(hivalue.GetChannel() == chn) hivalue.SetChannel(nullptr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+ModulatorController::ModulatorController()
+    : Controller(),
+    lovalue(this), hivalue(this, 1.0f), pwvalue(this, 0.2f), tvalue(this, 1.0f),
+    shape(ModulatorShape::pulse) {}
+
+ModulatorController::~ModulatorController() {}
+ModulatorController::ModulatorController(const ModulatorController &other)
+    : Controller(other),
+    lovalue(other.lovalue, this), hivalue(other.hivalue, this),
+    pwvalue(other.pwvalue, this), tvalue(other.tvalue, this),
+    shape(other.shape) {}
+Controller *ModulatorController::clone() const {
+    return new ModulatorController(*this);
+}
+
+float ModulatorController::Evaluate(float angle) const {
+    //LS_LOCK_READ(); //Not locking because channel evaluation will lock
+    float l = lovalue.Evaluate(angle);
+    return l; //TODO
+}
+
+void ModulatorController::RemoveAllMagicValuesForChannel(const Channel *chn){
+    if(lovalue.GetChannel() == chn) lovalue.SetChannel(nullptr);
+    if(hivalue.GetChannel() == chn) hivalue.SetChannel(nullptr);
+    if(pwvalue.GetChannel() == chn) pwvalue.SetChannel(nullptr);
+    if(tvalue .GetChannel() == chn) tvalue .SetChannel(nullptr);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 namespace ControllerSystem {
-    
+
     OwnedArray<Controller> ctrlrs;
-    
+
     int NumControllers() { return ctrlrs.size(); }
     Controller *GetController(int i){
         LS_LOCK_READ();
@@ -277,7 +330,7 @@ namespace ControllerSystem {
         }
         return ctrlrs[i];
     }
-    void AddController(Controller *c){
+    void AddInternal(Controller *c){
         LS_LOCK_WRITE();
         if(ctrlrs.size() >= 1){
             c->pos = ctrlrs[ctrlrs.size()-1]->pos + Point<int>(100, 100);
@@ -285,29 +338,19 @@ namespace ControllerSystem {
         ctrlrs.add(c);
         RefreshMatrixEditor(true);
     }
-    SimpleController *AddSimpleController(){
-        SimpleController *sc = new SimpleController();
-        AddController(sc);
-        return sc;
+    template<class CTRLR> CTRLR *AddController(){
+        static_assert(std::is_base_of<Controller, CTRLR>::value,
+            "Invalid use of AddController()!");
+        CTRLR *c = new CTRLR();
+        AddInternal(c);
+        return c;
     }
-    ContinuousController *AddContinuousController(){
-        ContinuousController *cc = new ContinuousController();
-        AddController(cc);
-        return cc;
-    }
+    template SimpleController *AddController<SimpleController>();
+    template ContinuousController *AddController<ContinuousController>();
+    template ModulatorController *AddController<ModulatorController>();
     Controller *DuplicateController(Controller *orig){
-        LS_LOCK_WRITE();
-        Controller *n;
-        if(SimpleController *sc = dynamic_cast<SimpleController*>(orig)){
-            n = new SimpleController(*sc);
-        }else if(ContinuousController *cc = dynamic_cast<ContinuousController*>(orig)){
-            n = new ContinuousController(*cc);
-        }else{
-            jassertfalse;
-            return nullptr;
-        }
-        RefreshMatrixEditor(true);
-        ctrlrs.add(n);
+        Controller *n = orig->clone();
+        AddInternal(n);
         return n;
     }
     void RemoveController(Controller *ctrlr){
@@ -316,39 +359,26 @@ namespace ControllerSystem {
         ctrlrs.removeObject(ctrlr, true);
         RefreshMatrixEditor(true);
     }
-    
+
     void ChangeControllerOrder(int orig, int newpos){
         LS_LOCK_WRITE();
         ctrlrs.move(orig, newpos);
         ChannelSystem::SortAllChannelPhasors();
         RefreshMatrixEditor(true);
     }
-    
-    void RemoveAllMagicValuesForChannel(Channel *chn){
+
+    void RemoveAllMagicValuesForChannel(const Channel *chn){
         LS_LOCK_WRITE();
         for(int i=0; i<ctrlrs.size(); ++i){
-            if(SimpleController *sc = dynamic_cast<SimpleController*>(ctrlrs[i])){
-                if(sc->GetValue()->GetChannel() == chn){
-                    sc->GetValue()->SetChannel(nullptr);
-                }
-            }else if(ContinuousController *cc = dynamic_cast<ContinuousController*>(ctrlrs[i])){
-                if(cc->GetLoValue()->GetChannel() == chn){
-                    cc->GetLoValue()->SetChannel(nullptr);
-                }
-                if(cc->GetHiValue()->GetChannel() == chn){
-                    cc->GetHiValue()->SetChannel(nullptr);
-                }
-            }else{
-                jassertfalse;
-            }
+            ctrlrs[i]->RemoveAllMagicValuesForChannel(chn);
         }
     }
-    
+
     void HandleMIDI(int port, MidiMessage msg){
         LS_LOCK_READ();
         for(int i=0; i<ctrlrs.size(); ++i){
             ctrlrs[i]->HandleMIDI(port, msg);
         }
     }
-    
+
 }

@@ -1,17 +1,17 @@
 /*
 * BuskMagic - Live lighting control system
 * Copyright (C) 2019 Sauraen
-* 
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-* 
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-* 
+*
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
@@ -46,14 +46,14 @@ public:
         btnEnable = nullptr;
     }
     inline Controller *GetController() { return controller; }
-    
+
     void paint (Graphics& g) override {
         g.fillAll(controller->GetGroupColor());
         g.setColour(controller->GetGroupColor().getBrightness() > 0.5f ? Colours::black : Colours::white);
         g.setFont (10.0f);
         g.drawMultiLineText(controller->GetName(), 2, texty, textwidth - 2, Justification::centred);
     }
-    
+
     void mouseDown(const MouseEvent &event) override {
         if(isRightClick(event)){
             popup.show<CtrlrEditor>(event.getScreenX(), event.getScreenY(), controller);
@@ -62,7 +62,7 @@ public:
             beginDragAutoRepeat(20);
         }
     }
-    
+
     void mouseDrag(const MouseEvent &event) override;
 
 protected:
@@ -73,14 +73,14 @@ protected:
 private:
     Point<int> dragbegin_local;
     PopupWindow popup;
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ControllerCmp)
 };
 
 class SimpleControllerCmp : public ControllerCmp
 {
 public:
-    SimpleControllerCmp(SimpleController *sc) 
+    SimpleControllerCmp(SimpleController *sc)
         : ControllerCmp(sc), scontroller(sc){
         boxValue.reset(new MagicValueBox(sc->GetValue()));
         addAndMakeVisible(boxValue.get());
@@ -91,95 +91,94 @@ public:
         textwidth = getWidth();
     }
     ~SimpleControllerCmp() {}
-    
+
 private:
     SimpleController *scontroller;
-    
+
     std::unique_ptr<MagicValueBox> boxValue;
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleControllerCmp)
 };
 
 class ContinuousControllerCmp : public ControllerCmp, public Slider::Listener
 {
 public:
-    ContinuousControllerCmp(ContinuousController *cc) 
+    ContinuousControllerCmp(ContinuousController *cc)
         : ControllerCmp(cc), ccontroller(cc){
         knob.reset(new CCKnob(ccontroller));
         addAndMakeVisible(knob.get());
         knob->addListener(this);
         knob->setTopLeftPosition(8, -4);
-        
+
         boxLo.reset(new MagicValueBox(cc->GetLoValue()));
         boxHi.reset(new MagicValueBox(cc->GetHiValue()));
         addAndMakeVisible(boxLo.get());
         addAndMakeVisible(boxHi.get());
         boxLo->setTopLeftPosition(4, 56);
         boxHi->setTopLeftPosition(44, 56);
-        
+
         btnEnable->setTopLeftPosition(16, 76);
         setSize(80, 136);
         texty = 120;
         textwidth = getWidth();
     }
     ~ContinuousControllerCmp() {}
-    
+
     void sliderValueChanged(Slider *slider) override {
         if(slider == knob.get()){
             ccontroller->SetKnob(knob->getValue());
         }
     }
-    
+
 private:
     ContinuousController *ccontroller;
-    
+
     std::unique_ptr<CCKnob> knob;
     std::unique_ptr<MagicValueBox> boxLo;
     std::unique_ptr<MagicValueBox> boxHi;
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ContinuousControllerCmp)
 };
 
-/*
 class ModulatorControllerCmp : public ControllerCmp, public Button::Listener
 {
 public:
     ModulatorControllerCmp(ModulatorController *mc)
         : ControllerCmp(mc), mcontroller(mc){
-        boxLo->reset(new MagicValueBox(mc->GetLoValue()));
-        boxHi->reset(new MagicValueBox(mc->GetHiValue()));
-        boxPW->reset(new MagicValueBox(mc->GetPWValue()));
-        boxT ->reset(new MagicValueBox(mc->GetTValue()));
+        boxLo.reset(new MagicValueBox(mc->GetLoValue()));
+        boxHi.reset(new MagicValueBox(mc->GetHiValue()));
+        boxPW.reset(new MagicValueBox(mc->GetPWValue()));
+        boxT .reset(new MagicValueBox(mc->GetTValue()));
         addAndMakeVisible(boxLo.get());
         addAndMakeVisible(boxHi.get());
         addAndMakeVisible(boxPW.get());
         addAndMakeVisible(boxT.get());
-        boxLo->setTopLeftPosition(100, 50);
-        boxHi->setTopLeftPosition(100, 24);
-        boxPW->setTopLeftPosition(80, 80);
-        boxT ->setTopLeftPosition(150, 8);
-        
+        boxLo->setTopLeftPosition(176, 32);
+        boxHi->setTopLeftPosition(176, 8);
+        boxPW->setTopLeftPosition(176, 56);
+        boxT ->setTopLeftPosition(236, 8);
+
         imgCosine = ImageCache::getFromMemory(imgCosine_data, imgCosine_size);
         imgTriangle = ImageCache::getFromMemory(imgTriangle_data, imgTriangle_size);
         imgNoise = ImageCache::getFromMemory(imgNoise_data, imgNoise_size);
         imgPulse = ImageCache::getFromMemory(imgPulse_data, imgPulse_size);
         imgSawF = ImageCache::getFromMemory(imgSawF_data, imgSawF_size);
         imgSawR = ImageCache::getFromMemory(imgSawR_data, imgSawR_size);
-        btnCosine->reset(new ImageButton());
-        btnTriangle->reset(new ImageButton());
-        btnNoise->reset(new ImageButton());
-        btnPulse->reset(new ImageButton());
-        btnSawF->reset(new ImageButton());
-        btnSawR->reset(new ImageButton());
+        btnCosine  .reset(new ImageButton());
+        btnTriangle.reset(new ImageButton());
+        btnNoise   .reset(new ImageButton());
+        btnPulse   .reset(new ImageButton());
+        btnSawF    .reset(new ImageButton());
+        btnSawR    .reset(new ImageButton());
         addAndMakeVisible(btnCosine.get());
         addAndMakeVisible(btnTriangle.get());
         addAndMakeVisible(btnNoise.get());
         addAndMakeVisible(btnPulse.get());
         addAndMakeVisible(btnSawF.get());
         addAndMakeVisible(btnSawR.get());
-        const uint32_t normalColor = 0x00000000;
-        const uint32_t overColor   = 0xFFFFFF30;
-        const uint32_t downColor   = 0x0080FF70;
+        const Colour normalColor = Colour(0x00000000);
+        const Colour overColor   = Colour(0xFFFFFF30);
+        const Colour downColor   = Colour(0xFF0000FF);
         btnCosine->setImages(true, false, true, imgCosine, 1.0f, normalColor,
                                                 imgCosine, 1.0f, overColor,
                                                 imgCosine, 1.0f, downColor, 0.0f);
@@ -198,29 +197,72 @@ public:
         btnSawR->setImages(true, false, true, imgSawR, 1.0f, normalColor,
                                               imgSawR, 1.0f, overColor,
                                               imgSawR, 1.0f, downColor, 0.0f);
-        const int shape_x = 50, shape_y = 4;
-        btnCosine->  setPosition(shape_x,    shape_y);
-        btnTriangle->setPosition(shape_x,    shape_y+24);
-        btnNoise->   setPosition(shape_x,    shape_y+48);
-        btnPulse->   setPosition(shape_x+36, shape_y);
-        btnSawF->    setPosition(shape_x+36, shape_y+24);
-        btnSawR->    setPosition(shape_x+36, shape_y+48);
-            
-        btnEnable->setTopLeftPosition(8, 36);
-        setSize(300, 300);
-        texty = 8;
+        btnCosine->  setClickingTogglesState(true);
+        btnTriangle->setClickingTogglesState(true);
+        btnNoise->   setClickingTogglesState(true);
+        btnPulse->   setClickingTogglesState(true);
+        btnSawF->    setClickingTogglesState(true);
+        btnSawR->    setClickingTogglesState(true);
+        btnCosine->  setRadioGroupId(1, dontSendNotification);
+        btnTriangle->setRadioGroupId(1, dontSendNotification);
+        btnNoise->   setRadioGroupId(1, dontSendNotification);
+        btnPulse->   setRadioGroupId(1, dontSendNotification);
+        btnSawF->    setRadioGroupId(1, dontSendNotification);
+        btnSawR->    setRadioGroupId(1, dontSendNotification);
+        btnCosine->  setToggleState(mc->GetShape() == ModulatorController::cosine, dontSendNotification);
+        btnTriangle->setToggleState(mc->GetShape() == ModulatorController::triangle, dontSendNotification);
+        btnNoise->   setToggleState(mc->GetShape() == ModulatorController::noise, dontSendNotification);
+        btnPulse->   setToggleState(mc->GetShape() == ModulatorController::pulse, dontSendNotification);
+        btnSawF->    setToggleState(mc->GetShape() == ModulatorController::sawf, dontSendNotification);
+        btnSawR->    setToggleState(mc->GetShape() == ModulatorController::sawr, dontSendNotification);
+        const int shape_x = 72, shape_y = 4;
+        btnCosine->  setTopLeftPosition(shape_x,    shape_y);
+        btnTriangle->setTopLeftPosition(shape_x,    shape_y+24);
+        btnNoise->   setTopLeftPosition(shape_x,    shape_y+48);
+        btnPulse->   setTopLeftPosition(shape_x+36, shape_y);
+        btnSawF->    setTopLeftPosition(shape_x+36, shape_y+24);
+        btnSawR->    setTopLeftPosition(shape_x+36, shape_y+48);
+
+        btnEnable->setTopLeftPosition(8, 40);
+        setSize(300, 82);
+        texty = 12;
         textwidth = 64;
     }
     ~ModulatorControllerCmp() {}
-    
+
+    void buttonClicked(Button* buttonThatWasClicked) override {
+        if(buttonThatWasClicked == btnCosine.get()){
+            mcontroller->SetShape(ModulatorController::cosine);
+        }else if(buttonThatWasClicked == btnTriangle.get()){
+            mcontroller->SetShape(ModulatorController::triangle);
+        }else if(buttonThatWasClicked == btnNoise.get()){
+            mcontroller->SetShape(ModulatorController::noise);
+        }else if(buttonThatWasClicked == btnPulse.get()){
+            mcontroller->SetShape(ModulatorController::pulse);
+        }else if(buttonThatWasClicked == btnSawF.get()){
+            mcontroller->SetShape(ModulatorController::sawf);
+        }else if(buttonThatWasClicked == btnSawR.get()){
+            mcontroller->SetShape(ModulatorController::sawr);
+        }
+    }
+
+    void paint(Graphics &g) override {
+        ControllerCmp::paint(g);
+        g.setFont(GetNormalFont());
+        g.drawText("Hi:", 152,  4, 24, 24, Justification::centredLeft, false);
+        g.drawText("Lo:", 152, 28, 24, 24, Justification::centredLeft, false);
+        g.drawText("PW:", 152, 52, 24, 24, Justification::centredLeft, false);
+        g.drawText("T:",  216,  4, 24, 24, Justification::centredLeft, false);
+    }
+
 private:
     ModulatorController *mcontroller;
-    
+
     std::unique_ptr<MagicValueBox> boxLo;
     std::unique_ptr<MagicValueBox> boxHi;
     std::unique_ptr<MagicValueBox> boxPW;
     std::unique_ptr<MagicValueBox> boxT;
-    
+
     std::unique_ptr<ImageButton> btnCosine;
     std::unique_ptr<ImageButton> btnTriangle;
     std::unique_ptr<ImageButton> btnNoise;
@@ -245,11 +287,10 @@ private:
     static const int imgPulse_size;
     static const int imgSawF_size;
     static const int imgSawR_size;
-    
+
     std::unique_ptr<ToggleButton> optMeasure;
     std::unique_ptr<ToggleButton> optBeat;
     std::unique_ptr<ToggleButton> optSecond;
-        
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ModulatorControllerCmp)
 };
-*/

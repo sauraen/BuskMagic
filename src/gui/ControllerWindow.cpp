@@ -84,9 +84,9 @@ ControllerWindow::ControllerWindow ()
     if(isMac()){
         lblInstructions->setText("Ctrl" + lblInstructions->getText().substring(5), dontSendNotification);
     }
-    
+
     setOpaque(true);
-    
+
     //[/UserPreSize]
 
     setSize (800, 600);
@@ -145,13 +145,13 @@ void ControllerWindow::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == btnNewSimple.get())
     {
         //[UserButtonCode_btnNewSimple] -- add your button handler code here..
-        canvas->addComp(ControllerSystem::AddSimpleController());
+        canvas->addComp(ControllerSystem::AddController<SimpleController>());
         //[/UserButtonCode_btnNewSimple]
     }
     else if (buttonThatWasClicked == btnNewContinuous.get())
     {
         //[UserButtonCode_btnNewContinuous] -- add your button handler code here..
-        canvas->addComp(ControllerSystem::AddContinuousController());
+        canvas->addComp(ControllerSystem::AddController<ModulatorController>());
         //[/UserButtonCode_btnNewContinuous]
     }
 
