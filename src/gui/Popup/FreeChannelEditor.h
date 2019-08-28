@@ -30,27 +30,11 @@ public:
     FreeChannelEditor(void *data) : channel((Channel*)data) {
         txtLetters.reset(new TextEditor("txtLetters"));
         addAndMakeVisible(txtLetters.get());
-        txtLetters->setMultiLine (false);
-        txtLetters->setReturnKeyStartsNewLine (false);
-        txtLetters->setEscapeAndReturnKeysConsumed(false);
-        txtLetters->setReadOnly (false);
-        txtLetters->setScrollbarsShown (true);
-        txtLetters->setCaretVisible (true);
-        txtLetters->setPopupMenuEnabled (true);
-        txtLetters->addListener(this);
-        txtLetters->setText(channel->GetLetters());
+        ConfigureTextEditor(txtLetters, this, channel->GetLetters());
         //
         txtName.reset(new TextEditor("txtName"));
         addAndMakeVisible(txtName.get());
-        txtName->setMultiLine (false);
-        txtName->setReturnKeyStartsNewLine (false);
-        txtName->setEscapeAndReturnKeysConsumed(false);
-        txtName->setReadOnly (false);
-        txtName->setScrollbarsShown (true);
-        txtName->setCaretVisible (true);
-        txtName->setPopupMenuEnabled (true);
-        txtName->addListener(this);
-        txtName->setText(channel->GetName());
+        ConfigureTextEditor(txtName, this, channel->GetName());
         //
         setOpaque(true);
         setSize(100, 48);

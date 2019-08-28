@@ -119,6 +119,18 @@ inline void InfoBox(String text){
 #define NULLSTATEMENT ((void)0)
 #define REQUIRESEMICOLON do{NULLSTATEMENT;} while(false)
 
+#define FROMLOOKANDFEEL(colorType) \
+    LookAndFeel::getDefaultLookAndFeel().findColour(colorType)
+    
+inline Colour LFWindowColor(){
+    return FROMLOOKANDFEEL(ResizableWindow::backgroundColourId);
+}
+inline Colour LFWidgetColor(){
+    return FROMLOOKANDFEEL(TextEditor::backgroundColourId);
+}
+
+#undef FROMLOOKANDFEEL
+
 #define TEXTCHANGEDHANDLER_PRE \
     bool turnRed = false; \
     String text = editorThatWasChanged.getText(); \
@@ -139,23 +151,7 @@ inline void InfoBox(String text){
     ignoreUnused(isdec); \
     ignoreUnused(decval); \
     REQUIRESEMICOLON
-
-#define FROMLOOKANDFEEL(colorType) \
-    LookAndFeel::getDefaultLookAndFeel().findColour(colorType)
     
-inline Colour LFWindowColor(){
-    return FROMLOOKANDFEEL(ResizableWindow::backgroundColourId);
-}
-inline Colour LFWidgetColor(){
-    return FROMLOOKANDFEEL(TextEditor::backgroundColourId);
-}
-
-#undef FROMLOOKANDFEEL
-
-inline Font GetNormalFont(float size = 15.0f){
-    return Font(size, Font::plain).withTypefaceStyle("Regular");
-}
-
 inline void TurnRed(TextEditor *ed, bool turnRed = true){
     ed->setColour(TextEditor::backgroundColourId,
         turnRed ? Colours::red : LFWidgetColor());
@@ -163,6 +159,39 @@ inline void TurnRed(TextEditor *ed, bool turnRed = true){
 }
 inline void TurnRed(const std::unique_ptr<TextEditor> &ed, bool turnRed = true){
     TurnRed(ed.get(), turnRed);
+}
+
+inline void ConfigureTextEditor(std::unique_ptr<TextEditor> &ed, 
+        TextEditor::Listener *parent, String text){
+    ed->setMultiLine(false);
+    ed->setReadOnly(false);
+    ed->setScrollbarsShown(false);
+    ed->setCaretVisible(true);
+    ed->setPopupMenuEnabled(true);
+    ed->setReturnKeyStartsNewLine(false);
+    ed->setEscapeAndReturnKeysConsumed(false);
+    ed->setSelectAllWhenFocused(true);
+    ed->addListener(parent);
+    ed->setText(text);
+}
+
+inline void ConfigureOptionButton(std::unique_ptr<ToggleButton> &opt,
+        Button::Listener *parent, int radiogroup, Colour col, String text, bool val){
+    opt->addListener(parent);
+    opt->setRadioGroupId(radiogroup, dontSendNotification);
+    opt->setButtonText(text);
+    opt->setToggleState(val, dontSendNotification);
+    opt->setColour(ToggleButton::textColourId, col);
+    opt->setColour(ToggleButton::tickColourId, col);
+    opt->setColour(ToggleButton::tickDisabledColourId, col);
+}
+
+inline Font GetNormalFont(float size = 15.0f){
+    return Font(size, Font::plain).withTypefaceStyle("Regular");
+}
+
+inline Colour GetTextColorFor(Colour background){
+    return background.getBrightness() > 0.5f ? Colours::black : Colours::white;
 }
 
 inline Colour ShowColorChooserWindow(Colour initcolor, Component *optionalparent = nullptr){

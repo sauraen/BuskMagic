@@ -101,6 +101,9 @@
       <FILE id="qsyKS2" name="MainWindow.h" compile="0" resource="0" file="src/MainWindow.h"/>
       <FILE id="titMmb" name="MIDISystem.cpp" compile="1" resource="0" file="src/MIDISystem.cpp"/>
       <FILE id="Hmf3m6" name="MIDISystem.h" compile="0" resource="0" file="src/MIDISystem.h"/>
+      <FILE id="US9QEx" name="TimingSystem.cpp" compile="1" resource="0"
+            file="src/TimingSystem.cpp"/>
+      <FILE id="fnoHgp" name="TimingSystem.h" compile="0" resource="0" file="src/TimingSystem.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

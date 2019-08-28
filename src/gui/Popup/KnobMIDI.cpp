@@ -178,20 +178,10 @@ KnobMIDI::KnobMIDI (void *data)
 
     //[UserPreSize]
 
-    txtIn->setEscapeAndReturnKeysConsumed(false);
-    txtGotoLo->setEscapeAndReturnKeysConsumed(false);
-    txtGotoHi->setEscapeAndReturnKeysConsumed(false);
-    txtOut->setEscapeAndReturnKeysConsumed(false);
-
-    txtIn->addListener(this);
-    txtGotoLo->addListener(this);
-    txtGotoHi->addListener(this);
-    txtOut->addListener(this);
-
-    txtIn->setText(ccontroller->GetMIDISettingStr(Controller::ct_in));
-    txtGotoLo->setText(ccontroller->GetMIDISettingStr(Controller::ct_goto_lo));
-    txtGotoHi->setText(ccontroller->GetMIDISettingStr(Controller::ct_goto_hi));
-    txtOut->setText(ccontroller->GetMIDISettingStr(Controller::ct_out));
+    ConfigureTextEditor(txtIn, this, ccontroller->GetMIDISettingStr(Controller::ct_in));
+    ConfigureTextEditor(txtGotoLo, this, ccontroller->GetMIDISettingStr(Controller::ct_goto_lo));
+    ConfigureTextEditor(txtGotoHi, this, ccontroller->GetMIDISettingStr(Controller::ct_goto_hi));
+    ConfigureTextEditor(txtOut, this, ccontroller->GetMIDISettingStr(Controller::ct_out));
     
     setOpaque(true);
     

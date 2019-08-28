@@ -84,6 +84,7 @@ private:
     std::unique_ptr<TextButton> btnNewSimple;
     std::unique_ptr<TextButton> btnNewContinuous;
     std::unique_ptr<Label> lblInstructions;
+    std::unique_ptr<TextButton> txtNewModulator;
 
 
     //==============================================================================

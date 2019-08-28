@@ -30,15 +30,7 @@ public:
     DefaultValueEditor(void *data) : channel((Channel*)data) {
         txtValue.reset(new TextEditor("txtValue"));
         addAndMakeVisible(txtValue.get());
-        txtValue->setMultiLine (false);
-        txtValue->setReturnKeyStartsNewLine (false);
-        txtValue->setEscapeAndReturnKeysConsumed(false);
-        txtValue->setReadOnly (false);
-        txtValue->setScrollbarsShown (true);
-        txtValue->setCaretVisible (true);
-        txtValue->setPopupMenuEnabled (true);
-        txtValue->addListener(this);
-        txtValue->setText (String(channel->GetDefaultValue(), 2));
+        ConfigureTextEditor(txtValue, this, String(channel->GetDefaultValue(), 2));
         setOpaque(true);
         setSize(100, 48);
     }

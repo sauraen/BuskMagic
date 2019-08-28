@@ -38,7 +38,7 @@ ControllerWindow::ControllerWindow ()
     vptControllers->setBounds (0, 24, 800, 576);
 
     lblControllers.reset (new Label ("lblControllers",
-                                     TRANS("Controllers:")));
+                                     TRANS("New:")));
     addAndMakeVisible (lblControllers.get());
     lblControllers->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lblControllers->setJustificationType (Justification::centredLeft);
@@ -46,23 +46,23 @@ ControllerWindow::ControllerWindow ()
     lblControllers->setColour (TextEditor::textColourId, Colours::black);
     lblControllers->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblControllers->setBounds (0, 0, 80, 24);
+    lblControllers->setBounds (0, 0, 40, 24);
 
     btnNewSimple.reset (new TextButton ("btnNewSimple"));
     addAndMakeVisible (btnNewSimple.get());
-    btnNewSimple->setButtonText (TRANS("New Simple"));
+    btnNewSimple->setButtonText (TRANS("Simple"));
     btnNewSimple->setConnectedEdges (Button::ConnectedOnRight);
     btnNewSimple->addListener (this);
 
-    btnNewSimple->setBounds (80, 0, 88, 24);
+    btnNewSimple->setBounds (40, 0, 56, 24);
 
     btnNewContinuous.reset (new TextButton ("btnNewContinuous"));
     addAndMakeVisible (btnNewContinuous.get());
-    btnNewContinuous->setButtonText (TRANS("New Continuous"));
-    btnNewContinuous->setConnectedEdges (Button::ConnectedOnLeft);
+    btnNewContinuous->setButtonText (TRANS("Continuous"));
+    btnNewContinuous->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight);
     btnNewContinuous->addListener (this);
 
-    btnNewContinuous->setBounds (168, 0, 120, 24);
+    btnNewContinuous->setBounds (96, 0, 88, 24);
 
     lblInstructions.reset (new Label ("lblInstructions",
                                       TRANS("Right-click to edit name, properties, MIDI mapping, magic values...")));
@@ -73,7 +73,15 @@ ControllerWindow::ControllerWindow ()
     lblInstructions->setColour (TextEditor::textColourId, Colours::black);
     lblInstructions->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblInstructions->setBounds (288, 0, 512, 24);
+    lblInstructions->setBounds (264, 0, 536, 24);
+
+    txtNewModulator.reset (new TextButton ("txtNewModulator"));
+    addAndMakeVisible (txtNewModulator.get());
+    txtNewModulator->setButtonText (TRANS("Modulator"));
+    txtNewModulator->setConnectedEdges (Button::ConnectedOnLeft);
+    txtNewModulator->addListener (this);
+
+    txtNewModulator->setBounds (184, 0, 80, 24);
 
 
     //[UserPreSize]
@@ -109,6 +117,7 @@ ControllerWindow::~ControllerWindow()
     btnNewSimple = nullptr;
     btnNewContinuous = nullptr;
     lblInstructions = nullptr;
+    txtNewModulator = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -151,8 +160,14 @@ void ControllerWindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == btnNewContinuous.get())
     {
         //[UserButtonCode_btnNewContinuous] -- add your button handler code here..
-        canvas->addComp(ControllerSystem::AddController<ModulatorController>());
+        canvas->addComp(ControllerSystem::AddController<ContinuousController>());
         //[/UserButtonCode_btnNewContinuous]
+    }
+    else if (buttonThatWasClicked == txtNewModulator.get())
+    {
+        //[UserButtonCode_txtNewModulator] -- add your button handler code here..
+        canvas->addComp(ControllerSystem::AddController<ModulatorController>());
+        //[/UserButtonCode_txtNewModulator]
     }
 
     //[UserbuttonClicked_Post]
@@ -188,22 +203,25 @@ BEGIN_JUCER_METADATA
             hscroll="1" scrollbarThickness="8" contentType="0" jucerFile=""
             contentClass="" constructorParams=""/>
   <LABEL name="lblControllers" id="b56006e77548471b" memberName="lblControllers"
-         virtualName="" explicitFocusOrder="0" pos="0 0 80 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Controllers:" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+         virtualName="" explicitFocusOrder="0" pos="0 0 40 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="New:" editableSingleClick="0" editableDoubleClick="0"
+         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
+         kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="btnNewSimple" id="405e0cfed0c3c8dc" memberName="btnNewSimple"
-              virtualName="" explicitFocusOrder="0" pos="80 0 88 24" buttonText="New Simple"
+              virtualName="" explicitFocusOrder="0" pos="40 0 56 24" buttonText="Simple"
               connectedEdges="2" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnNewContinuous" id="868866992ff3ca38" memberName="btnNewContinuous"
-              virtualName="" explicitFocusOrder="0" pos="168 0 120 24" buttonText="New Continuous"
-              connectedEdges="1" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="96 0 88 24" buttonText="Continuous"
+              connectedEdges="3" needsCallback="1" radioGroupId="0"/>
   <LABEL name="lblInstructions" id="d0b9b888b227b508" memberName="lblInstructions"
-         virtualName="" explicitFocusOrder="0" pos="288 0 512 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="264 0 536 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Right-click to edit name, properties, MIDI mapping, magic values..."
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
          italic="0" justification="33"/>
+  <TEXTBUTTON name="txtNewModulator" id="394ce9ec0cecf8bd" memberName="txtNewModulator"
+              virtualName="" explicitFocusOrder="0" pos="184 0 80 24" buttonText="Modulator"
+              connectedEdges="1" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -213,3 +231,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

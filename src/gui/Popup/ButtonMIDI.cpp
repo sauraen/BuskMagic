@@ -201,27 +201,11 @@ ButtonMIDI::ButtonMIDI (void *data)
 
     //[UserPreSize]
 
-    txtOn->setEscapeAndReturnKeysConsumed(false);
-    txtOff->setEscapeAndReturnKeysConsumed(false);
-    txtToggle->setEscapeAndReturnKeysConsumed(false);
-    txtOutOn->setEscapeAndReturnKeysConsumed(false);
-    txtOutOff->setEscapeAndReturnKeysConsumed(false);
-    txtOn->setSelectAllWhenFocused(true);
-    txtOff->setSelectAllWhenFocused(true);
-    txtToggle->setSelectAllWhenFocused(true); TODO finish this
-    txtOutOn->setSelectAllWhenFocused(true);
-    txtOutOff->setSelectAllWhenFocused(true);
-    txtOn->addListener(this);
-    txtOff->addListener(this);
-    txtToggle->addListener(this);
-    txtOutOn->addListener(this);
-    txtOutOff->addListener(this);
-
-    txtOn->setText(controller->GetMIDISettingStr(Controller::en_on));
-    txtOff->setText(controller->GetMIDISettingStr(Controller::en_off));
-    txtToggle->setText(controller->GetMIDISettingStr(Controller::en_toggle));
-    txtOutOn->setText(controller->GetMIDISettingStr(Controller::en_out_on));
-    txtOutOff->setText(controller->GetMIDISettingStr(Controller::en_out_off));
+    ConfigureTextEditor(txtOn, this, controller->GetMIDISettingStr(Controller::en_on));
+    ConfigureTextEditor(txtOff, this, controller->GetMIDISettingStr(Controller::en_off));
+    ConfigureTextEditor(txtToggle, this, controller->GetMIDISettingStr(Controller::en_toggle));
+    ConfigureTextEditor(txtOutOn, this, controller->GetMIDISettingStr(Controller::en_out_on));
+    ConfigureTextEditor(txtOutOff, this, controller->GetMIDISettingStr(Controller::en_out_off));
 
     setOpaque(true);
 

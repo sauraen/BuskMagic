@@ -195,7 +195,8 @@ ControllerCanvas *Controller::GetCanvas(){
 
 ////////////////////////////////////////////////////////////////////////////////
 
-SimpleController::SimpleController() : Controller(), value(this) {}
+SimpleController::SimpleController() 
+    : Controller(), name("Simple Controller"), value(this) {}
 SimpleController::~SimpleController() {}
 SimpleController::SimpleController(const SimpleController &other)
     : Controller(other), value(other.value, this) {}
@@ -215,7 +216,8 @@ void SimpleController::RemoveAllMagicValuesForChannel(const Channel *chn){
 ////////////////////////////////////////////////////////////////////////////////
 
 ContinuousController::ContinuousController()
-    : Controller(), lovalue(this), hivalue(this, 1.0f), knob(0.0f) {
+    : Controller(), name("Continuous Controller"), 
+    lovalue(this), hivalue(this, 1.0f), knob(0.0f) {
     midisettings.add(new MIDISetting(false, true )); //ct_in
     midisettings.add(new MIDISetting(false, false)); //ct_goto_lo
     midisettings.add(new MIDISetting(false, false)); //ct_goto_hi
@@ -288,16 +290,16 @@ void ContinuousController::RemoveAllMagicValuesForChannel(const Channel *chn){
 ////////////////////////////////////////////////////////////////////////////////
 
 ModulatorController::ModulatorController()
-    : Controller(),
+    : Controller(), name("Modulator Controller")
     lovalue(this), hivalue(this, 1.0f), pwvalue(this, 0.2f), tvalue(this, 1.0f),
-    shape(ModulatorShape::pulse) {}
+    shape(ModulatorShape::pulse), timebase(TimeBase::beat) {}
 
 ModulatorController::~ModulatorController() {}
 ModulatorController::ModulatorController(const ModulatorController &other)
     : Controller(other),
     lovalue(other.lovalue, this), hivalue(other.hivalue, this),
     pwvalue(other.pwvalue, this), tvalue(other.tvalue, this),
-    shape(other.shape) {}
+    shape(other.shape), timebase(other.timebase) {}
 Controller *ModulatorController::clone() const {
     return new ModulatorController(*this);
 }

@@ -31,15 +31,7 @@ public:
     MagicValueEditor(void *data) : magic((MagicValue*)data) {
         txtLiteral.reset(new TextEditor ("txtLiteral"));
         addAndMakeVisible(txtLiteral.get());
-        txtLiteral->setMultiLine(false);
-        txtLiteral->setReturnKeyStartsNewLine(false);
-        txtLiteral->setEscapeAndReturnKeysConsumed(false);
-        txtLiteral->setReadOnly(false);
-        txtLiteral->setScrollbarsShown(true);
-        txtLiteral->setCaretVisible(true);
-        txtLiteral->setPopupMenuEnabled(true);
-        txtLiteral->addListener(this);
-        txtLiteral->setText(String(magic->GetLiteral(), 2));
+        ConfigureTextEditor(txtLiteral, this, String(magic->GetLiteral(), 2));
     
         lstChannel.reset(new TextListBox(this));
         addAndMakeVisible(lstChannel.get());

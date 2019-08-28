@@ -133,15 +133,9 @@ CtrlrEditor::CtrlrEditor (void *data)
 
     //[UserPreSize]
 
-    txtName->setEscapeAndReturnKeysConsumed(false);
-    txtGroup->setEscapeAndReturnKeysConsumed(false);
-    txtName->setSelectAllWhenFocused(true);
-    txtGroup->setSelectAllWhenFocused(true);
-    txtName->addListener(this);
-    txtGroup->addListener(this);
-
-    txtName->setText(controller->GetName());
-    txtGroup->setText(controller->GetGroup() <= 0 ? "" : String(controller->GetGroup()));
+    ConfigureTextEditor(txtName, this, controller->GetName());
+    ConfigureTextEditor(txtGroup, this, controller->GetGroup() <= 0 ? "" : String(controller->GetGroup()));
+    
     chkNoState->setToggleState(controller->nostate, dontSendNotification);
     btnMainColor->setColour(TextButton::buttonColourId, controller->GetColor());
     btnGroupColor->setColour(TextButton::buttonColourId, controller->GetGroupColor());

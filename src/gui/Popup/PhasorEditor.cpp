@@ -36,29 +36,13 @@ PhasorEditor::PhasorEditor(void *data) : gml(*this) {
     //
     txtMag.reset(new TextEditor("txtMag"));
     addAndMakeVisible(txtMag.get());
-    txtMag->addListener(this);
-    txtMag->setMultiLine(false);
-    txtMag->setReturnKeyStartsNewLine(false);
-    txtMag->setEscapeAndReturnKeysConsumed(false);
-    txtMag->setReadOnly(false);
-    txtMag->setScrollbarsShown(false);
-    txtMag->setCaretVisible(true);
-    txtMag->setPopupMenuEnabled(true);
+    ConfigureTextEditor(txtMag, this, String(phasor->mag, 2));
     txtMag->setBounds(44, 148, 64, 24);
-    txtMag->setText(String(phasor->mag, 2));
     
     txtAngle.reset(new TextEditor("txtAngle"));
     addAndMakeVisible(txtAngle.get());
-    txtAngle->addListener(this);
-    txtAngle->setMultiLine(false);
-    txtAngle->setReturnKeyStartsNewLine(false);
-    txtAngle->setEscapeAndReturnKeysConsumed(false);
-    txtAngle->setReadOnly(false);
-    txtAngle->setScrollbarsShown(false);
-    txtAngle->setCaretVisible(true);
-    txtAngle->setPopupMenuEnabled(true);
+    ConfigureTextEditor(txtAngle, this, String(phasor->angle, 2));
     txtAngle->setBounds(44, 172, 64, 24);
-    txtAngle->setText(String(phasor->angle, 2));
     //
     setWantsKeyboardFocus(true);
     setOpaque(true);

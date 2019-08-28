@@ -157,6 +157,10 @@
 			isa = PBXBuildFile;
 			fileRef = B73E58229762B5845974E61D;
 		};
+		36B86E606A13426FEA9821F7 = {
+			isa = PBXBuildFile;
+			fileRef = C295FFBA813CD35D3D9745AF;
+		};
 		46383F447C575EB6A5F75FF5 = {
 			isa = PBXBuildFile;
 			fileRef = 810798F71E6AE967F565B83C;
@@ -553,6 +557,13 @@
 			path = "../../JuceLibraryCode/include_juce_graphics.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		9D6098D148BB0FDB256649E2 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = TimingSystem.h;
+			path = ../../src/TimingSystem.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		A0B19AFF807D2939DF0FBD45 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -663,6 +674,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = KnobMIDI.cpp;
 			path = ../../src/gui/Popup/KnobMIDI.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		C295FFBA813CD35D3D9745AF = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = TimingSystem.cpp;
+			path = ../../src/TimingSystem.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		C40A6BCF939DD38BF25B1CEC = {
@@ -898,6 +916,8 @@
 				B1F733C62786EEDEA807FF9A,
 				B73E58229762B5845974E61D,
 				B788B4A4E695A23D87F4790D,
+				C295FFBA813CD35D3D9745AF,
+				9D6098D148BB0FDB256649E2,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -1212,6 +1232,7 @@
 				7EE2E61A8CB78EE8ACEB013C,
 				B3CC698D9729C935327F6561,
 				7B1D415BADF2C14F9097CA68,
+				36B86E606A13426FEA9821F7,
 				46383F447C575EB6A5F75FF5,
 				2182685E7A92EF7A0146F1FB,
 				C3FB88DC35BE41A376019217,

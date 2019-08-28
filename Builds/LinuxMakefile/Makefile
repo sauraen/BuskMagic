@@ -95,6 +95,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/Main_36be1979.o \
   $(JUCE_OBJDIR)/MainWindow_3fb73689.o \
   $(JUCE_OBJDIR)/MIDISystem_f9013c90.o \
+  $(JUCE_OBJDIR)/TimingSystem_53aa17d9.o \
   $(JUCE_OBJDIR)/include_juce_audio_basics_8a4e984a.o \
   $(JUCE_OBJDIR)/include_juce_audio_devices_63111d02.o \
   $(JUCE_OBJDIR)/include_juce_core_f26d17db.o \
@@ -250,6 +251,11 @@ $(JUCE_OBJDIR)/MainWindow_3fb73689.o: ../../src/MainWindow.cpp
 $(JUCE_OBJDIR)/MIDISystem_f9013c90.o: ../../src/MIDISystem.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling MIDISystem.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/TimingSystem_53aa17d9.o: ../../src/TimingSystem.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling TimingSystem.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_audio_basics_8a4e984a.o: ../../JuceLibraryCode/include_juce_audio_basics.cpp

@@ -62,7 +62,7 @@ public:
     }
     
     bool keyPressed(const KeyPress &key) override {
-        if(key.getKeyCode() == KeyPress::escapeKey){
+        if(key.getKeyCode() == KeyPress::escapeKey || key.getKeyCode() == KeyPress::returnKey){
             reset();
             return true;
         }

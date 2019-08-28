@@ -49,7 +49,7 @@ public:
 
     void paint (Graphics& g) override {
         g.fillAll(controller->GetGroupColor());
-        g.setColour(controller->GetGroupColor().getBrightness() > 0.5f ? Colours::black : Colours::white);
+        g.setColour(GetTextColorFor(controller->GetGroupColor()));
         g.setFont (10.0f);
         g.drawMultiLineText(controller->GetName(), 2, texty, textwidth - 2, Justification::centred);
     }
@@ -153,10 +153,6 @@ public:
         addAndMakeVisible(boxHi.get());
         addAndMakeVisible(boxPW.get());
         addAndMakeVisible(boxT.get());
-        boxLo->setTopLeftPosition(176, 32);
-        boxHi->setTopLeftPosition(176, 8);
-        boxPW->setTopLeftPosition(176, 56);
-        boxT ->setTopLeftPosition(236, 8);
 
         imgCosine = ImageCache::getFromMemory(imgCosine_data, imgCosine_size);
         imgTriangle = ImageCache::getFromMemory(imgTriangle_data, imgTriangle_size);
@@ -215,6 +211,23 @@ public:
         btnPulse->   setToggleState(mc->GetShape() == ModulatorController::pulse, dontSendNotification);
         btnSawF->    setToggleState(mc->GetShape() == ModulatorController::sawf, dontSendNotification);
         btnSawR->    setToggleState(mc->GetShape() == ModulatorController::sawr, dontSendNotification);
+
+        Colour textcolor = GetTextColorFor(mcontroller->GetGroupColor());
+        optMeasure.reset(new ToggleButton());
+        optBeat   .reset(new ToggleButton());
+        optSecond .reset(new ToggleButton());
+        addAndMakeVisible(optMeasure.get());
+        addAndMakeVisible(optBeat.get());
+        addAndMakeVisible(optSecond.get());
+        ConfigureOptionButton(optMeasure, this, 2, textcolor, "Measure", mc->GetTimeBase() == ModulatorController::measure);
+        ConfigureOptionButton(optBeat, this, 2, textcolor, "Beat", mc->GetTimeBase() == ModulatorController::beat);
+        ConfigureOptionButton(optSecond, this, 2, textcolor, "Second", mc->GetTimeBase() == ModulatorController::second);
+        
+        setSize(300, 96);
+        texty = 12;
+        textwidth = 64;
+        btnEnable->setTopLeftPosition(8, 40);
+        
         const int shape_x = 72, shape_y = 4;
         btnCosine->  setTopLeftPosition(shape_x,    shape_y);
         btnTriangle->setTopLeftPosition(shape_x,    shape_y+24);
@@ -222,13 +235,27 @@ public:
         btnPulse->   setTopLeftPosition(shape_x+36, shape_y);
         btnSawF->    setTopLeftPosition(shape_x+36, shape_y+24);
         btnSawR->    setTopLeftPosition(shape_x+36, shape_y+48);
-
-        btnEnable->setTopLeftPosition(8, 40);
-        setSize(300, 82);
-        texty = 12;
-        textwidth = 64;
+        
+        boxLo->setTopLeftPosition(176, 48);
+        boxHi->setTopLeftPosition(176, 16);
+        boxPW->setTopLeftPosition(108, 76);
+        boxT ->setTopLeftPosition(236, 6);
+        
+        optMeasure->setBounds(216, 28, 76, 20);
+        optBeat   ->setBounds(216, 48, 76, 20);
+        optSecond ->setBounds(216, 68, 76, 20);
     }
     ~ModulatorControllerCmp() {}
+    
+    void paint(Graphics &g) override {
+        ControllerCmp::paint(g);
+        g.setFont(GetNormalFont());
+        g.setColour(GetTextColorFor(mcontroller->GetGroupColor()));
+        g.drawText("Hi:", 152, 16, 24, 16, Justification::centredLeft, false);
+        g.drawText("Lo:", 152, 48, 24, 16, Justification::centredLeft, false);
+        g.drawText("PW:",  76, 76, 32, 16, Justification::centredLeft, false);
+        g.drawText("T:",  220,  6, 24, 16, Justification::centredLeft, false);
+    }
 
     void buttonClicked(Button* buttonThatWasClicked) override {
         if(buttonThatWasClicked == btnCosine.get()){
@@ -243,16 +270,13 @@ public:
             mcontroller->SetShape(ModulatorController::sawf);
         }else if(buttonThatWasClicked == btnSawR.get()){
             mcontroller->SetShape(ModulatorController::sawr);
+        }else if(buttonThatWasClicked == optMeasure.get()){
+            mcontroller->SetTimeBase(ModulatorController::measure);
+        }else if(buttonThatWasClicked == optBeat.get()){
+            mcontroller->SetTimeBase(ModulatorController::beat);
+        }else if(buttonThatWasClicked == optSecond.get()){
+            mcontroller->SetTimeBase(ModulatorController::second);
         }
-    }
-
-    void paint(Graphics &g) override {
-        ControllerCmp::paint(g);
-        g.setFont(GetNormalFont());
-        g.drawText("Hi:", 152,  4, 24, 24, Justification::centredLeft, false);
-        g.drawText("Lo:", 152, 28, 24, 24, Justification::centredLeft, false);
-        g.drawText("PW:", 152, 52, 24, 24, Justification::centredLeft, false);
-        g.drawText("T:",  216,  4, 24, 24, Justification::centredLeft, false);
     }
 
 private:

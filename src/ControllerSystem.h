@@ -168,9 +168,12 @@ public:
     String GetClassType() override { return "Modulator"; }
 
     enum ModulatorShape { cosine, triangle, noise, pulse, sawf, sawr };
+    enum TimeBase { measure, beat, second };
 
-    inline float GetShape() { return shape; }
+    inline ModulatorShape GetShape() { return shape; }
     inline void SetShape(ModulatorShape s) { shape = s; }
+    inline TimeBase GetTimeBase() { return timebase; }
+    inline void SetTimeBase(TimeBase t) { timebase = t; }
 
     inline MagicValue *GetLoValue() { return &lovalue; }
     inline MagicValue *GetHiValue() { return &hivalue; }
@@ -183,6 +186,7 @@ public:
 private:
     MagicValue lovalue, hivalue, pwvalue, tvalue;
     ModulatorShape shape;
+    TimeBase timebase;
 };
 
 namespace ControllerSystem {
