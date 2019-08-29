@@ -25,6 +25,7 @@
 
 #include "ArtNetSystem.h"
 #include "MIDISystem.h"
+#include "TimingSystem.h"
 #include "LightingSystem.h"
 
 class SubWindow : public Component {
@@ -97,6 +98,7 @@ MainWindow::MainWindow()
     //Application startup
     ArtNetSystem::Init();
     MIDISystem::Init();
+    TimingSystem::Init();
     LightingSystem::Init();
     //GUI startup
     artnetWindow.reset(new SubWindow("BuskMagic - Art-Net Setup", false, new ArtNetSetup()));
@@ -114,6 +116,7 @@ MainWindow::~MainWindow() {
     controllersWindow = nullptr;
     //Application finalize
     LightingSystem::Finalize();
+    TimingSystem::Finalize();
     MIDISystem::Finalize();
     ArtNetSystem::Finalize();
 }

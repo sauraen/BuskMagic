@@ -70,6 +70,7 @@ MatrixEditor::MatrixEditor() : view(0, 0) {
     //
     lstCtType->add("Simple");
     lstCtType->add("Continuous");
+    lstCtType->add("Modulator");
     lstFixID->add("Free channels");
     //
     RefreshControllerFilters();

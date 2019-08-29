@@ -140,6 +140,24 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ContinuousControllerCmp)
 };
 
+inline void ConfigureImageButton(std::unique_ptr<ImageButton> &btn, 
+        Component *parent, Button::Listener *alsoparent,
+        Image &img, const char *img_data, int img_size, bool initvalue){
+    img = ImageCache::getFromMemory(img_data, img_size);
+    btn.reset(new ImageButton());
+    parent->addAndMakeVisible(btn.get());
+    btn->addListener(alsoparent);
+    const Colour normalColor = Colour(0x00000000);
+    const Colour overColor   = Colour(0xFFFFFF30);
+    const Colour downColor   = Colour(0xFF0000FF);
+    btn->setImages(true, false, true, img, 1.0f, normalColor,
+                                      img, 1.0f, overColor,
+                                      img, 1.0f, downColor, 0.0f);
+    btn->setClickingTogglesState(true);
+    btn->setRadioGroupId(1, dontSendNotification);
+    btn->setToggleState(initvalue, dontSendNotification);
+}
+
 class ModulatorControllerCmp : public ControllerCmp, public Button::Listener
 {
 public:
@@ -154,63 +172,12 @@ public:
         addAndMakeVisible(boxPW.get());
         addAndMakeVisible(boxT.get());
 
-        imgCosine = ImageCache::getFromMemory(imgCosine_data, imgCosine_size);
-        imgTriangle = ImageCache::getFromMemory(imgTriangle_data, imgTriangle_size);
-        imgNoise = ImageCache::getFromMemory(imgNoise_data, imgNoise_size);
-        imgPulse = ImageCache::getFromMemory(imgPulse_data, imgPulse_size);
-        imgSawF = ImageCache::getFromMemory(imgSawF_data, imgSawF_size);
-        imgSawR = ImageCache::getFromMemory(imgSawR_data, imgSawR_size);
-        btnCosine  .reset(new ImageButton());
-        btnTriangle.reset(new ImageButton());
-        btnNoise   .reset(new ImageButton());
-        btnPulse   .reset(new ImageButton());
-        btnSawF    .reset(new ImageButton());
-        btnSawR    .reset(new ImageButton());
-        addAndMakeVisible(btnCosine.get());
-        addAndMakeVisible(btnTriangle.get());
-        addAndMakeVisible(btnNoise.get());
-        addAndMakeVisible(btnPulse.get());
-        addAndMakeVisible(btnSawF.get());
-        addAndMakeVisible(btnSawR.get());
-        const Colour normalColor = Colour(0x00000000);
-        const Colour overColor   = Colour(0xFFFFFF30);
-        const Colour downColor   = Colour(0xFF0000FF);
-        btnCosine->setImages(true, false, true, imgCosine, 1.0f, normalColor,
-                                                imgCosine, 1.0f, overColor,
-                                                imgCosine, 1.0f, downColor, 0.0f);
-        btnTriangle->setImages(true, false, true, imgTriangle, 1.0f, normalColor,
-                                                  imgTriangle, 1.0f, overColor,
-                                                  imgTriangle, 1.0f, downColor, 0.0f);
-        btnNoise->setImages(true, false, true, imgNoise, 1.0f, normalColor,
-                                               imgNoise, 1.0f, overColor,
-                                               imgNoise, 1.0f, downColor, 0.0f);
-        btnPulse->setImages(true, false, true, imgPulse, 1.0f, normalColor,
-                                               imgPulse, 1.0f, overColor,
-                                               imgPulse, 1.0f, downColor, 0.0f);
-        btnSawF->setImages(true, false, true, imgSawF, 1.0f, normalColor,
-                                              imgSawF, 1.0f, overColor,
-                                              imgSawF, 1.0f, downColor, 0.0f);
-        btnSawR->setImages(true, false, true, imgSawR, 1.0f, normalColor,
-                                              imgSawR, 1.0f, overColor,
-                                              imgSawR, 1.0f, downColor, 0.0f);
-        btnCosine->  setClickingTogglesState(true);
-        btnTriangle->setClickingTogglesState(true);
-        btnNoise->   setClickingTogglesState(true);
-        btnPulse->   setClickingTogglesState(true);
-        btnSawF->    setClickingTogglesState(true);
-        btnSawR->    setClickingTogglesState(true);
-        btnCosine->  setRadioGroupId(1, dontSendNotification);
-        btnTriangle->setRadioGroupId(1, dontSendNotification);
-        btnNoise->   setRadioGroupId(1, dontSendNotification);
-        btnPulse->   setRadioGroupId(1, dontSendNotification);
-        btnSawF->    setRadioGroupId(1, dontSendNotification);
-        btnSawR->    setRadioGroupId(1, dontSendNotification);
-        btnCosine->  setToggleState(mc->GetShape() == ModulatorController::cosine, dontSendNotification);
-        btnTriangle->setToggleState(mc->GetShape() == ModulatorController::triangle, dontSendNotification);
-        btnNoise->   setToggleState(mc->GetShape() == ModulatorController::noise, dontSendNotification);
-        btnPulse->   setToggleState(mc->GetShape() == ModulatorController::pulse, dontSendNotification);
-        btnSawF->    setToggleState(mc->GetShape() == ModulatorController::sawf, dontSendNotification);
-        btnSawR->    setToggleState(mc->GetShape() == ModulatorController::sawr, dontSendNotification);
+        ConfigureImageButton(btnCosine, this, this, imgCosine, imgCosine_data, imgCosine_size, mc->GetShape() == ModulatorController::cosine);
+        ConfigureImageButton(btnTriangle, this, this, imgTriangle, imgTriangle_data, imgTriangle_size, mc->GetShape() == ModulatorController::triangle);
+        ConfigureImageButton(btnNoise, this, this, imgNoise, imgNoise_data, imgNoise_size, mc->GetShape() == ModulatorController::noise);
+        ConfigureImageButton(btnPulse, this, this, imgPulse, imgPulse_data, imgPulse_size, mc->GetShape() == ModulatorController::pulse);
+        ConfigureImageButton(btnSawF, this, this, imgSawF, imgSawF_data, imgSawF_size, mc->GetShape() == ModulatorController::sawf);
+        ConfigureImageButton(btnSawR, this, this, imgSawR, imgSawR_data, imgSawR_size, mc->GetShape() == ModulatorController::sawr);
 
         Colour textcolor = GetTextColorFor(mcontroller->GetGroupColor());
         optMeasure.reset(new ToggleButton());

@@ -99,6 +99,8 @@ public:
     virtual void RemoveAllMagicValuesForChannel(const Channel *chn) = 0;
 
 protected:
+    String name;
+    
     OwnedArray<MIDISetting> midisettings;
 
     void RefreshComponent();
@@ -106,7 +108,6 @@ protected:
 private:
     friend class MagicValue;
 
-    String name;
     int group;
     Colour color, groupColor;
 
@@ -187,6 +188,7 @@ private:
     MagicValue lovalue, hivalue, pwvalue, tvalue;
     ModulatorShape shape;
     TimeBase timebase;
+    uint64_t freet_origin;
 };
 
 namespace ControllerSystem {

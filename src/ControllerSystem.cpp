@@ -20,6 +20,7 @@
 
 #include "LightingSystem.h"
 #include "ChannelSystem.h"
+#include "TimingSystem.h"
 
 #include "gui/MatrixEditor.h"
 #include "gui/Controller/ControllerCmps.h"
@@ -196,7 +197,9 @@ ControllerCanvas *Controller::GetCanvas(){
 ////////////////////////////////////////////////////////////////////////////////
 
 SimpleController::SimpleController() 
-    : Controller(), name("Simple Controller"), value(this) {}
+    : Controller(), value(this) {
+    name = "Simple Controller";
+}
 SimpleController::~SimpleController() {}
 SimpleController::SimpleController(const SimpleController &other)
     : Controller(other), value(other.value, this) {}
@@ -216,8 +219,9 @@ void SimpleController::RemoveAllMagicValuesForChannel(const Channel *chn){
 ////////////////////////////////////////////////////////////////////////////////
 
 ContinuousController::ContinuousController()
-    : Controller(), name("Continuous Controller"), 
+    : Controller(),
     lovalue(this), hivalue(this, 1.0f), knob(0.0f) {
+    name = "Continuous Controller";
     midisettings.add(new MIDISetting(false, true )); //ct_in
     midisettings.add(new MIDISetting(false, false)); //ct_goto_lo
     midisettings.add(new MIDISetting(false, false)); //ct_goto_hi
@@ -290,24 +294,68 @@ void ContinuousController::RemoveAllMagicValuesForChannel(const Channel *chn){
 ////////////////////////////////////////////////////////////////////////////////
 
 ModulatorController::ModulatorController()
-    : Controller(), name("Modulator Controller")
+    : Controller(),
     lovalue(this), hivalue(this, 1.0f), pwvalue(this, 0.2f), tvalue(this, 1.0f),
-    shape(ModulatorShape::pulse), timebase(TimeBase::beat) {}
+    shape(ModulatorShape::pulse), timebase(TimeBase::beat), 
+    freet_origin(TimingSystem::GetTimeMS()) {
+    name = "Modulator Controller";
+}
 
 ModulatorController::~ModulatorController() {}
 ModulatorController::ModulatorController(const ModulatorController &other)
     : Controller(other),
     lovalue(other.lovalue, this), hivalue(other.hivalue, this),
     pwvalue(other.pwvalue, this), tvalue(other.tvalue, this),
-    shape(other.shape), timebase(other.timebase) {}
+    shape(other.shape), timebase(other.timebase), 
+    freet_origin(TimingSystem::GetTimeMS()) {}
 Controller *ModulatorController::clone() const {
     return new ModulatorController(*this);
 }
 
 float ModulatorController::Evaluate(float angle) const {
     //LS_LOCK_READ(); //Not locking because channel evaluation will lock
-    float l = lovalue.Evaluate(angle);
-    return l; //TODO
+    float l = lovalue.Evaluate(0.0f);
+    float h = hivalue.Evaluate(0.0f);
+    float pw = pwvalue.Evaluate(0.0f);
+    float period = tvalue.Evaluate(0.0f);
+    float t_frac = 0.0f;
+    if(period > 0.001f){
+        if(timebase == TimeBase::measure || timebase == TimeBase::beat){
+            if(timebase == TimeBase::measure){
+                t_frac = TimingSystem::GetPositionInMeasure();
+            }else{
+                t_frac = TimingSystem::GetPositionInBeat();
+            }
+            t_frac /= period;
+        }else if(timebase == TimeBase::second){
+            float periodms = period * 1000.0f;
+            t_frac = (float)((TimingSystem::GetTimeMS() - freet_origin) 
+                    % (uint64_t)periodms) / periodms;
+        }else{
+            jassertfalse;
+        }
+    }
+    t_frac += angle;
+    t_frac = t_frac - std::floor(t_frac);
+    float fallshape = (h-l)*(pw-t_frac)/pw + l;
+    float riseshape = (h-l)*(t_frac-pw)/(1.0f-pw) + l;
+    switch(shape){
+    case ModulatorShape::cosine:
+        return (h-l)*std::cos(t_frac) + l;
+    case ModulatorShape::triangle:
+        return t_frac < pw ? fallshape : riseshape;
+    case ModulatorShape::noise:
+        return 0.0f; //TODO
+    case ModulatorShape::pulse:
+        return t_frac < pw ? h : l;
+    case ModulatorShape::sawf:
+        return t_frac < pw ? fallshape : l;
+    case ModulatorShape::sawr:
+        return t_frac < pw ? l : riseshape;
+    default:
+        jassertfalse;
+        return 0.0f;
+    }
 }
 
 void ModulatorController::RemoveAllMagicValuesForChannel(const Channel *chn){
