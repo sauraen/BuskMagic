@@ -201,11 +201,11 @@ ButtonMIDI::ButtonMIDI (void *data)
 
     //[UserPreSize]
 
-    ConfigureTextEditor(txtOn, this, controller->GetMIDISettingStr(Controller::en_on));
-    ConfigureTextEditor(txtOff, this, controller->GetMIDISettingStr(Controller::en_off));
-    ConfigureTextEditor(txtToggle, this, controller->GetMIDISettingStr(Controller::en_toggle));
-    ConfigureTextEditor(txtOutOn, this, controller->GetMIDISettingStr(Controller::en_out_on));
-    ConfigureTextEditor(txtOutOff, this, controller->GetMIDISettingStr(Controller::en_out_off));
+    ConfigureTextEditor(txtOn, this, controller->GetMIDISettingStr(MIDISetting::en_on));
+    ConfigureTextEditor(txtOff, this, controller->GetMIDISettingStr(MIDISetting::en_off));
+    ConfigureTextEditor(txtToggle, this, controller->GetMIDISettingStr(MIDISetting::en_toggle));
+    ConfigureTextEditor(txtOutOn, this, controller->GetMIDISettingStr(MIDISetting::en_out_on));
+    ConfigureTextEditor(txtOutOff, this, controller->GetMIDISettingStr(MIDISetting::en_out_off));
 
     setOpaque(true);
 
@@ -303,15 +303,15 @@ void ButtonMIDI::textEditorTextChanged(TextEditor &editorThatWasChanged)
 {
     TEXTCHANGEDHANDLER_PRE;
     if(&editorThatWasChanged == txtOn.get()){
-        turnRed = !controller->SetMIDISettingFromStr(Controller::en_on, text);
+        turnRed = !controller->SetMIDISettingFromStr(MIDISetting::en_on, text);
     }else if(&editorThatWasChanged == txtOff.get()){
-        turnRed = !controller->SetMIDISettingFromStr(Controller::en_off, text);
+        turnRed = !controller->SetMIDISettingFromStr(MIDISetting::en_off, text);
     }else if(&editorThatWasChanged == txtToggle.get()){
-        turnRed = !controller->SetMIDISettingFromStr(Controller::en_toggle, text);
+        turnRed = !controller->SetMIDISettingFromStr(MIDISetting::en_toggle, text);
     }else if(&editorThatWasChanged == txtOutOn.get()){
-        turnRed = !controller->SetMIDISettingFromStr(Controller::en_out_on, text);
+        turnRed = !controller->SetMIDISettingFromStr(MIDISetting::en_out_on, text);
     }else if(&editorThatWasChanged == txtOutOff.get()){
-        turnRed = !controller->SetMIDISettingFromStr(Controller::en_out_off, text);
+        turnRed = !controller->SetMIDISettingFromStr(MIDISetting::en_out_off, text);
     }
     TEXTCHANGEDHANDLER_POST;
 }
@@ -400,3 +400,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

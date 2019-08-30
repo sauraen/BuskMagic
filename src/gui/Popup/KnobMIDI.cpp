@@ -178,13 +178,13 @@ KnobMIDI::KnobMIDI (void *data)
 
     //[UserPreSize]
 
-    ConfigureTextEditor(txtIn, this, ccontroller->GetMIDISettingStr(Controller::ct_in));
-    ConfigureTextEditor(txtGotoLo, this, ccontroller->GetMIDISettingStr(Controller::ct_goto_lo));
-    ConfigureTextEditor(txtGotoHi, this, ccontroller->GetMIDISettingStr(Controller::ct_goto_hi));
-    ConfigureTextEditor(txtOut, this, ccontroller->GetMIDISettingStr(Controller::ct_out));
-    
+    ConfigureTextEditor(txtIn, this, ccontroller->GetMIDISettingStr(MIDISetting::ct_in));
+    ConfigureTextEditor(txtGotoLo, this, ccontroller->GetMIDISettingStr(MIDISetting::ct_goto_lo));
+    ConfigureTextEditor(txtGotoHi, this, ccontroller->GetMIDISettingStr(MIDISetting::ct_goto_hi));
+    ConfigureTextEditor(txtOut, this, ccontroller->GetMIDISettingStr(MIDISetting::ct_out));
+
     setOpaque(true);
-    
+
     //[/UserPreSize]
 
     setSize (256, 96);
@@ -277,13 +277,13 @@ void KnobMIDI::textEditorTextChanged(TextEditor &editorThatWasChanged)
 {
     TEXTCHANGEDHANDLER_PRE;
     if(&editorThatWasChanged == txtIn.get()){
-        turnRed = !ccontroller->SetMIDISettingFromStr(Controller::ct_in, text);
+        turnRed = !ccontroller->SetMIDISettingFromStr(MIDISetting::ct_in, text);
     }else if(&editorThatWasChanged == txtGotoLo.get()){
-        turnRed = !ccontroller->SetMIDISettingFromStr(Controller::ct_goto_lo, text);
+        turnRed = !ccontroller->SetMIDISettingFromStr(MIDISetting::ct_goto_lo, text);
     }else if(&editorThatWasChanged == txtGotoHi.get()){
-        turnRed = !ccontroller->SetMIDISettingFromStr(Controller::ct_goto_hi, text);
+        turnRed = !ccontroller->SetMIDISettingFromStr(MIDISetting::ct_goto_hi, text);
     }else if(&editorThatWasChanged == txtOut.get()){
-        turnRed = !ccontroller->SetMIDISettingFromStr(Controller::ct_out, text);
+        turnRed = !ccontroller->SetMIDISettingFromStr(MIDISetting::ct_out, text);
     }
     TEXTCHANGEDHANDLER_POST;
 }
@@ -363,3 +363,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

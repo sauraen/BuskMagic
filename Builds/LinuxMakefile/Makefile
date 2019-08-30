@@ -79,6 +79,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/CtrlrEditor_540c3ce7.o \
   $(JUCE_OBJDIR)/KnobMIDI_76846a0e.o \
   $(JUCE_OBJDIR)/PhasorEditor_1cb2b851.o \
+  $(JUCE_OBJDIR)/TriggerMIDI_b2f8c78c.o \
   $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o \
   $(JUCE_OBJDIR)/ControllerWindow_e8832740.o \
   $(JUCE_OBJDIR)/FixtureEditor_fac650c.o \
@@ -87,6 +88,8 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/Patcher_67e4906b.o \
   $(JUCE_OBJDIR)/StatusBar_2cfd19f7.o \
   $(JUCE_OBJDIR)/TextListBox_a5daddd6.o \
+  $(JUCE_OBJDIR)/TimingWindow_d6faf9ee.o \
+  $(JUCE_OBJDIR)/TriggerButton_3d89cd40.o \
   $(JUCE_OBJDIR)/ArtNetSystem_e2a73c9.o \
   $(JUCE_OBJDIR)/ChannelSystem_70c63d9c.o \
   $(JUCE_OBJDIR)/ControllerSystem_52a6cf2b.o \
@@ -173,6 +176,11 @@ $(JUCE_OBJDIR)/PhasorEditor_1cb2b851.o: ../../src/gui/Popup/PhasorEditor.cpp
 	@echo "Compiling PhasorEditor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
+$(JUCE_OBJDIR)/TriggerMIDI_b2f8c78c.o: ../../src/gui/Popup/TriggerMIDI.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling TriggerMIDI.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
 $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o: ../../src/gui/ArtNetSetup.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling ArtNetSetup.cpp"
@@ -211,6 +219,16 @@ $(JUCE_OBJDIR)/StatusBar_2cfd19f7.o: ../../src/gui/StatusBar.cpp
 $(JUCE_OBJDIR)/TextListBox_a5daddd6.o: ../../src/gui/TextListBox.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling TextListBox.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/TimingWindow_d6faf9ee.o: ../../src/gui/TimingWindow.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling TimingWindow.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/TriggerButton_3d89cd40.o: ../../src/gui/TriggerButton.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling TriggerButton.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/ArtNetSystem_e2a73c9.o: ../../src/ArtNetSystem.cpp

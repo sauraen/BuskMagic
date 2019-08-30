@@ -54,6 +54,8 @@
                 file="src/gui/Popup/PhasorEditor.cpp"/>
           <FILE id="wNhBYw" name="PhasorEditor.h" compile="0" resource="0" file="src/gui/Popup/PhasorEditor.h"/>
           <FILE id="ocjfNK" name="PopupWindow.h" compile="0" resource="0" file="src/gui/Popup/PopupWindow.h"/>
+          <FILE id="UqZqJQ" name="TriggerMIDI.cpp" compile="1" resource="0" file="src/gui/Popup/TriggerMIDI.cpp"/>
+          <FILE id="XIl3NS" name="TriggerMIDI.h" compile="0" resource="0" file="src/gui/Popup/TriggerMIDI.h"/>
         </GROUP>
         <FILE id="nGOUXC" name="ArtNetSetup.cpp" compile="1" resource="0" file="src/gui/ArtNetSetup.cpp"/>
         <FILE id="PuyiPs" name="ArtNetSetup.h" compile="0" resource="0" file="src/gui/ArtNetSetup.h"/>
@@ -77,6 +79,12 @@
         <FILE id="ijfYax" name="SynthButton.h" compile="0" resource="0" file="src/gui/SynthButton.h"/>
         <FILE id="QpfB9w" name="TextListBox.cpp" compile="1" resource="0" file="src/gui/TextListBox.cpp"/>
         <FILE id="EL1OzB" name="TextListBox.h" compile="0" resource="0" file="src/gui/TextListBox.h"/>
+        <FILE id="ufagCs" name="TimingWindow.cpp" compile="1" resource="0"
+              file="src/gui/TimingWindow.cpp"/>
+        <FILE id="U4d3Uy" name="TimingWindow.h" compile="0" resource="0" file="src/gui/TimingWindow.h"/>
+        <FILE id="yrXQdz" name="TriggerButton.cpp" compile="1" resource="0"
+              file="src/gui/TriggerButton.cpp"/>
+        <FILE id="f8vON5" name="TriggerButton.h" compile="0" resource="0" file="src/gui/TriggerButton.h"/>
       </GROUP>
       <FILE id="XoowRq" name="ArtNetSystem.cpp" compile="1" resource="0"
             file="src/ArtNetSystem.cpp"/>

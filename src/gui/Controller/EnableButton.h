@@ -54,7 +54,7 @@ public:
     }
 
     void mouseUp(const MouseEvent &event) override {
-        if(event.mods.isLeftButtonDown()){
+        if(!isRightClick(event) && event.mods.isLeftButtonDown()){
             setToggleState(!getToggleState(), dontSendNotification);
             controller->SetEnabled(getToggleState());
         }else{

@@ -34,6 +34,21 @@ public:
     bool Matches(int port_, MidiMessage msg);
     int GetValueFrom(MidiMessage msg); //Assumes it matches!
     void SendMsg(int valforcontinuous=-1);
+    
+    enum Type {
+        en_on = 0,
+        en_off = 1,
+        en_toggle = 2,
+        en_out_on = 3,
+        en_out_off = 4,
+        ct_in = 5,
+        ct_goto_lo = 6,
+        ct_goto_hi = 7,
+        ct_out = 8,
+        tr_trig = 9,
+        tr_out_on = 10,
+        tr_out_off = 11
+    };
 private:
     bool out, continuous;
     int port, channel, type, note, vel;

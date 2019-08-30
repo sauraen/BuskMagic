@@ -133,7 +133,7 @@ void Controller::SetEnabled(bool en){
     if(enabled == en) return;
     enabled = en;
     if(enabled){
-        midisettings[en_out_on]->SendMsg();
+        midisettings[MIDISetting::en_out_on]->SendMsg();
         if(group > 0){
             for(int i=0; i<ControllerSystem::NumControllers(); ++i){
                 Controller *ctrlr = ControllerSystem::GetController(i);
@@ -145,35 +145,35 @@ void Controller::SetEnabled(bool en){
             }
         }
     }else{
-        midisettings[en_out_off]->SendMsg();
+        midisettings[MIDISetting::en_out_off]->SendMsg();
     }
     RefreshComponent();
 }
 
 void Controller::HandleMIDI(int port, MidiMessage msg){
     LS_LOCK_READ();
-    if(midisettings[en_on]->Matches(port, msg)){
+    if(midisettings[MIDISetting::en_on]->Matches(port, msg)){
         SetEnabled(true);
-    }else if(midisettings[en_off]->Matches(port, msg)){
+    }else if(midisettings[MIDISetting::en_off]->Matches(port, msg)){
         SetEnabled(false);
-    }else if(midisettings[en_toggle]->Matches(port, msg)){
+    }else if(midisettings[MIDISetting::en_toggle]->Matches(port, msg)){
         SetEnabled(!enabled);
     }
 }
 
-String Controller::GetMIDISettingStr(MIDISettingType type){
+String Controller::GetMIDISettingStr(MIDISetting::Type type){
     LS_LOCK_READ();
-    if(type > en_out_off || type < 0){
-        std::cout << "Invalid usage of Controller::GetMIDISettingStr()!\n";
+    if(type > MIDISetting::en_out_off || type < 0){
+        jassertfalse;
         return "Error";
     }
     return midisettings[type]->GetStr();
 }
 
-bool Controller::SetMIDISettingFromStr(MIDISettingType type, String str){
+bool Controller::SetMIDISettingFromStr(MIDISetting::Type type, String str){
     LS_LOCK_WRITE();
-    if(type > en_out_off || type < 0){
-        std::cout << "Invalid usage of Controller::SetMIDISettingFromStr()!\n";
+    if(type > MIDISetting::en_out_off || type < 0){
+        jassertfalse;
         return false;
     }
     return midisettings[type]->FromStr(str);
@@ -239,40 +239,40 @@ Controller *ContinuousController::clone() const{
 void ContinuousController::SetKnob(float k){
     LS_LOCK_WRITE();
     knob = k;
-    midisettings[ct_out]->SendMsg((int)(knob * 127.0f));
+    midisettings[MIDISetting::ct_out]->SendMsg((int)(knob * 127.0f));
 }
 
 void ContinuousController::HandleMIDI(int port, MidiMessage msg) {
     LS_LOCK_READ();
     Controller::HandleMIDI(port, msg);
-    if(midisettings[ct_in]->Matches(port, msg)){
-        knob = (float)midisettings[ct_in]->GetValueFrom(msg) / 127.0f;
+    if(midisettings[MIDISetting::ct_in]->Matches(port, msg)){
+        knob = (float)midisettings[MIDISetting::ct_in]->GetValueFrom(msg) / 127.0f;
         jassert(knob >= 0.0f && knob <= 1.0f);
-        midisettings[ct_out]->SendMsg((int)(knob * 127.0f));
+        midisettings[MIDISetting::ct_out]->SendMsg((int)(knob * 127.0f));
         RefreshComponent();
-    }else if(midisettings[ct_goto_lo]->Matches(port, msg)){
+    }else if(midisettings[MIDISetting::ct_goto_lo]->Matches(port, msg)){
         knob = 0.0f;
-        midisettings[ct_out]->SendMsg(0);
+        midisettings[MIDISetting::ct_out]->SendMsg(0);
         RefreshComponent();
-    }else if(midisettings[ct_goto_hi]->Matches(port, msg)){
+    }else if(midisettings[MIDISetting::ct_goto_hi]->Matches(port, msg)){
         knob = 1.0f;
-        midisettings[ct_out]->SendMsg(127);
+        midisettings[MIDISetting::ct_out]->SendMsg(127);
         RefreshComponent();
     }
 }
-String ContinuousController::GetMIDISettingStr(MIDISettingType type) {
+String ContinuousController::GetMIDISettingStr(MIDISetting::Type type) {
     LS_LOCK_READ();
-    if(type <= en_out_off) return Controller::GetMIDISettingStr(type);
-    if(type > ct_out){
+    if(type <= MIDISetting::en_out_off) return Controller::GetMIDISettingStr(type);
+    if(type > MIDISetting::ct_out){
         std::cout << "Invalid usage of ContinuousController::GetMIDISettingStr()!\n";
         return "Error";
     }
     return midisettings[type]->GetStr();
 }
-bool ContinuousController::SetMIDISettingFromStr(MIDISettingType type, String str) {
+bool ContinuousController::SetMIDISettingFromStr(MIDISetting::Type type, String str) {
     LS_LOCK_WRITE();
-    if(type <= en_out_off) return Controller::SetMIDISettingFromStr(type, str);
-    if(type > ct_out){
+    if(type <= MIDISetting::en_out_off) return Controller::SetMIDISettingFromStr(type, str);
+    if(type > MIDISetting::ct_out){
         std::cout << "Invalid usage of ContinuousController::SetMIDISettingFromStr()!\n";
         return false;
     }

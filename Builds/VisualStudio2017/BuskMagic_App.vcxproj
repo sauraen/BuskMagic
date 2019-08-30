@@ -149,6 +149,7 @@
     <ClCompile Include="..\..\src\gui\Popup\CtrlrEditor.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\KnobMIDI.cpp"/>
     <ClCompile Include="..\..\src\gui\Popup\PhasorEditor.cpp"/>
+    <ClCompile Include="..\..\src\gui\Popup\TriggerMIDI.cpp"/>
     <ClCompile Include="..\..\src\gui\ArtNetSetup.cpp"/>
     <ClCompile Include="..\..\src\gui\ControllerWindow.cpp"/>
     <ClCompile Include="..\..\src\gui\FixtureEditor.cpp"/>
@@ -157,6 +158,8 @@
     <ClCompile Include="..\..\src\gui\Patcher.cpp"/>
     <ClCompile Include="..\..\src\gui\StatusBar.cpp"/>
     <ClCompile Include="..\..\src\gui\TextListBox.cpp"/>
+    <ClCompile Include="..\..\src\gui\TimingWindow.cpp"/>
+    <ClCompile Include="..\..\src\gui\TriggerButton.cpp"/>
     <ClCompile Include="..\..\src\ArtNetSystem.cpp"/>
     <ClCompile Include="..\..\src\ChannelSystem.cpp"/>
     <ClCompile Include="..\..\src\ControllerSystem.cpp"/>
@@ -195,6 +198,7 @@
     <ClInclude Include="..\..\src\gui\Popup\MagicValueEditor.h"/>
     <ClInclude Include="..\..\src\gui\Popup\PhasorEditor.h"/>
     <ClInclude Include="..\..\src\gui\Popup\PopupWindow.h"/>
+    <ClInclude Include="..\..\src\gui\Popup\TriggerMIDI.h"/>
     <ClInclude Include="..\..\src\gui\ArtNetSetup.h"/>
     <ClInclude Include="..\..\src\gui\ControllerWindow.h"/>
     <ClInclude Include="..\..\src\gui\FixtureEditor.h"/>
@@ -205,6 +209,8 @@
     <ClInclude Include="..\..\src\gui\StatusBar.h"/>
     <ClInclude Include="..\..\src\gui\SynthButton.h"/>
     <ClInclude Include="..\..\src\gui\TextListBox.h"/>
+    <ClInclude Include="..\..\src\gui\TimingWindow.h"/>
+    <ClInclude Include="..\..\src\gui\TriggerButton.h"/>
     <ClInclude Include="..\..\src\ArtNetSystem.h"/>
     <ClInclude Include="..\..\src\ChannelSystem.h"/>
     <ClInclude Include="..\..\src\Common.h"/>

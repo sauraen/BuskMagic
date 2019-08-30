@@ -31,10 +31,17 @@ namespace TimingSystem {
     double tempo_msperbeat;
     int measurelen;
     
-    float GetPositionInMeasure(){
+    double GetPositionInMeasureInternal(){
         double dt = (double)(GetTimeMS() - origin);
         dt /= (tempo_msperbeat * (double)measurelen);
-        return (float)(dt - std::floor(dt));
+        return dt - std::floor(dt);
+    }
+    void SetOriginForMsrPos(double posinmsr){
+        origin = GetTimeMS() - (uint64_t)(tempo_msperbeat * (double)measurelen * posinmsr);
+    }
+    
+    float GetPositionInMeasure(){
+        return (float)GetPositionInMeasureInternal();
     }
     float GetPositionInBeat(){
         double dt = (double)(GetTimeMS() - origin);
@@ -46,25 +53,33 @@ namespace TimingSystem {
         return (float)(60000.0 / tempo_msperbeat);
     }
     void SetTempo(float bpm){
+        double orig_posinmsr = GetPositionInMeasureInternal();
         tempo_msperbeat = 60000.0 / (double)bpm;
+        SetOriginForMsrPos(orig_posinmsr);
     }
     int GetBeatsPerMeasure(){
         return measurelen;
     }
     void SetBeatsPerMeasure(int beats){
+        if(beats <= 0) return;
+        if(beats == measurelen) return;
+        double orig_posinmsr = GetPositionInMeasureInternal();
+        orig_posinmsr *= (double)measurelen / (double)beats;
+        orig_posinmsr -= std::floor(orig_posinmsr);
         measurelen = beats;
+        SetOriginForMsrPos(orig_posinmsr);
     }
     
     void TapBeat(){
-        //TODO
+        std::cout << "Tap Beat received\n"; //TODO
     }
     void TapMeasure(){
-        //TODO
+        std::cout << "Tap Measure received\n"; //TODO
     }
     
     void Init(){
         origin = GetTimeMS();
-        SetTempo(120.0f);
+        tempo_msperbeat = 60000.0 / 120.0;
         measurelen = 4;
     }
     void Finalize(){

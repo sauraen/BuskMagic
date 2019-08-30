@@ -93,6 +93,10 @@
 			isa = PBXBuildFile;
 			fileRef = D0087996AD33F7A7B0CB8086;
 		};
+		B2A6107509E9D8D75ADEADB5 = {
+			isa = PBXBuildFile;
+			fileRef = F95DFE0ED318AE2991CCC6B9;
+		};
 		16FBF7251CA38AB7C3B2999F = {
 			isa = PBXBuildFile;
 			fileRef = 0931C17F4AB4A2340A912B7F;
@@ -124,6 +128,14 @@
 		D3546F2CB119364535E95500 = {
 			isa = PBXBuildFile;
 			fileRef = DCE71C222A988056D29BF0DF;
+		};
+		DA0EDF645241327129E2CC38 = {
+			isa = PBXBuildFile;
+			fileRef = 569CB9291A4A57DD616BC6EB;
+		};
+		9383249E2F7E91C42D90BEEC = {
+			isa = PBXBuildFile;
+			fileRef = C28FADBD06A8B4DC7B4A91B9;
 		};
 		1B790381B4E8DD68C64B60C6 = {
 			isa = PBXBuildFile;
@@ -382,6 +394,13 @@
 			path = "../../JuceLibraryCode/include_juce_gui_extra.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		42ACA00F634DD07394F11BB0 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = TriggerButton.h;
+			path = ../../src/gui/TriggerButton.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		448F5F68DF58CBEB91ECDC49 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -408,6 +427,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = ControllerSystem.cpp;
 			path = ../../src/ControllerSystem.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		569CB9291A4A57DD616BC6EB = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = TimingWindow.cpp;
+			path = ../../src/gui/TimingWindow.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		60460D52CB47B649B9E5D77B = {
@@ -676,6 +702,13 @@
 			path = ../../src/gui/Popup/KnobMIDI.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		C28FADBD06A8B4DC7B4A91B9 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = TriggerButton.cpp;
+			path = ../../src/gui/TriggerButton.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		C295FFBA813CD35D3D9745AF = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -730,6 +763,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = RGB.cpp;
 			path = ../../src/gui/FixParamEd/ColorMode/RGB.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		D647578D9CAB9452CAAF9D95 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = TimingWindow.h;
+			path = ../../src/gui/TimingWindow.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		DCE71C222A988056D29BF0DF = {
@@ -802,6 +842,20 @@
 			path = ../../src/gui/ControllerWindow.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		F95DFE0ED318AE2991CCC6B9 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = TriggerMIDI.cpp;
+			path = ../../src/gui/Popup/TriggerMIDI.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		FC3941DE28DCA3FF883E49B3 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = TriggerMIDI.h;
+			path = ../../src/gui/Popup/TriggerMIDI.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		FD1180090C881E3443424B3D = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -864,6 +918,8 @@
 				D0087996AD33F7A7B0CB8086,
 				2B683993EEC67CFBEC9D46CB,
 				F1D64539AA9299E723453500,
+				F95DFE0ED318AE2991CCC6B9,
+				FC3941DE28DCA3FF883E49B3,
 			);
 			name = Popup;
 			sourceTree = "<group>";
@@ -892,6 +948,10 @@
 				1244CD3566D40BF6A1447627,
 				DCE71C222A988056D29BF0DF,
 				60460D52CB47B649B9E5D77B,
+				569CB9291A4A57DD616BC6EB,
+				D647578D9CAB9452CAAF9D95,
+				C28FADBD06A8B4DC7B4A91B9,
+				42ACA00F634DD07394F11BB0,
 			);
 			name = gui;
 			sourceTree = "<group>";
@@ -1216,6 +1276,7 @@
 				D40E86353791E938A2C16BB1,
 				1A59EB4AE0469DEA13B4CC3A,
 				CE2A1F8BE71BE88792A4AB4C,
+				B2A6107509E9D8D75ADEADB5,
 				16FBF7251CA38AB7C3B2999F,
 				3057EB35B57670330D5511E3,
 				182FF3B58EFBCAE6F9B7C7E7,
@@ -1224,6 +1285,8 @@
 				5CBD7F35C97B5078FD17F046,
 				92FE66EC0A061510F8D80AB5,
 				D3546F2CB119364535E95500,
+				DA0EDF645241327129E2CC38,
+				9383249E2F7E91C42D90BEEC,
 				1B790381B4E8DD68C64B60C6,
 				31F7E985A2A10E08753B340E,
 				32C2055711FD86AA59F8C771,

@@ -77,19 +77,8 @@ public:
     void SetEnabled(bool en);
 
     virtual void HandleMIDI(int port, MidiMessage msg);
-    enum MIDISettingType {
-        en_on = 0,
-        en_off = 1,
-        en_toggle = 2,
-        en_out_on = 3,
-        en_out_off = 4,
-        ct_in = 5,
-        ct_goto_lo = 6,
-        ct_goto_hi = 7,
-        ct_out = 8
-    };
-    virtual String GetMIDISettingStr(MIDISettingType type);
-    virtual bool SetMIDISettingFromStr(MIDISettingType type, String str);
+    virtual String GetMIDISettingStr(MIDISetting::Type type);
+    virtual bool SetMIDISettingFromStr(MIDISetting::Type type, String str);
 
     virtual float Evaluate(float angle) const = 0;
 
@@ -149,8 +138,8 @@ public:
     inline MagicValue *GetHiValue() { return &hivalue; }
 
     virtual void HandleMIDI(int port, MidiMessage msg) override;
-    virtual String GetMIDISettingStr(MIDISettingType type) override;
-    virtual bool SetMIDISettingFromStr(MIDISettingType, String str) override;
+    virtual String GetMIDISettingStr(MIDISetting::Type type) override;
+    virtual bool SetMIDISettingFromStr(MIDISetting::Type, String str) override;
 
     virtual float Evaluate(float angle) const override;
 
