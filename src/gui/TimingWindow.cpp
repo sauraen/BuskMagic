@@ -55,61 +55,6 @@ TimingWindow::TimingWindow ()
     tw_static = this;
     //[/Constructor_pre]
 
-    lblTapBeat.reset (new Label ("lblTapBeat",
-                                 TRANS("Tap Beat")));
-    addAndMakeVisible (lblTapBeat.get());
-    lblTapBeat->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblTapBeat->setJustificationType (Justification::centred);
-    lblTapBeat->setEditable (false, false, false);
-    lblTapBeat->setColour (TextEditor::textColourId, Colours::black);
-    lblTapBeat->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    lblTapBeat->setBounds (8, 56, 64, 24);
-
-    lblTapMeasure.reset (new Label ("lblTapMeasure",
-                                    TRANS("Tap Measure")));
-    addAndMakeVisible (lblTapMeasure.get());
-    lblTapMeasure->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblTapMeasure->setJustificationType (Justification::centred);
-    lblTapMeasure->setEditable (false, false, false);
-    lblTapMeasure->setColour (TextEditor::textColourId, Colours::black);
-    lblTapMeasure->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    lblTapMeasure->setBounds (72, 56, 96, 24);
-
-    lblDouble.reset (new Label ("lblDouble",
-                                TRANS("x2")));
-    addAndMakeVisible (lblDouble.get());
-    lblDouble->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblDouble->setJustificationType (Justification::centred);
-    lblDouble->setEditable (false, false, false);
-    lblDouble->setColour (TextEditor::textColourId, Colours::black);
-    lblDouble->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    lblDouble->setBounds (8, 136, 64, 24);
-
-    lblHalf.reset (new Label ("lblHalf",
-                              TRANS("/2")));
-    addAndMakeVisible (lblHalf.get());
-    lblHalf->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblHalf->setJustificationType (Justification::centred);
-    lblHalf->setEditable (false, false, false);
-    lblHalf->setColour (TextEditor::textColourId, Colours::black);
-    lblHalf->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    lblHalf->setBounds (88, 136, 64, 24);
-
-    lblTempo.reset (new Label ("lblTempo",
-                               TRANS("Tempo:")));
-    addAndMakeVisible (lblTempo.get());
-    lblTempo->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblTempo->setJustificationType (Justification::centredLeft);
-    lblTempo->setEditable (false, false, false);
-    lblTempo->setColour (TextEditor::textColourId, Colours::black);
-    lblTempo->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    lblTempo->setBounds (168, 16, 56, 24);
-
     txtBPM.reset (new TextEditor ("txtBPM"));
     addAndMakeVisible (txtBPM.get());
     txtBPM->setMultiLine (false);
@@ -120,29 +65,7 @@ TimingWindow::TimingWindow ()
     txtBPM->setPopupMenuEnabled (true);
     txtBPM->setText (TRANS("123.456"));
 
-    txtBPM->setBounds (224, 16, 56, 24);
-
-    lblMeasure.reset (new Label ("lblMeasure",
-                                 TRANS("Measure:")));
-    addAndMakeVisible (lblMeasure.get());
-    lblMeasure->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblMeasure->setJustificationType (Justification::centredLeft);
-    lblMeasure->setEditable (false, false, false);
-    lblMeasure->setColour (TextEditor::textColourId, Colours::black);
-    lblMeasure->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    lblMeasure->setBounds (168, 40, 72, 24);
-
-    lblBPM.reset (new Label ("lblBPM",
-                             TRANS("BPM")));
-    addAndMakeVisible (lblBPM.get());
-    lblBPM->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblBPM->setJustificationType (Justification::centredLeft);
-    lblBPM->setEditable (false, false, false);
-    lblBPM->setColour (TextEditor::textColourId, Colours::black);
-    lblBPM->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    lblBPM->setBounds (280, 16, 40, 24);
+    txtBPM->setBounds (16, 8, 64, 24);
 
     txtMeasureLen.reset (new TextEditor ("txtMeasureLen"));
     addAndMakeVisible (txtMeasureLen.get());
@@ -154,50 +77,80 @@ TimingWindow::TimingWindow ()
     txtMeasureLen->setPopupMenuEnabled (true);
     txtMeasureLen->setText (TRANS("16"));
 
-    txtMeasureLen->setBounds (240, 40, 24, 24);
+    txtMeasureLen->setBounds (16, 72, 24, 24);
 
-    lblBeats.reset (new Label ("lblBeats",
-                               TRANS("beats")));
-    addAndMakeVisible (lblBeats.get());
-    lblBeats->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblBeats->setJustificationType (Justification::centredLeft);
-    lblBeats->setEditable (false, false, false);
-    lblBeats->setColour (TextEditor::textColourId, Colours::black);
-    lblBeats->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    btnBPMSet.reset (new TextButton ("btnBPMSet"));
+    addAndMakeVisible (btnBPMSet.get());
+    btnBPMSet->setButtonText (TRANS("Set"));
+    btnBPMSet->setConnectedEdges (Button::ConnectedOnLeft);
+    btnBPMSet->addListener (this);
 
-    lblBeats->setBounds (264, 40, 56, 24);
+    btnBPMSet->setBounds (80, 8, 32, 24);
+
+    lblBPM.reset (new Label ("lblBPM",
+                             TRANS("120.000")));
+    addAndMakeVisible (lblBPM.get());
+    lblBPM->setFont (Font (30.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lblBPM->setJustificationType (Justification::centred);
+    lblBPM->setEditable (false, false, false);
+    lblBPM->setColour (TextEditor::textColourId, Colours::black);
+    lblBPM->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    lblBPM->setBounds (8, 32, 112, 40);
+
+    chkInt.reset (new ToggleButton ("chkInt"));
+    addAndMakeVisible (chkInt.get());
+    chkInt->setButtonText (TRANS("Int"));
+    chkInt->addListener (this);
+
+    chkInt->setBounds (72, 72, 56, 24);
 
 
     //[UserPreSize]
 
-    trgTapBeat.reset(new TriggerButton(this));
-    addAndMakeVisible(trgTapBeat.get());
-    trgTapBeat->setTopLeftPosition(16, 16);
+    trgUp.reset(new TriggerButton(this));
+    addAndMakeVisible(trgUp.get());
+    trgUp->setTopLeftPosition(120, 8);
 
-    trgTapMeasure.reset(new TriggerButton(this));
-    addAndMakeVisible(trgTapMeasure.get());
-    trgTapMeasure->setTopLeftPosition(96, 16);
+    trgDown.reset(new TriggerButton(this));
+    addAndMakeVisible(trgDown.get());
+    trgDown->setTopLeftPosition(120, 64);
 
     trgDouble.reset(new TriggerButton(this));
     addAndMakeVisible(trgDouble.get());
-    trgDouble->setTopLeftPosition(16, 96);
+    trgDouble->setTopLeftPosition(184, 8);
 
     trgHalf.reset(new TriggerButton(this));
     addAndMakeVisible(trgHalf.get());
-    trgHalf->setTopLeftPosition(96, 96);
-    
+    trgHalf->setTopLeftPosition(184, 64);
+
+    trgTapBeat.reset(new TriggerButton(this));
+    addAndMakeVisible(trgTapBeat.get());
+    trgTapBeat->setTopLeftPosition(8, 120);
+
+    trgTapMeasure.reset(new TriggerButton(this));
+    addAndMakeVisible(trgTapMeasure.get());
+    trgTapMeasure->setTopLeftPosition(104, 120);
+
+    trgFreeze.reset(new TriggerButton(this));
+    addAndMakeVisible(trgFreeze.get());
+    trgFreeze->setTopLeftPosition(184, 120);
+
     txtBPM->addListener(this);
     txtMeasureLen->addListener(this);
 
     //[/UserPreSize]
 
-    setSize (328, 160);
+    setSize (240, 176);
 
 
     //[Constructor] You can add your own custom stuff here..
 
     txtBPM->setText(String(TimingSystem::GetTempo(), 3), dontSendNotification);
     txtMeasureLen->setText(String(TimingSystem::GetBeatsPerMeasure()), dontSendNotification);
+    chkInt->setToggleState(TimingSystem::IsTempoOnlyInt(), dontSendNotification);
+
+    startTimer(33);
 
     //[/Constructor]
 }
@@ -207,16 +160,11 @@ TimingWindow::~TimingWindow()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    lblTapBeat = nullptr;
-    lblTapMeasure = nullptr;
-    lblDouble = nullptr;
-    lblHalf = nullptr;
-    lblTempo = nullptr;
     txtBPM = nullptr;
-    lblMeasure = nullptr;
-    lblBPM = nullptr;
     txtMeasureLen = nullptr;
-    lblBeats = nullptr;
+    btnBPMSet = nullptr;
+    lblBPM = nullptr;
+    chkInt = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -232,6 +180,90 @@ void TimingWindow::paint (Graphics& g)
 
     g.fillAll (Colour (0xff323e44));
 
+    {
+        int x = 64, y = 128, width = 32, height = 16;
+        String text (TRANS("Tap"));
+        Colour fillColour = Colours::white;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+        g.drawText (text, x, y, width, height,
+                    Justification::centred, true);
+    }
+
+    {
+        int x = 8, y = 152, width = 48, height = 24;
+        String text (TRANS("Beat"));
+        Colour fillColour = Colours::white;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+        g.drawText (text, x, y, width, height,
+                    Justification::centred, true);
+    }
+
+    {
+        int x = 96, y = 152, width = 64, height = 24;
+        String text (TRANS("Measure"));
+        Colour fillColour = Colours::white;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+        g.drawText (text, x, y, width, height,
+                    Justification::centred, true);
+    }
+
+    {
+        int x = 184, y = 40, width = 48, height = 24;
+        String text (CharPointer_UTF8 ("\xc3\x97""2 / \xc3\xb7""2"));
+        Colour fillColour = Colours::white;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+        g.drawText (text, x, y, width, height,
+                    Justification::centred, true);
+    }
+
+    {
+        int x = 120, y = 40, width = 48, height = 24;
+        String text (CharPointer_UTF8 ("\xe2\x86\x95"));
+        Colour fillColour = Colours::white;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (Font (17.00f, Font::plain).withTypefaceStyle ("Regular"));
+        g.drawText (text, x, y, width, height,
+                    Justification::centred, true);
+    }
+
+    {
+        int x = 176, y = 152, width = 64, height = 24;
+        String text (TRANS("Freeze"));
+        Colour fillColour = Colours::white;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+        g.drawText (text, x, y, width, height,
+                    Justification::centred, true);
+    }
+
+    {
+        int x = 43, y = 73, width = 32, height = 22;
+        String text (TRANS("bts"));
+        Colour fillColour = Colours::white;
+        //[UserPaintCustomArguments] Customize the painting arguments here..
+        //[/UserPaintCustomArguments]
+        g.setColour (fillColour);
+        g.setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+        g.drawText (text, x, y, width, height,
+                    Justification::centredLeft, true);
+    }
+
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
@@ -245,30 +277,64 @@ void TimingWindow::resized()
     //[/UserResized]
 }
 
+void TimingWindow::buttonClicked (Button* buttonThatWasClicked)
+{
+    //[UserbuttonClicked_Pre]
+    float t = TimingSystem::GetTempo();
+    //[/UserbuttonClicked_Pre]
+
+    if (buttonThatWasClicked == btnBPMSet.get())
+    {
+        //[UserButtonCode_btnBPMSet] -- add your button handler code here..
+        String text = txtBPM->getText();
+        if(!isDec(text)) return;
+        float d = text.getFloatValue();
+        if(d < 0.1f || d > 500.0f) return;
+        TimingSystem::SetTempo(d);
+        //[/UserButtonCode_btnBPMSet]
+    }
+    else if (buttonThatWasClicked == chkInt.get())
+    {
+        //[UserButtonCode_chkInt] -- add your button handler code here..
+        TimingSystem::SetTempoOnlyInt(chkInt->getToggleState());
+        //[/UserButtonCode_chkInt]
+    }
+
+    //[UserbuttonClicked_Post]
+    else if(buttonThatWasClicked == trgUp.get()){
+        TimingSystem::SetTempo(t == std::floor(t) ? t + 1.0f : std::ceil(t));
+    }else if(buttonThatWasClicked == trgDown.get()){
+        TimingSystem::SetTempo(t == std::floor(t) ? t - 1.0f : std::floor(t));
+    }else if(buttonThatWasClicked == trgDouble.get()){
+        TimingSystem::SetTempo(2.0f * t);
+    }else if(buttonThatWasClicked == trgHalf.get()){
+        TimingSystem::SetTempo(0.5f * t);
+    }else if(buttonThatWasClicked == trgTapBeat.get()){
+        TimingSystem::TapBeat();
+    }else if(buttonThatWasClicked == trgTapMeasure.get()){
+        TimingSystem::TapMeasure();
+        txtMeasureLen->setText(String(TimingSystem::GetBeatsPerMeasure()), dontSendNotification);
+    }else if(buttonThatWasClicked == trgFreeze.get()){
+        TimingSystem::ToggleFreeze();
+    }
+    //[/UserbuttonClicked_Post]
+}
+
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void TimingWindow::buttonClicked(Button *buttonThatWasClicked){
-    std::cout << "button press\n";
-    if(buttonThatWasClicked == trgTapBeat.get()){
-        TimingSystem::TapBeat();
-    }else if(buttonThatWasClicked == trgTapMeasure.get()){
-        TimingSystem::TapMeasure();
-    }else if(buttonThatWasClicked == trgDouble.get()){
-        txtMeasureLen->setText(String(TimingSystem::GetBeatsPerMeasure()), dontSendNotification);
-        TimingSystem::SetTempo(2.0f * TimingSystem::GetTempo());
-    }else if(buttonThatWasClicked == trgHalf.get()){
-        TimingSystem::SetTempo(0.5f * TimingSystem::GetTempo());
-    }
-    txtBPM->setText(String(TimingSystem::GetTempo(), 3), dontSendNotification);
+void TimingWindow::timerCallback(){
+    String s = "";
+    if(TimingSystem::IsFrozen()) s += "FRZ ";
+    s += String(TimingSystem::GetTempo(), TimingSystem::IsFrozen() || TimingSystem::IsTempoOnlyInt() ? 0 : 3);
+    lblBPM->setText(s, dontSendNotification);
 }
 
 void TimingWindow::textEditorTextChanged(TextEditor &editorThatWasChanged){
     TEXTCHANGEDHANDLER_PRE;
     if(&editorThatWasChanged == txtBPM.get()){
         if(!isdec || decval < 0.1f || decval > 500.0f) turnRed = true;
-        else TimingSystem::SetTempo(decval);
     }else if(&editorThatWasChanged == txtMeasureLen.get()){
         if(!isint || val <= 0) turnRed = true;
         else TimingSystem::SetBeatsPerMeasure(val);
@@ -277,10 +343,13 @@ void TimingWindow::textEditorTextChanged(TextEditor &editorThatWasChanged){
 }
 
 void TimingWindow::HandleMIDI(int port, MidiMessage msg){
-    trgTapBeat->HandleMIDI(port, msg);
-    trgTapMeasure->HandleMIDI(port, msg);
+    trgUp->HandleMIDI(port, msg);
+    trgDown->HandleMIDI(port, msg);
     trgDouble->HandleMIDI(port, msg);
     trgHalf->HandleMIDI(port, msg);
+    trgTapBeat->HandleMIDI(port, msg);
+    trgTapMeasure->HandleMIDI(port, msg);
+    trgFreeze->HandleMIDI(port, msg);
 }
 
 
@@ -297,59 +366,52 @@ void TimingWindow::HandleMIDI(int port, MidiMessage msg){
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="TimingWindow" componentName=""
-                 parentClasses="public Component, public Button::Listener, public TextEditor::Listener"
+                 parentClasses="public Component, public TextEditor::Listener, private Timer"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
-                 snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="328"
-                 initialHeight="160">
-  <BACKGROUND backgroundColour="ff323e44"/>
-  <LABEL name="lblTapBeat" id="b060ed39fd586d60" memberName="lblTapBeat"
-         virtualName="" explicitFocusOrder="0" pos="8 56 64 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Tap Beat" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
-         kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="lblTapMeasure" id="4006277d7561730" memberName="lblTapMeasure"
-         virtualName="" explicitFocusOrder="0" pos="72 56 96 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Tap Measure" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="lblDouble" id="36f9e9bd24dc7f2e" memberName="lblDouble"
-         virtualName="" explicitFocusOrder="0" pos="8 136 64 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="x2" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
-         kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="lblHalf" id="a655a61b87d5cf52" memberName="lblHalf" virtualName=""
-         explicitFocusOrder="0" pos="88 136 64 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="/2" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
-         kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="lblTempo" id="6606c2230e91c01f" memberName="lblTempo" virtualName=""
-         explicitFocusOrder="0" pos="168 16 56 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Tempo:" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
-         kerning="0.0" bold="0" italic="0" justification="33"/>
+                 snapShown="1" overlayOpacity="0.660" fixedSize="1" initialWidth="240"
+                 initialHeight="176">
+  <BACKGROUND backgroundColour="ff323e44">
+    <TEXT pos="64 128 32 16" fill="solid: ffffffff" hasStroke="0" text="Tap"
+          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
+          italic="0" justification="36"/>
+    <TEXT pos="8 152 48 24" fill="solid: ffffffff" hasStroke="0" text="Beat"
+          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
+          italic="0" justification="36"/>
+    <TEXT pos="96 152 64 24" fill="solid: ffffffff" hasStroke="0" text="Measure"
+          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
+          italic="0" justification="36"/>
+    <TEXT pos="184 40 48 24" fill="solid: ffffffff" hasStroke="0" text="&#215;2 / &#247;2"
+          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
+          italic="0" justification="36"/>
+    <TEXT pos="120 40 48 24" fill="solid: ffffffff" hasStroke="0" text="&#8597;"
+          fontname="Default font" fontsize="17.0" kerning="0.0" bold="0"
+          italic="0" justification="36"/>
+    <TEXT pos="176 152 64 24" fill="solid: ffffffff" hasStroke="0" text="Freeze"
+          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
+          italic="0" justification="36"/>
+    <TEXT pos="43 73 32 22" fill="solid: ffffffff" hasStroke="0" text="bts"
+          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
+          italic="0" justification="33"/>
+  </BACKGROUND>
   <TEXTEDITOR name="txtBPM" id="37e3bc569d4b8cc" memberName="txtBPM" virtualName=""
-              explicitFocusOrder="0" pos="224 16 56 24" initialText="123.456"
+              explicitFocusOrder="0" pos="16 8 64 24" initialText="123.456"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
-  <LABEL name="lblMeasure" id="67af052245673552" memberName="lblMeasure"
-         virtualName="" explicitFocusOrder="0" pos="168 40 72 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Measure:" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
-         kerning="0.0" bold="0" italic="0" justification="33"/>
-  <LABEL name="lblBPM" id="9f1e2b87be54206e" memberName="lblBPM" virtualName=""
-         explicitFocusOrder="0" pos="280 16 40 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="BPM" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
-         kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtMeasureLen" id="a58c3c5dac9fca7e" memberName="txtMeasureLen"
-              virtualName="" explicitFocusOrder="0" pos="240 40 24 24" initialText="16"
+              virtualName="" explicitFocusOrder="0" pos="16 72 24 24" initialText="16"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
-  <LABEL name="lblBeats" id="4e4054d3038cc2b1" memberName="lblBeats" virtualName=""
-         explicitFocusOrder="0" pos="264 40 56 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="beats" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
-         kerning="0.0" bold="0" italic="0" justification="33"/>
+  <TEXTBUTTON name="btnBPMSet" id="fb881a8402a7ef15" memberName="btnBPMSet"
+              virtualName="" explicitFocusOrder="0" pos="80 8 32 24" buttonText="Set"
+              connectedEdges="1" needsCallback="1" radioGroupId="0"/>
+  <LABEL name="lblBPM" id="23b1d7913a26df55" memberName="lblBPM" virtualName=""
+         explicitFocusOrder="0" pos="8 32 112 40" edTextCol="ff000000"
+         edBkgCol="0" labelText="120.000" editableSingleClick="0" editableDoubleClick="0"
+         focusDiscardsChanges="0" fontname="Default font" fontsize="30.0"
+         kerning="0.0" bold="0" italic="0" justification="36"/>
+  <TOGGLEBUTTON name="chkInt" id="75c7b174ffa3061" memberName="chkInt" virtualName=""
+                explicitFocusOrder="0" pos="72 72 56 24" buttonText="Int" connectedEdges="0"
+                needsCallback="1" radioGroupId="0" state="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -359,3 +421,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

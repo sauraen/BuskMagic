@@ -30,13 +30,21 @@ namespace TimingSystem {
     
     float GetPositionInMeasure();
     float GetPositionInBeat();
+    int GetCurrentBeat();
     
     float GetTempo();
     void SetTempo(float bpm);
+    bool IsTempoOnlyInt();
+    void SetTempoOnlyInt(bool tempoonlyint);
+    
     int GetBeatsPerMeasure();
     void SetBeatsPerMeasure(int beats);
     
     void TapBeat();
     void TapMeasure();
+    
+    void ToggleFreeze();
+    bool IsFrozen();
+    
     
 }

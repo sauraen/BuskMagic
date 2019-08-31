@@ -31,10 +31,15 @@ namespace TimingSystem {
     double tempo_msperbeat;
     int measurelen;
     
+    double freeze_posmsr;
+    bool frozen;
+    bool onlyint;
+    
     Array<uint64_t> taptimes;
     Array<double> taptempos;
     
     double GetPositionInMeasureInternal(){
+        if(frozen) return freeze_posmsr;
         double dt = (double)(GetTimeMS() - origin);
         dt /= (tempo_msperbeat * (double)measurelen);
         return dt - std::floor(dt);
@@ -42,21 +47,21 @@ namespace TimingSystem {
     void SetOriginForMsrPos(double posinmsr){
         origin = GetTimeMS() - (uint64_t)(tempo_msperbeat * (double)measurelen * posinmsr);
     }
-    int GetCurrentBeat(){
-        double orig_posinmsr = GetPositionInMeasureInternal();
-        orig_posinmsr *= (double)measurelen;
-        orig_posinmsr += 0.5;
-        orig_posinmsr = std::floor(orig_posinmsr);
-        return (int)orig_posinmsr;
-    }
     
     float GetPositionInMeasure(){
         return (float)GetPositionInMeasureInternal();
     }
     float GetPositionInBeat(){
-        double dt = (double)(GetTimeMS() - origin);
-        dt /= tempo_msperbeat;
-        return (float)(dt - std::floor(dt));
+        double d = GetPositionInMeasureInternal();
+        d *= (double)measurelen;
+        return (float)(d - std::floor(d));
+    }
+    int GetCurrentBeat(){
+        double d = GetPositionInMeasureInternal();
+        d *= (double)measurelen;
+        d += 0.5;
+        d = std::floor(d);
+        return (int)d;
     }
     
     float GetTempo(){
@@ -65,10 +70,14 @@ namespace TimingSystem {
     void SetTempo(float bpm){
         taptimes.clear();
         taptempos.clear();
+        if(onlyint) bpm = std::round(bpm);
         double orig_posinmsr = GetPositionInMeasureInternal();
         tempo_msperbeat = 60000.0 / (double)bpm;
         SetOriginForMsrPos(orig_posinmsr);
     }
+    bool IsTempoOnlyInt() { return onlyint; }
+    void SetTempoOnlyInt(bool tempoonlyint) { onlyint = tempoonlyint; }
+    
     int GetBeatsPerMeasure(){
         return measurelen;
     }
@@ -112,11 +121,16 @@ namespace TimingSystem {
             double interstdev = (newavg - interavg) * (newavg - interavg)
                               + (oldavg - interavg) * (oldavg - interavg);
             interstdev = std::sqrt(interstdev);
-            if(interstdev > newstdev && std::abs(newavg - oldavg) > 7.0){
+            if(interstdev > newstdev + 10.0 && std::abs(newavg - oldavg) > 40.0){
                 //User has tapped two beat-intervals of a totally new tempo
+                std::cout << "Throwing out old beats, oldavg = " << oldavg << ", newavg = " << newavg << "\n";
                 taptempos.removeRange(0, ntt-2);
                 taptimes.removeRange(0, ntt-2);
             }
+        }
+        if(taptempos.size() > 10){
+            taptempos.remove(0);
+            taptimes.remove(0);
         }
         //Weighted-average tempos
         double newtempo = 0.0;
@@ -125,21 +139,37 @@ namespace TimingSystem {
         for(int i=taptempos.size()-1; i>=0; --i){
             newtempo += taptempos[i] * weight;
             totalweight += weight;
-            weight *= 0.8;
+            weight *= 0.9;
         }
         newtempo /= totalweight;
-        //Change tempo, keeping beat in measure but rounding to beat
-        tempo_msperbeat = newtempo;
+        //Change tempo, keeping beat in measure but adjusting to beat
+        if(onlyint){
+            tempo_msperbeat = 60000.0 / std::round(60000.0 / newtempo);
+        }else{
+            tempo_msperbeat = newtempo;
+        }
         SetOriginForMsrPos((double)b / (double)measurelen);
     }
     void TapMeasure(){
         std::cout << "Tap Measure received\n"; //TODO
     }
     
+    void ToggleFreeze(){
+        if(!frozen){
+            freeze_posmsr = GetPositionInMeasureInternal();
+            frozen = true;
+        }else{
+            SetOriginForMsrPos(freeze_posmsr);
+            frozen = false;
+        }
+    }
+    bool IsFrozen() { return frozen; }
+    
     void Init(){
         origin = GetTimeMS();
         tempo_msperbeat = 60000.0 / 120.0;
         measurelen = 4;
+        frozen = false;
     }
     void Finalize(){
         

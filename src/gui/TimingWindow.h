@@ -55,8 +55,9 @@
                                                                     //[/Comments]
 */
 class TimingWindow  : public Component,
-                      public Button::Listener,
-                      public TextEditor::Listener
+                      public TextEditor::Listener,
+                      private Timer,
+                      public Button::Listener
 {
 public:
     //==============================================================================
@@ -67,8 +68,8 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     static TimingWindow *tw_static;
 
-    void buttonClicked(Button *buttonThatWasClicked) override;
     void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
+    void timerCallback() override;
 
     void HandleMIDI(int port, MidiMessage msg);
 
@@ -76,28 +77,27 @@ public:
 
     void paint (Graphics& g) override;
     void resized() override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    std::unique_ptr<TriggerButton> trgTapBeat;
-    std::unique_ptr<TriggerButton> trgTapMeasure;
+    std::unique_ptr<TriggerButton> trgUp;
+    std::unique_ptr<TriggerButton> trgDown;
     std::unique_ptr<TriggerButton> trgDouble;
     std::unique_ptr<TriggerButton> trgHalf;
+    std::unique_ptr<TriggerButton> trgTapBeat;
+    std::unique_ptr<TriggerButton> trgTapMeasure;
+    std::unique_ptr<TriggerButton> trgFreeze;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<Label> lblTapBeat;
-    std::unique_ptr<Label> lblTapMeasure;
-    std::unique_ptr<Label> lblDouble;
-    std::unique_ptr<Label> lblHalf;
-    std::unique_ptr<Label> lblTempo;
     std::unique_ptr<TextEditor> txtBPM;
-    std::unique_ptr<Label> lblMeasure;
-    std::unique_ptr<Label> lblBPM;
     std::unique_ptr<TextEditor> txtMeasureLen;
-    std::unique_ptr<Label> lblBeats;
+    std::unique_ptr<TextButton> btnBPMSet;
+    std::unique_ptr<Label> lblBPM;
+    std::unique_ptr<ToggleButton> chkInt;
 
 
     //==============================================================================
