@@ -79,6 +79,7 @@ public:
     virtual void HandleMIDI(int port, MidiMessage msg);
     virtual String GetMIDISettingStr(MIDISetting::Type type);
     virtual bool SetMIDISettingFromStr(MIDISetting::Type type, String str);
+    virtual void LearnMIDI(MIDISetting::Type type, int port, MidiMessage msg);
 
     virtual float Evaluate(float angle) const = 0;
 
@@ -140,6 +141,7 @@ public:
     virtual void HandleMIDI(int port, MidiMessage msg) override;
     virtual String GetMIDISettingStr(MIDISetting::Type type) override;
     virtual bool SetMIDISettingFromStr(MIDISetting::Type, String str) override;
+    virtual void LearnMIDI(MIDISetting::Type type, int port, MidiMessage msg) override;
 
     virtual float Evaluate(float angle) const override;
 

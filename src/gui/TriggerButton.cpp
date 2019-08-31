@@ -43,6 +43,8 @@ void TriggerButton::mouseDown(const MouseEvent &event) {
 void TriggerButton::HandleMIDI(int port, MidiMessage msg){
     LS_LOCK_READ();
     if(midisettings[MIDISetting::tr_trig-MIDISetting::tr_trig]->Matches(port, msg)){
+        const MessageManagerLock mml(Thread::getCurrentThread());
+        if(!mml.lockWasGained()) return;
         triggerClick();
         TriggeredInternal();
     }
@@ -62,6 +64,11 @@ bool TriggerButton::SetMIDISettingFromStr(MIDISetting::Type type, String str){
         return "Error";
     }
     return midisettings[type-MIDISetting::tr_trig]->FromStr(str);
+}
+void TriggerButton::LearnMIDI(int port, MidiMessage msg){
+    midisettings[MIDISetting::tr_trig-MIDISetting::tr_trig]->Learn(port, msg, false);
+    midisettings[MIDISetting::tr_out_on-MIDISetting::tr_trig]->Learn(port, msg, false);
+    midisettings[MIDISetting::tr_out_off-MIDISetting::tr_trig]->Learn(port, msg, true);
 }
 
 void TriggerButton::timerCallback(){

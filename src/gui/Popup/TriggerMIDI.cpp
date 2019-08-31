@@ -157,6 +157,7 @@ TriggerMIDI::TriggerMIDI (void *data)
 TriggerMIDI::~TriggerMIDI()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
+    MIDISystem::LearnMIDIStop();
     //[/Destructor_pre]
 
     lblOn = nullptr;
@@ -202,6 +203,7 @@ void TriggerMIDI::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == btnLearnTrig.get())
     {
         //[UserButtonCode_btnLearnTrig] -- add your button handler code here..
+        MIDISystem::LearnMIDIStart(this);
         //[/UserButtonCode_btnLearnTrig]
     }
     else if (buttonThatWasClicked == btnHelp.get())
@@ -232,6 +234,17 @@ void TriggerMIDI::textEditorTextChanged(TextEditor &editorThatWasChanged)
     TEXTCHANGEDHANDLER_POST;
 }
 
+void TriggerMIDI::LearnMIDI(int port, MidiMessage msg)
+{
+    triggerbtn->LearnMIDI(port, msg);
+    const MessageManagerLock mml(Thread::getCurrentThread());
+    if(!mml.lockWasGained()) return;
+    txtTrig->setText(triggerbtn->GetMIDISettingStr(MIDISetting::tr_trig), dontSendNotification);
+    txtOutOn->setText(triggerbtn->GetMIDISettingStr(MIDISetting::tr_out_on), dontSendNotification);
+    txtOutOff->setText(triggerbtn->GetMIDISettingStr(MIDISetting::tr_out_off), dontSendNotification);
+}
+
+
 //[/MiscUserCode]
 
 
@@ -245,7 +258,7 @@ void TriggerMIDI::textEditorTextChanged(TextEditor &editorThatWasChanged)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="TriggerMIDI" componentName=""
-                 parentClasses="public Component, public TextEditor::Listener"
+                 parentClasses="public Component, public TextEditor::Listener, public MIDILearner"
                  constructorParams="void *data" variableInitialisers="triggerbtn((TriggerButton*)data)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="224" initialHeight="72">
@@ -292,3 +305,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

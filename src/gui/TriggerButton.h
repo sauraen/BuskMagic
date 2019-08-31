@@ -36,6 +36,7 @@ public:
     void HandleMIDI(int port, MidiMessage msg);
     String GetMIDISettingStr(MIDISetting::Type type);
     bool SetMIDISettingFromStr(MIDISetting::Type type, String str);
+    void LearnMIDI(int port, MidiMessage msg);
 
 private:
     Button::Listener *parent;

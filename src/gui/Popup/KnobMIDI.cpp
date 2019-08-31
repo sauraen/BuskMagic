@@ -197,6 +197,7 @@ KnobMIDI::KnobMIDI (void *data)
 KnobMIDI::~KnobMIDI()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
+    MIDISystem::LearnMIDIStop();
     //[/Destructor_pre]
 
     lblIn = nullptr;
@@ -246,16 +247,22 @@ void KnobMIDI::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == btnLearnIn.get())
     {
         //[UserButtonCode_btnLearnIn] -- add your button handler code here..
+        learntype = MIDISetting::ct_in;
+        MIDISystem::LearnMIDIStart(this);
         //[/UserButtonCode_btnLearnIn]
     }
     else if (buttonThatWasClicked == btnLearnGotoLo.get())
     {
         //[UserButtonCode_btnLearnGotoLo] -- add your button handler code here..
+        learntype = MIDISetting::ct_goto_lo;
+        MIDISystem::LearnMIDIStart(this);
         //[/UserButtonCode_btnLearnGotoLo]
     }
     else if (buttonThatWasClicked == btnLearnGotoHi.get())
     {
         //[UserButtonCode_btnLearnGotoHi] -- add your button handler code here..
+        learntype = MIDISetting::ct_goto_hi;
+        MIDISystem::LearnMIDIStart(this);
         //[/UserButtonCode_btnLearnGotoHi]
     }
     else if (buttonThatWasClicked == btnHelp.get())
@@ -288,6 +295,25 @@ void KnobMIDI::textEditorTextChanged(TextEditor &editorThatWasChanged)
     TEXTCHANGEDHANDLER_POST;
 }
 
+void KnobMIDI::LearnMIDI(int port, MidiMessage msg)
+{
+    ccontroller->LearnMIDI(learntype, port, msg);
+    const MessageManagerLock mml(Thread::getCurrentThread());
+    if(!mml.lockWasGained()) return;
+    switch(learntype){
+    case MIDISetting::ct_in:
+        txtIn->setText(ccontroller->GetMIDISettingStr(MIDISetting::ct_in), dontSendNotification);
+        txtOut->setText(ccontroller->GetMIDISettingStr(MIDISetting::ct_out), dontSendNotification);
+        break;
+    case MIDISetting::ct_goto_lo:
+        txtGotoLo->setText(ccontroller->GetMIDISettingStr(MIDISetting::ct_goto_lo), dontSendNotification);
+        break;
+    case MIDISetting::ct_goto_hi:
+        txtGotoHi->setText(ccontroller->GetMIDISettingStr(MIDISetting::ct_goto_hi), dontSendNotification);
+        break;
+    }
+}
+
 //[/MiscUserCode]
 
 
@@ -301,7 +327,7 @@ void KnobMIDI::textEditorTextChanged(TextEditor &editorThatWasChanged)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="KnobMIDI" componentName=""
-                 parentClasses="public Component, public TextEditor::Listener"
+                 parentClasses="public Component, public TextEditor::Listener, public MIDILearner"
                  constructorParams="void *data" variableInitialisers="ccontroller((ContinuousController*)data)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="256" initialHeight="96">

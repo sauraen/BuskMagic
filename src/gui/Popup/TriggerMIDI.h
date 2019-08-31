@@ -58,6 +58,7 @@
 */
 class TriggerMIDI  : public Component,
                      public TextEditor::Listener,
+                     public MIDILearner,
                      public Button::Listener
 {
 public:
@@ -68,6 +69,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
+    void LearnMIDI(int port, MidiMessage msg) override;
     //[/UserMethods]
 
     void paint (Graphics& g) override;

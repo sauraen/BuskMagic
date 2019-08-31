@@ -121,6 +121,7 @@ void Controller::SetGroupColor(Colour col){
             ctrlr->groupColor = groupColor;
             ctrlr->RefreshComponent();
         }
+        //This is only called on the message thread
         ControllerCanvas *canvas = GetCanvas();
         if(canvas != nullptr) canvas->repaint();
     }else{
@@ -178,6 +179,21 @@ bool Controller::SetMIDISettingFromStr(MIDISetting::Type type, String str){
     }
     return midisettings[type]->FromStr(str);
 }
+void Controller::LearnMIDI(MIDISetting::Type type, int port, MidiMessage msg){
+    switch(type){
+    case MIDISetting::en_on:
+        midisettings[MIDISetting::en_on]->Learn(port, msg, false);
+        midisettings[MIDISetting::en_out_on]->Learn(port, msg, false);
+        break;
+    case MIDISetting::en_off:
+        midisettings[MIDISetting::en_off]->Learn(port, msg, false);
+        midisettings[MIDISetting::en_out_off]->Learn(port, msg, false);
+        break;
+    case MIDISetting::en_toggle:
+        midisettings[MIDISetting::en_toggle]->Learn(port, msg, false);
+        break;
+    }
+}
 
 void Controller::RegisterComponent(ControllerCmp *cmp){
     LS_LOCK_WRITE();
@@ -185,6 +201,8 @@ void Controller::RegisterComponent(ControllerCmp *cmp){
 }
 void Controller::RefreshComponent(){
     LS_LOCK_READ();
+    const MessageManagerLock mml(Thread::getCurrentThread());
+    if(!mml.lockWasGained()) return;
     if(component != nullptr) component->repaint();
 }
 ControllerCanvas *Controller::GetCanvas(){
@@ -277,6 +295,21 @@ bool ContinuousController::SetMIDISettingFromStr(MIDISetting::Type type, String 
         return false;
     }
     return midisettings[type]->FromStr(str);
+}
+void ContinuousController::LearnMIDI(MIDISetting::Type type, int port, MidiMessage msg){
+    Controller::LearnMIDI(type, port, msg);
+    switch(type){
+    case MIDISetting::ct_in:
+        midisettings[MIDISetting::ct_in]->Learn(port, msg, false);
+        midisettings[MIDISetting::ct_out]->Learn(port, msg, false);
+        break;
+    case MIDISetting::ct_goto_lo:
+        midisettings[MIDISetting::ct_goto_lo]->Learn(port, msg, false);
+        break;
+    case MIDISetting::ct_goto_hi:
+        midisettings[MIDISetting::ct_goto_hi]->Learn(port, msg, false);
+        break;
+    }
 }
 
 float ContinuousController::Evaluate(float angle) const {

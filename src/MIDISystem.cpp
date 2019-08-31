@@ -20,6 +20,7 @@
 
 #include "ControllerSystem.h"
 #include "gui/TimingWindow.h"
+#include "LightingSystem.h"
 
 #include <vector>
 
@@ -210,14 +211,59 @@ void MIDISetting::SendMsg(int valforcontinuous){
     }
 }
 
+void MIDISetting::Learn(int port_, MidiMessage msg, bool invert){
+    if(continuous && msg.isProgramChange()) return;
+    uint8_t intype = msg.getRawData()[0] >> 4;
+    if(intype == 0xF || intype < 0x8) return;
+    port = port_;
+    channel = msg.getChannel();
+    if(invert && ((intype & 0xE) == 0x8)){
+        intype ^= 1; //Swap note on and note off
+    }
+    type = intype;
+    if(type < 0xD){
+        note = msg.getRawData()[1];
+    }else{
+        note = -1;
+    }
+    if(continuous || !out || type == 0xC){
+        vel = -1;
+    }else if(type == 0xD){
+        vel = msg.getRawData()[1];
+    }else{
+        vel = msg.getRawData()[2];
+    }
+    if(out && type == 0x8 && vel >= 0) vel = 0;
+}
+
 namespace MIDISystem {
     
+    MIDILearner *learner;
+    
     void HandleMIDIInput(int port, const MidiMessage &message){
+        if(message.isSysEx() || message.isMetaEvent()) return;
+        {
+            LS_LOCK_READ();
+            if(learner){
+                learner->LearnMIDI(port, message);
+                learner = nullptr;
+                return;
+            }
+        }
         //std::cout << "MIDI message received port " << port 
         //    << ": " << message.getDescription() << "\n";
         ControllerSystem::HandleMIDI(port, message);
         if(TimingWindow::tw_static != nullptr) TimingWindow::tw_static->HandleMIDI(port, message);
         //TODO handle by other systems
+    }
+    
+    void LearnMIDIStart(MIDILearner *l){
+        LS_LOCK_WRITE();
+        learner = l;
+    }
+    void LearnMIDIStop(){
+        LS_LOCK_WRITE();
+        learner = nullptr;
     }
     
     struct MIDIInPort {
@@ -245,6 +291,7 @@ namespace MIDISystem {
     static MIDISystemCallback callback;
     
     void Init(){
+        learner = nullptr;
         AddInPort();
         AddOutPort();
     }

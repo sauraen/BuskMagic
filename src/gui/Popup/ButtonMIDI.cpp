@@ -221,6 +221,7 @@ ButtonMIDI::ButtonMIDI (void *data)
 ButtonMIDI::~ButtonMIDI()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
+    MIDISystem::LearnMIDIStop();
     //[/Destructor_pre]
 
     lblOn = nullptr;
@@ -272,16 +273,22 @@ void ButtonMIDI::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == btnLearnOn.get())
     {
         //[UserButtonCode_btnLearnOn] -- add your button handler code here..
+        learntype = MIDISetting::en_on;
+        MIDISystem::LearnMIDIStart(this);
         //[/UserButtonCode_btnLearnOn]
     }
     else if (buttonThatWasClicked == btnLearnOff.get())
     {
         //[UserButtonCode_btnLearnOff] -- add your button handler code here..
+        learntype = MIDISetting::en_off;
+        MIDISystem::LearnMIDIStart(this);
         //[/UserButtonCode_btnLearnOff]
     }
     else if (buttonThatWasClicked == btnLearnToggle.get())
     {
         //[UserButtonCode_btnLearnToggle] -- add your button handler code here..
+        learntype = MIDISetting::en_toggle;
+        MIDISystem::LearnMIDIStart(this);
         //[/UserButtonCode_btnLearnToggle]
     }
     else if (buttonThatWasClicked == btnHelp.get())
@@ -316,6 +323,26 @@ void ButtonMIDI::textEditorTextChanged(TextEditor &editorThatWasChanged)
     TEXTCHANGEDHANDLER_POST;
 }
 
+void ButtonMIDI::LearnMIDI(int port, MidiMessage msg)
+{
+    controller->LearnMIDI(learntype, port, msg);
+    const MessageManagerLock mml(Thread::getCurrentThread());
+    if(!mml.lockWasGained()) return;
+    switch(learntype){
+    case MIDISetting::en_on:
+        txtOn->setText(controller->GetMIDISettingStr(MIDISetting::en_on), dontSendNotification);
+        txtOutOn->setText(controller->GetMIDISettingStr(MIDISetting::en_out_on), dontSendNotification);
+        break;
+    case MIDISetting::en_off:
+        txtOff->setText(controller->GetMIDISettingStr(MIDISetting::en_off), dontSendNotification);
+        txtOutOff->setText(controller->GetMIDISettingStr(MIDISetting::en_out_off), dontSendNotification);
+        break;
+    case MIDISetting::en_toggle:
+        txtToggle->setText(controller->GetMIDISettingStr(MIDISetting::en_toggle), dontSendNotification);
+        break;
+    }
+}
+
 //[/MiscUserCode]
 
 
@@ -329,7 +356,7 @@ void ButtonMIDI::textEditorTextChanged(TextEditor &editorThatWasChanged)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ButtonMIDI" componentName=""
-                 parentClasses="public Component, public TextEditor::Listener"
+                 parentClasses="public Component, public TextEditor::Listener, public MIDILearner"
                  constructorParams="void *data" variableInitialisers="controller((Controller*)data)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="224" initialHeight="120">

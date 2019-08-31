@@ -35,6 +35,8 @@ public:
     int GetValueFrom(MidiMessage msg); //Assumes it matches!
     void SendMsg(int valforcontinuous=-1);
     
+    void Learn(int port_, MidiMessage msg, bool invert);
+    
     enum Type {
         en_on = 0,
         en_off = 1,
@@ -52,6 +54,12 @@ public:
 private:
     bool out, continuous;
     int port, channel, type, note, vel;
+};
+
+class MIDILearner {
+public:
+    virtual ~MIDILearner() {}
+    virtual void LearnMIDI(int port, MidiMessage msg) = 0;
 };
 
 namespace MIDISystem {
@@ -85,4 +93,7 @@ namespace MIDISystem {
     void SendProgChange(int p, int c, int prog);
     void SendChanAftertouch(int p, int c, int a);
     void SendPitchBend(int p, int c, int pb);
+    
+    void LearnMIDIStart(MIDILearner *l);
+    void LearnMIDIStop();
 }
