@@ -22,6 +22,7 @@
 #include "gui/MIDISetup.h"
 #include "gui/Patcher.h"
 #include "gui/ControllerWindow.h"
+#include "gui/TimingWindow.h"
 
 #include "ArtNetSystem.h"
 #include "MIDISystem.h"
@@ -77,7 +78,8 @@ private:
 };
 
 namespace {
-    std::unique_ptr<SubWindow> artnetWindow, midiWindow, patcherWindow, controllersWindow;
+    std::unique_ptr<SubWindow> artnetWindow, midiWindow, patcherWindow, 
+        controllersWindow, timingWindow;
 }
 
 MainWindow::MainWindow() 
@@ -105,6 +107,7 @@ MainWindow::MainWindow()
     midiWindow.reset(new SubWindow("BuskMagic - MIDI Setup", false, new MIDISetup()));
     patcherWindow.reset(new SubWindow("BuskMagic - Patcher", false, new Patcher()));
     controllersWindow.reset(new SubWindow("BuskMagic - Controllers", true, new ControllerWindow()));
+    timingWindow.reset(new SubWindow("BuskMagic - Timing (Tempo)", false, new TimingWindow()));
 }
 
 MainWindow::~MainWindow() {
@@ -114,6 +117,7 @@ MainWindow::~MainWindow() {
     midiWindow = nullptr;
     patcherWindow = nullptr;
     controllersWindow = nullptr;
+    timingWindow = nullptr;
     //Application finalize
     LightingSystem::Finalize();
     TimingSystem::Finalize();
@@ -148,7 +152,7 @@ PopupMenu MainMenus::getMenuForIndex(int topLevelMenuIndex, const String &menuNa
     }else if(topLevelMenuIndex == 2){
         PopupMenu menu;
         menu.addItem(0x3000, "Controllers...");
-        menu.addItem(0x3001, "Tempo...");
+        menu.addItem(0x3001, "Timing (Tempo)...");
         return menu;
     }else{
         PopupMenu menu;
@@ -185,7 +189,7 @@ void MainMenus::menuItemSelected(int menuItemID, int topLevelMenuIndex){
         controllersWindow->show();
         break;
     case 0x3001:
-        WarningBox("Tempo system not yet implemented!");
+        timingWindow->show();
         break;
     case 0x9001:
         WarningBox("Menu subsystem error!");

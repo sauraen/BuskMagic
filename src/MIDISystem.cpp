@@ -19,6 +19,7 @@
 #include "MIDISystem.h"
 
 #include "ControllerSystem.h"
+#include "gui/TimingWindow.h"
 
 #include <vector>
 
@@ -215,6 +216,7 @@ namespace MIDISystem {
         //std::cout << "MIDI message received port " << port 
         //    << ": " << message.getDescription() << "\n";
         ControllerSystem::HandleMIDI(port, message);
+        if(TimingWindow::tw_static != nullptr) TimingWindow::tw_static->HandleMIDI(port, message);
         //TODO handle by other systems
     }
     

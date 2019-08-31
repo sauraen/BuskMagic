@@ -18,18 +18,41 @@
 */
 
 //[Headers] You can add your own extra header files here...
+/*
+* BuskMagic - Live lighting control system
+* Copyright (C) 2019 Sauraen
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#include "TimingSystem.h"
+
 //[/Headers]
 
 #include "TimingWindow.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
+TimingWindow *TimingWindow::tw_static = nullptr;
 //[/MiscUserDefs]
 
 //==============================================================================
 TimingWindow::TimingWindow ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    jassert(tw_static == nullptr);
+    tw_static = this;
     //[/Constructor_pre]
 
     lblTapBeat.reset (new Label ("lblTapBeat",
@@ -54,27 +77,27 @@ TimingWindow::TimingWindow ()
 
     lblTapMeasure->setBounds (72, 56, 96, 24);
 
-    lblTapDouble.reset (new Label ("lblTapBeat",
-                                   TRANS("x2")));
-    addAndMakeVisible (lblTapDouble.get());
-    lblTapDouble->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblTapDouble->setJustificationType (Justification::centred);
-    lblTapDouble->setEditable (false, false, false);
-    lblTapDouble->setColour (TextEditor::textColourId, Colours::black);
-    lblTapDouble->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    lblDouble.reset (new Label ("lblDouble",
+                                TRANS("x2")));
+    addAndMakeVisible (lblDouble.get());
+    lblDouble->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lblDouble->setJustificationType (Justification::centred);
+    lblDouble->setEditable (false, false, false);
+    lblDouble->setColour (TextEditor::textColourId, Colours::black);
+    lblDouble->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblTapDouble->setBounds (8, 136, 64, 24);
+    lblDouble->setBounds (8, 136, 64, 24);
 
-    lblTapHalf.reset (new Label ("lblTapHalf",
-                                 TRANS("/2")));
-    addAndMakeVisible (lblTapHalf.get());
-    lblTapHalf->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblTapHalf->setJustificationType (Justification::centred);
-    lblTapHalf->setEditable (false, false, false);
-    lblTapHalf->setColour (TextEditor::textColourId, Colours::black);
-    lblTapHalf->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    lblHalf.reset (new Label ("lblHalf",
+                              TRANS("/2")));
+    addAndMakeVisible (lblHalf.get());
+    lblHalf->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lblHalf->setJustificationType (Justification::centred);
+    lblHalf->setEditable (false, false, false);
+    lblHalf->setColour (TextEditor::textColourId, Colours::black);
+    lblHalf->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblTapHalf->setBounds (88, 136, 64, 24);
+    lblHalf->setBounds (88, 136, 64, 24);
 
     lblTempo.reset (new Label ("lblTempo",
                                TRANS("Tempo:")));
@@ -87,17 +110,17 @@ TimingWindow::TimingWindow ()
 
     lblTempo->setBounds (168, 16, 56, 24);
 
-    textEditor.reset (new TextEditor ("new text editor"));
-    addAndMakeVisible (textEditor.get());
-    textEditor->setMultiLine (false);
-    textEditor->setReturnKeyStartsNewLine (false);
-    textEditor->setReadOnly (false);
-    textEditor->setScrollbarsShown (true);
-    textEditor->setCaretVisible (true);
-    textEditor->setPopupMenuEnabled (true);
-    textEditor->setText (TRANS("123.456"));
+    txtBPM.reset (new TextEditor ("txtBPM"));
+    addAndMakeVisible (txtBPM.get());
+    txtBPM->setMultiLine (false);
+    txtBPM->setReturnKeyStartsNewLine (false);
+    txtBPM->setReadOnly (false);
+    txtBPM->setScrollbarsShown (true);
+    txtBPM->setCaretVisible (true);
+    txtBPM->setPopupMenuEnabled (true);
+    txtBPM->setText (TRANS("123.456"));
 
-    textEditor->setBounds (224, 16, 56, 24);
+    txtBPM->setBounds (224, 16, 56, 24);
 
     lblMeasure.reset (new Label ("lblMeasure",
                                  TRANS("Measure:")));
@@ -121,37 +144,61 @@ TimingWindow::TimingWindow ()
 
     lblBPM->setBounds (280, 16, 40, 24);
 
-    textEditor2.reset (new TextEditor ("new text editor"));
-    addAndMakeVisible (textEditor2.get());
-    textEditor2->setMultiLine (false);
-    textEditor2->setReturnKeyStartsNewLine (false);
-    textEditor2->setReadOnly (false);
-    textEditor2->setScrollbarsShown (true);
-    textEditor2->setCaretVisible (true);
-    textEditor2->setPopupMenuEnabled (true);
-    textEditor2->setText (TRANS("16"));
+    txtMeasureLen.reset (new TextEditor ("txtMeasureLen"));
+    addAndMakeVisible (txtMeasureLen.get());
+    txtMeasureLen->setMultiLine (false);
+    txtMeasureLen->setReturnKeyStartsNewLine (false);
+    txtMeasureLen->setReadOnly (false);
+    txtMeasureLen->setScrollbarsShown (true);
+    txtMeasureLen->setCaretVisible (true);
+    txtMeasureLen->setPopupMenuEnabled (true);
+    txtMeasureLen->setText (TRANS("16"));
 
-    textEditor2->setBounds (240, 40, 24, 24);
+    txtMeasureLen->setBounds (240, 40, 24, 24);
 
-    label.reset (new Label ("new label",
-                            TRANS("beats")));
-    addAndMakeVisible (label.get());
-    label->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    label->setJustificationType (Justification::centredLeft);
-    label->setEditable (false, false, false);
-    label->setColour (TextEditor::textColourId, Colours::black);
-    label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    lblBeats.reset (new Label ("lblBeats",
+                               TRANS("beats")));
+    addAndMakeVisible (lblBeats.get());
+    lblBeats->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lblBeats->setJustificationType (Justification::centredLeft);
+    lblBeats->setEditable (false, false, false);
+    lblBeats->setColour (TextEditor::textColourId, Colours::black);
+    lblBeats->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    label->setBounds (264, 40, 56, 24);
+    lblBeats->setBounds (264, 40, 56, 24);
 
 
     //[UserPreSize]
+
+    trgTapBeat.reset(new TriggerButton(this));
+    addAndMakeVisible(trgTapBeat.get());
+    trgTapBeat->setTopLeftPosition(16, 16);
+
+    trgTapMeasure.reset(new TriggerButton(this));
+    addAndMakeVisible(trgTapMeasure.get());
+    trgTapMeasure->setTopLeftPosition(96, 16);
+
+    trgDouble.reset(new TriggerButton(this));
+    addAndMakeVisible(trgDouble.get());
+    trgDouble->setTopLeftPosition(16, 96);
+
+    trgHalf.reset(new TriggerButton(this));
+    addAndMakeVisible(trgHalf.get());
+    trgHalf->setTopLeftPosition(96, 96);
+    
+    txtBPM->addListener(this);
+    txtMeasureLen->addListener(this);
+
     //[/UserPreSize]
 
     setSize (328, 160);
 
 
     //[Constructor] You can add your own custom stuff here..
+
+    txtBPM->setText(String(TimingSystem::GetTempo(), 3), dontSendNotification);
+    txtMeasureLen->setText(String(TimingSystem::GetBeatsPerMeasure()), dontSendNotification);
+
     //[/Constructor]
 }
 
@@ -162,17 +209,18 @@ TimingWindow::~TimingWindow()
 
     lblTapBeat = nullptr;
     lblTapMeasure = nullptr;
-    lblTapDouble = nullptr;
-    lblTapHalf = nullptr;
+    lblDouble = nullptr;
+    lblHalf = nullptr;
     lblTempo = nullptr;
-    textEditor = nullptr;
+    txtBPM = nullptr;
     lblMeasure = nullptr;
     lblBPM = nullptr;
-    textEditor2 = nullptr;
-    label = nullptr;
+    txtMeasureLen = nullptr;
+    lblBeats = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
+    tw_static = nullptr;
     //[/Destructor]
 }
 
@@ -183,42 +231,6 @@ void TimingWindow::paint (Graphics& g)
     //[/UserPrePaint]
 
     g.fillAll (Colour (0xff323e44));
-
-    {
-        int x = 16, y = 16, width = 48, height = 32;
-        Colour fillColour = Colour (0xffa5792a);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 96, y = 16, width = 48, height = 32;
-        Colour fillColour = Colour (0xffa5792a);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 16, y = 96, width = 48, height = 32;
-        Colour fillColour = Colour (0xffa5792a);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 96, y = 96, width = 48, height = 32;
-        Colour fillColour = Colour (0xffa5792a);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -236,6 +248,42 @@ void TimingWindow::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void TimingWindow::buttonClicked(Button *buttonThatWasClicked){
+    std::cout << "button press\n";
+    if(buttonThatWasClicked == trgTapBeat.get()){
+        TimingSystem::TapBeat();
+    }else if(buttonThatWasClicked == trgTapMeasure.get()){
+        TimingSystem::TapMeasure();
+    }else if(buttonThatWasClicked == trgDouble.get()){
+        txtMeasureLen->setText(String(TimingSystem::GetBeatsPerMeasure()), dontSendNotification);
+        TimingSystem::SetTempo(2.0f * TimingSystem::GetTempo());
+    }else if(buttonThatWasClicked == trgHalf.get()){
+        TimingSystem::SetTempo(0.5f * TimingSystem::GetTempo());
+    }
+    txtBPM->setText(String(TimingSystem::GetTempo(), 3), dontSendNotification);
+}
+
+void TimingWindow::textEditorTextChanged(TextEditor &editorThatWasChanged){
+    TEXTCHANGEDHANDLER_PRE;
+    if(&editorThatWasChanged == txtBPM.get()){
+        if(!isdec || decval < 0.1f || decval > 500.0f) turnRed = true;
+        else TimingSystem::SetTempo(decval);
+    }else if(&editorThatWasChanged == txtMeasureLen.get()){
+        if(!isint || val <= 0) turnRed = true;
+        else TimingSystem::SetBeatsPerMeasure(val);
+    }
+    TEXTCHANGEDHANDLER_POST;
+}
+
+void TimingWindow::HandleMIDI(int port, MidiMessage msg){
+    trgTapBeat->HandleMIDI(port, msg);
+    trgTapMeasure->HandleMIDI(port, msg);
+    trgDouble->HandleMIDI(port, msg);
+    trgHalf->HandleMIDI(port, msg);
+}
+
+
 //[/MiscUserCode]
 
 
@@ -249,15 +297,11 @@ void TimingWindow::resized()
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="TimingWindow" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="328" initialHeight="160">
-  <BACKGROUND backgroundColour="ff323e44">
-    <RECT pos="16 16 48 32" fill="solid: ffa5792a" hasStroke="0"/>
-    <RECT pos="96 16 48 32" fill="solid: ffa5792a" hasStroke="0"/>
-    <RECT pos="16 96 48 32" fill="solid: ffa5792a" hasStroke="0"/>
-    <RECT pos="96 96 48 32" fill="solid: ffa5792a" hasStroke="0"/>
-  </BACKGROUND>
+                 parentClasses="public Component, public Button::Listener, public TextEditor::Listener"
+                 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
+                 snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="328"
+                 initialHeight="160">
+  <BACKGROUND backgroundColour="ff323e44"/>
   <LABEL name="lblTapBeat" id="b060ed39fd586d60" memberName="lblTapBeat"
          virtualName="" explicitFocusOrder="0" pos="8 56 64 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Tap Beat" editableSingleClick="0" editableDoubleClick="0"
@@ -268,13 +312,13 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="Tap Measure" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="lblTapBeat" id="36f9e9bd24dc7f2e" memberName="lblTapDouble"
+  <LABEL name="lblDouble" id="36f9e9bd24dc7f2e" memberName="lblDouble"
          virtualName="" explicitFocusOrder="0" pos="8 136 64 24" edTextCol="ff000000"
          edBkgCol="0" labelText="x2" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="36"/>
-  <LABEL name="lblTapHalf" id="a655a61b87d5cf52" memberName="lblTapHalf"
-         virtualName="" explicitFocusOrder="0" pos="88 136 64 24" edTextCol="ff000000"
+  <LABEL name="lblHalf" id="a655a61b87d5cf52" memberName="lblHalf" virtualName=""
+         explicitFocusOrder="0" pos="88 136 64 24" edTextCol="ff000000"
          edBkgCol="0" labelText="/2" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="36"/>
@@ -283,8 +327,8 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="Tempo:" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="new text editor" id="37e3bc569d4b8cc" memberName="textEditor"
-              virtualName="" explicitFocusOrder="0" pos="224 16 56 24" initialText="123.456"
+  <TEXTEDITOR name="txtBPM" id="37e3bc569d4b8cc" memberName="txtBPM" virtualName=""
+              explicitFocusOrder="0" pos="224 16 56 24" initialText="123.456"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
   <LABEL name="lblMeasure" id="67af052245673552" memberName="lblMeasure"
@@ -297,11 +341,11 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="BPM" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
-  <TEXTEDITOR name="new text editor" id="a58c3c5dac9fca7e" memberName="textEditor2"
+  <TEXTEDITOR name="txtMeasureLen" id="a58c3c5dac9fca7e" memberName="txtMeasureLen"
               virtualName="" explicitFocusOrder="0" pos="240 40 24 24" initialText="16"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
-  <LABEL name="new label" id="4e4054d3038cc2b1" memberName="label" virtualName=""
+  <LABEL name="lblBeats" id="4e4054d3038cc2b1" memberName="lblBeats" virtualName=""
          explicitFocusOrder="0" pos="264 40 56 24" edTextCol="ff000000"
          edBkgCol="0" labelText="beats" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
@@ -315,4 +359,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

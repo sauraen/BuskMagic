@@ -22,11 +22,12 @@
 #include "LightingSystem.h"
 
 TriggerButton::TriggerButton(Button::Listener *l) : parent(l) {
+    addListener(l);
     SetColor(Colours::red);
     setTriggeredOnMouseDown(true);
-    midisettings.add(new MIDISetting(false, false)); //en_on
-    midisettings.add(new MIDISetting(true,  false)); //en_out_on
-    midisettings.add(new MIDISetting(true,  false)); //en_out_off
+    midisettings.add(new MIDISetting(false, false)); //tr_trigger - tr_trigger
+    midisettings.add(new MIDISetting(true,  false)); //tr_out_on - tr_trigger
+    midisettings.add(new MIDISetting(true,  false)); //tr_out_off - tr_trigger
 }
 
 void TriggerButton::mouseDown(const MouseEvent &event) {
@@ -34,14 +35,15 @@ void TriggerButton::mouseDown(const MouseEvent &event) {
         Point<int> mouse = getMouseXYRelative();
         popup.show<TriggerMIDI>(mouse.x + getScreenX(), mouse.y + getScreenY(), this);
     }else{
-        TriggeredInternal();
         SynthButton::mouseDown(event); //This calls Listener::buttonClicked()
+        TriggeredInternal();
     }
 }
 
 void TriggerButton::HandleMIDI(int port, MidiMessage msg){
     LS_LOCK_READ();
     if(midisettings[MIDISetting::tr_trig-MIDISetting::tr_trig]->Matches(port, msg)){
+        triggerClick();
         TriggeredInternal();
     }
 }
@@ -69,6 +71,6 @@ void TriggerButton::timerCallback(){
 }
 void TriggerButton::TriggeredInternal(){
     setToggleState(true, dontSendNotification);
-    midisettings[MIDISetting::en_out_on-MIDISetting::tr_trig]->SendMsg();
+    midisettings[MIDISetting::tr_out_on-MIDISetting::tr_trig]->SendMsg();
     startTimer(100);
 }
