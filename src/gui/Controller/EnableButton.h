@@ -30,7 +30,7 @@ class EnableButton : public SynthButton
 public:
     EnableButton(Controller *c) : controller(c) {
         SetColor(controller->GetColor());
-        setToggleState(controller->IsEnabled(), dontSendNotification);
+        setToggleState(controller->IsEnabledDisplay(), dontSendNotification);
         setTriggeredOnMouseDown(false);
     }
 
@@ -40,7 +40,7 @@ public:
     
     void paint(Graphics &g) override {
         SetColor(controller->GetColor());
-        setToggleState(controller->IsEnabled(), dontSendNotification);
+        setToggleState(controller->IsEnabledDisplay(), dontSendNotification);
         SynthButton::paint(g);
     }
     
@@ -56,7 +56,7 @@ public:
     void mouseUp(const MouseEvent &event) override {
         if(!isRightClick(event) && event.mods.isLeftButtonDown()){
             setToggleState(!getToggleState(), dontSendNotification);
-            controller->SetEnabled(getToggleState());
+            controller->SetEnabledDisplay(getToggleState());
         }else{
             SynthButton::mouseUp(event);
         }

@@ -178,7 +178,7 @@ float Channel::Evaluate(float angle) const {
                   (op == OpPrioTop ? (i<phasors.size()) : (i>=0)); 
                   (op == OpPrioTop ? ++i : --i)){
             Controller *c = phasors[i]->src;
-            if(c->IsEnabled()){
+            if(c->IsEnabledStage()){
                 return EVALCHN();
             }
         }
@@ -189,7 +189,7 @@ float Channel::Evaluate(float angle) const {
         val = 0.0f; //doesn't matter
         for(int i=0; i<phasors.size(); ++i){
             Controller *c = phasors[i]->src;
-            if(c->IsEnabled()){
+            if(c->IsEnabledStage()){
                 float v = EVALCHN();
                 if(!flag || (op == OpPrioMax ? (v > val) : (v < val))){
                     flag = true;
@@ -204,7 +204,7 @@ float Channel::Evaluate(float angle) const {
         val = defaultvalue;
         for(int i=0; i<phasors.size(); ++i){
             Controller *c = phasors[i]->src;
-            if(c->IsEnabled()){
+            if(c->IsEnabledStage()){
                 float v = EVALCHN();
                 if(op == OpPrioMax ? (v > val) : (v < val)){
                     val = v;
@@ -218,7 +218,7 @@ float Channel::Evaluate(float angle) const {
         val = op == OpAdd ? 0.0f : 1.0f;
         for(int i=0; i<phasors.size(); ++i){
             Controller *c = phasors[i]->src;
-            if(c->IsEnabled()){
+            if(c->IsEnabledStage()){
                 flag = true;
                 float v = EVALCHN();
                 if(op == OpAdd){

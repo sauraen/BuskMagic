@@ -73,9 +73,14 @@ public:
     inline Colour GetGroupColor() const { return groupColor; }
     void SetGroupColor(Colour col);
 
-    inline bool IsEnabled() const { return enabled; }
-    void SetEnabled(bool en);
-
+    bool IsEnabledStage() const;
+    bool IsEnabledDisplay() const;
+    void SetEnabledDisplay(bool en);
+    
+    virtual void DisplayStateChanged();
+    virtual void NumStatesChanged();
+    virtual void CopyState(int dst, int src);
+    
     virtual void HandleMIDI(int port, MidiMessage msg);
     virtual String GetMIDISettingStr(MIDISetting::Type type);
     virtual bool SetMIDISettingFromStr(MIDISetting::Type type, String str);
@@ -87,7 +92,7 @@ public:
     ControllerCanvas *GetCanvas();
 
     virtual void RemoveAllMagicValuesForChannel(const Channel *chn) = 0;
-
+    
 protected:
     String name;
     
@@ -101,7 +106,7 @@ private:
     int group;
     Colour color, groupColor;
 
-    bool enabled;
+    Array<bool> states_enabled;
 
     ControllerCmp *component;
 };
@@ -132,8 +137,12 @@ public:
     virtual Controller *clone() const override;
     String GetClassType() override { return "Continuous"; }
 
-    inline float GetKnob() { return knob; }
-    void SetKnob(float k);
+    float GetKnobDisplay();
+    void SetKnobDisplay(float k);
+    
+    virtual void DisplayStateChanged() override;
+    virtual void NumStatesChanged() override;
+    virtual void CopyState(int dst, int src) override;
 
     inline MagicValue *GetLoValue() { return &lovalue; }
     inline MagicValue *GetHiValue() { return &hivalue; }
@@ -148,7 +157,7 @@ public:
     virtual void RemoveAllMagicValuesForChannel(const Channel *chn) override;
 private:
     MagicValue lovalue, hivalue;
-    float knob;
+    Array<float> states_knob;
 };
 
 class ModulatorController : public Controller {
@@ -184,6 +193,9 @@ private:
 
 namespace ControllerSystem {
 
+    void Init();
+    void Finalize();
+    
     int NumControllers();
     Controller *GetController(int i);
     template<class CTRLR> CTRLR *AddController();
@@ -194,4 +206,14 @@ namespace ControllerSystem {
     void RemoveAllMagicValuesForChannel(const Channel *chn);
 
     void HandleMIDI(int port, MidiMessage msg);
+    
+    int NumStates();
+    void AddState();
+    void RemoveState();
+    void CopyState(int dst, int src);
+    
+    int GetStageState();
+    int GetDisplayState();
+    void ActivateState(int s);
+    void BlindState(int s);
 }

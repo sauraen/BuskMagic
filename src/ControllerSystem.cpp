@@ -60,8 +60,11 @@ Controller::Controller()
     : pos(0,0), nostate(false),
       name("New Controller Blah blah"), group(0),
       color(Colours::red), groupColor(Colours::lightgrey),
-      enabled(false), component(nullptr)
+      component(nullptr)
 {
+    for(int i=0; i<ControllerSystem::NumStates(); ++i){
+        states_enabled.add(false);
+    }
     midisettings.add(new MIDISetting(false, false)); //en_on
     midisettings.add(new MIDISetting(false, false)); //en_off
     midisettings.add(new MIDISetting(false, false)); //en_toggle
@@ -74,7 +77,7 @@ Controller::Controller(const Controller &other)
     : pos(other.pos + Point<int>(100,100)), nostate(other.nostate),
       name(other.name + " 2"), group(other.group),
       color(other.color), groupColor(other.groupColor),
-      enabled(false), component(nullptr)
+      states_enabled(other.states_enabled), component(nullptr)
 {
     for(int i=0; i<other.midisettings.size(); ++i){
         midisettings.add(new MIDISetting(*other.midisettings[i]));
@@ -129,19 +132,29 @@ void Controller::SetGroupColor(Colour col){
     }
 }
 
-void Controller::SetEnabled(bool en){
+bool Controller::IsEnabledStage() const{
     LS_LOCK_READ();
-    if(enabled == en) return;
-    enabled = en;
-    if(enabled){
+    return states_enabled[ControllerSystem::GetStageState()];
+}
+bool Controller::IsEnabledDisplay() const{
+    LS_LOCK_READ();
+    return states_enabled[ControllerSystem::GetDisplayState()];
+}
+
+void Controller::SetEnabledDisplay(bool en){
+    LS_LOCK_READ();
+    int ds = ControllerSystem::GetDisplayState();
+    if(states_enabled[ds] == en) return;
+    states_enabled.set(ds, en);
+    if(en){
         midisettings[MIDISetting::en_out_on]->SendMsg();
         if(group > 0){
             for(int i=0; i<ControllerSystem::NumControllers(); ++i){
                 Controller *ctrlr = ControllerSystem::GetController(i);
                 if(ctrlr == this) continue;
                 if(ctrlr->group != group) continue;
-                if(!ctrlr->IsEnabled()) continue;
-                ctrlr->SetEnabled(false);
+                if(!ctrlr->IsEnabledDisplay()) continue;
+                ctrlr->SetEnabledDisplay(false);
                 ctrlr->RefreshComponent();
             }
         }
@@ -151,14 +164,34 @@ void Controller::SetEnabled(bool en){
     RefreshComponent();
 }
 
+void Controller::DisplayStateChanged(){
+    LS_LOCK_READ();
+    if(states_enabled[ControllerSystem::GetDisplayState()]){
+        midisettings[MIDISetting::en_out_on]->SendMsg();
+    }else{
+        midisettings[MIDISetting::en_out_off]->SendMsg();
+    }
+    RefreshComponent();
+}
+void Controller::NumStatesChanged(){
+    LS_LOCK_READ();
+    int ns = ControllerSystem::NumStates();
+    while(states_enabled.size() > ns) states_enabled.remove(states_enabled.size()-1);
+    while(states_enabled.size() < ns) states_enabled.add(false);
+}
+void Controller::CopyState(int dst, int src){
+    LS_LOCK_READ();
+    states_enabled.set(dst, states_enabled[src]);
+}
+
 void Controller::HandleMIDI(int port, MidiMessage msg){
     LS_LOCK_READ();
     if(midisettings[MIDISetting::en_on]->Matches(port, msg)){
-        SetEnabled(true);
+        SetEnabledDisplay(true);
     }else if(midisettings[MIDISetting::en_off]->Matches(port, msg)){
-        SetEnabled(false);
+        SetEnabledDisplay(false);
     }else if(midisettings[MIDISetting::en_toggle]->Matches(port, msg)){
-        SetEnabled(!enabled);
+        SetEnabledDisplay(!states_enabled[ControllerSystem::GetDisplayState()]);
     }
 }
 
@@ -238,7 +271,10 @@ void SimpleController::RemoveAllMagicValuesForChannel(const Channel *chn){
 
 ContinuousController::ContinuousController()
     : Controller(),
-    lovalue(this), hivalue(this, 1.0f), knob(0.0f) {
+    lovalue(this), hivalue(this, 1.0f) {
+    for(int i=0; i<ControllerSystem::NumStates(); ++i){
+        states_knob.add(0.0f);
+    }
     name = "Continuous Controller";
     midisettings.add(new MIDISetting(false, true )); //ct_in
     midisettings.add(new MIDISetting(false, false)); //ct_goto_lo
@@ -249,32 +285,51 @@ ContinuousController::ContinuousController()
 ContinuousController::~ContinuousController() {}
 ContinuousController::ContinuousController(const ContinuousController &other)
     : Controller(other), lovalue(other.lovalue, this),
-      hivalue(other.hivalue, this), knob(other.knob) {}
+      hivalue(other.hivalue, this), states_knob(other.states_knob) {}
 Controller *ContinuousController::clone() const{
     return new ContinuousController(*this);
 }
 
-void ContinuousController::SetKnob(float k){
-    LS_LOCK_WRITE();
-    knob = k;
-    midisettings[MIDISetting::ct_out]->SendMsg((int)(knob * 127.0f));
+float ContinuousController::GetKnobDisplay(){
+    LS_LOCK_READ();
+    return states_knob[ControllerSystem::GetDisplayState()];
+}
+void ContinuousController::SetKnobDisplay(float k){
+    LS_LOCK_READ();
+    jassert(k >= 0.0f && k <= 1.0f);
+    states_knob.set(ControllerSystem::GetDisplayState(), k);
+    midisettings[MIDISetting::ct_out]->SendMsg((int)(k * 127.0f));
+}
+
+void ContinuousController::DisplayStateChanged(){
+    LS_LOCK_READ();
+    midisettings[MIDISetting::ct_out]->SendMsg((int)(ControllerSystem::GetDisplayState() * 127.0f));
+    Controller::DisplayStateChanged(); //Calls RefreshComponent()
+}
+void ContinuousController::NumStatesChanged(){
+    LS_LOCK_READ();
+    Controller::NumStatesChanged();
+    int ns = ControllerSystem::NumStates();
+    while(states_knob.size() > ns) states_knob.remove(states_knob.size()-1);
+    while(states_knob.size() < ns) states_knob.add(0.0f);
+}
+void ContinuousController::CopyState(int dst, int src){
+    LS_LOCK_READ();
+    Controller::CopyState(dst, src);
+    states_knob.set(dst, states_knob[src]);
 }
 
 void ContinuousController::HandleMIDI(int port, MidiMessage msg) {
     LS_LOCK_READ();
     Controller::HandleMIDI(port, msg);
     if(midisettings[MIDISetting::ct_in]->Matches(port, msg)){
-        knob = (float)midisettings[MIDISetting::ct_in]->GetValueFrom(msg) / 127.0f;
-        jassert(knob >= 0.0f && knob <= 1.0f);
-        midisettings[MIDISetting::ct_out]->SendMsg((int)(knob * 127.0f));
+        SetKnobDisplay((float)midisettings[MIDISetting::ct_in]->GetValueFrom(msg) / 127.0f);
         RefreshComponent();
     }else if(midisettings[MIDISetting::ct_goto_lo]->Matches(port, msg)){
-        knob = 0.0f;
-        midisettings[MIDISetting::ct_out]->SendMsg(0);
+        SetKnobDisplay(0.0f);
         RefreshComponent();
     }else if(midisettings[MIDISetting::ct_goto_hi]->Matches(port, msg)){
-        knob = 1.0f;
-        midisettings[MIDISetting::ct_out]->SendMsg(127);
+        SetKnobDisplay(1.0f);
         RefreshComponent();
     }
 }
@@ -316,7 +371,8 @@ float ContinuousController::Evaluate(float angle) const {
     //LS_LOCK_READ(); //Not locking because channel evaluation will lock
     float l = lovalue.Evaluate(angle);
     float h = hivalue.Evaluate(angle);
-    return (l * (1.0f - knob)) + (h * knob);
+    float k = states_knob[ControllerSystem::GetStageState()];
+    return (l * (1.0f - k)) + (h * k);
 }
 
 void ContinuousController::RemoveAllMagicValuesForChannel(const Channel *chn){
@@ -463,5 +519,65 @@ namespace ControllerSystem {
             ctrlrs[i]->HandleMIDI(port, msg);
         }
     }
+    
+    int nstates;
+    int dstate, sstate;
+    
+    void Init(){
+        nstates = 10;
+        dstate = sstate = 0;
+    }
+    void Finalize(){
+        //
+    }
+    
+    int NumStates(){
+        return nstates;
+    }
+    void AddState(){
+        LS_LOCK_WRITE();
+        ++nstates;
+        for(int i=0; i<ctrlrs.size(); ++i){
+            ctrlrs[i]->NumStatesChanged();
+        }
+    }
+    void RemoveState(){
+        LS_LOCK_WRITE();
+        if(nstates == 1) return;
+        --nstates;
+        for(int i=0; i<ctrlrs.size(); ++i){
+            ctrlrs[i]->NumStatesChanged();
+        }
+    }
+    void CopyState(int dst, int src){
+        LS_LOCK_READ();
+        if(dst < 0 || src < 0 || dst >= nstates || src >= nstates){
+            jassertfalse;
+            return;
+        }
+        for(int i=0; i<ctrlrs.size(); ++i){
+            ctrlrs[i]->CopyState(dst, src);
+        }
+    }
 
+    int GetStageState(){
+        return sstate;
+    }
+    int GetDisplayState(){
+        return dstate;
+    }
+    void ActivateState(int s){
+        LS_LOCK_READ();
+        dstate = sstate = s;
+        for(int i=0; i<ctrlrs.size(); ++i){
+            ctrlrs[i]->DisplayStateChanged();
+        }
+    }
+    void BlindState(int s){
+        LS_LOCK_READ();
+        dstate = s;
+        for(int i=0; i<ctrlrs.size(); ++i){
+            ctrlrs[i]->DisplayStateChanged();
+        }
+    }
 }

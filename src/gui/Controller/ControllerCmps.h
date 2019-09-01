@@ -126,7 +126,7 @@ public:
 
     void sliderValueChanged(Slider *slider) override {
         if(slider == knob.get()){
-            ccontroller->SetKnob(knob->getValue());
+            ccontroller->SetKnobDisplay(knob->getValue());
         }
     }
 

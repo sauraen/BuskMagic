@@ -34,7 +34,7 @@ public:
         setVelocityBasedMode(false);
         setRange(0.0, 1.0, 0.0);
         setSize(64, 64);
-        setValue(ccontroller->GetKnob(), dontSendNotification);
+        setValue(ccontroller->GetKnobDisplay(), dontSendNotification);
     }
 
     ~CCKnob(){
@@ -42,7 +42,7 @@ public:
     }
     
     void paint(Graphics &g) override {
-        setValue(ccontroller->GetKnob(), dontSendNotification);
+        setValue(ccontroller->GetKnobDisplay(), dontSendNotification);
         Slider::paint(g);
     }
     
