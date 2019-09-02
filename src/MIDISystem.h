@@ -37,6 +37,7 @@ public:
     
     void Learn(int port_, MidiMessage msg, bool invert);
     
+    /*
     enum Type {
         en_on = 0,
         en_off = 1,
@@ -51,15 +52,55 @@ public:
         tr_out_on = 10,
         tr_out_off = 11
     };
+    */
 private:
     bool out, continuous;
     int port, channel, type, note, vel;
 };
 
-class MIDILearner {
+class MIDIUser {
 public:
-    virtual ~MIDILearner() {}
-    virtual void LearnMIDI(int port, MidiMessage msg) = 0;
+    MIDIUser();
+    virtual ~MIDIUser();
+    MIDIUser(const MIDIUser &other);
+    
+    class Refreshable {
+    public:
+        ~Refreshable() {}
+        void RefreshAfterMIDILearn() = 0;
+    };
+    
+    enum ActionType {
+        out_val,
+        out_on,
+        out_off,
+        in_val,
+        in_on,
+        in_off,
+        in_toggle,
+        in_trigger,
+        in_goto_hi,
+        in_goto_lo,
+        ActionType_SIZE
+    };
+    inline static bool IsOutput(ActionType t) { return t <= out_off; }
+    inline static bool IsContinuous(ActionType t) { return t == out_val || t == in_val; }
+    
+    void AddMIDIAction(ActionType t);
+    String GetMIDISettingStr(ActionType t);
+    bool SetMIDISettingFromStr(ActionType t, String str);
+    
+    virtual void ReceivedMIDIAction(ActionType t, int val) = 0;
+    void SendMIDIAction(ActionType t, int val = 0);
+    
+    void HandleMIDI(int port, MidiMessage msg);
+    void LearnMIDIStart(ActionType t, Refreshable *ref);
+    void LearnMIDI(int port, MidiMessage msg);
+    
+private:
+    Array<MIDISetting*> settings;
+    ActionType learn_target;
+    Refreshable *refreshable;
 };
 
 namespace MIDISystem {
@@ -94,6 +135,6 @@ namespace MIDISystem {
     void SendChanAftertouch(int p, int c, int a);
     void SendPitchBend(int p, int c, int pb);
     
-    void LearnMIDIStart(MIDILearner *l);
+    void LearnMIDIStart(MIDIUser *u);
     void LearnMIDIStop();
 }

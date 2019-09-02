@@ -66,6 +66,8 @@
         <FILE id="TbwUaF" name="FixtureEditor.cpp" compile="1" resource="0"
               file="src/gui/FixtureEditor.cpp"/>
         <FILE id="vS6c7t" name="FixtureEditor.h" compile="0" resource="0" file="src/gui/FixtureEditor.h"/>
+        <FILE id="YHdX2F" name="HoldButton.cpp" compile="1" resource="0" file="src/gui/HoldButton.cpp"/>
+        <FILE id="FQ0pPd" name="HoldButton.h" compile="0" resource="0" file="src/gui/HoldButton.h"/>
         <FILE id="mhTPfA" name="MagicValueBox.h" compile="0" resource="0" file="src/gui/MagicValueBox.h"/>
         <FILE id="DSgqf7" name="MatrixEditor.cpp" compile="1" resource="0"
               file="src/gui/MatrixEditor.cpp"/>
@@ -74,6 +76,9 @@
         <FILE id="mYeBXE" name="MIDISetup.h" compile="0" resource="0" file="src/gui/MIDISetup.h"/>
         <FILE id="owp8Tw" name="Patcher.cpp" compile="1" resource="0" file="src/gui/Patcher.cpp"/>
         <FILE id="TN16vv" name="Patcher.h" compile="0" resource="0" file="src/gui/Patcher.h"/>
+        <FILE id="HvEcE0" name="StatesWindow.cpp" compile="1" resource="0"
+              file="src/gui/StatesWindow.cpp"/>
+        <FILE id="fPXZCu" name="StatesWindow.h" compile="0" resource="0" file="src/gui/StatesWindow.h"/>
         <FILE id="Z0eqzo" name="StatusBar.cpp" compile="1" resource="0" file="src/gui/StatusBar.cpp"/>
         <FILE id="yrj4Pb" name="StatusBar.h" compile="0" resource="0" file="src/gui/StatusBar.h"/>
         <FILE id="ijfYax" name="SynthButton.h" compile="0" resource="0" file="src/gui/SynthButton.h"/>

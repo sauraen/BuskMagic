@@ -53,7 +53,7 @@ private:
 class ControllerCmp;
 class ControllerCanvas;
 
-class Controller {
+class Controller : public MIDIUser {
 public:
     Controller();
     virtual ~Controller();
@@ -81,10 +81,7 @@ public:
     virtual void NumStatesChanged();
     virtual void CopyState(int dst, int src);
     
-    virtual void HandleMIDI(int port, MidiMessage msg);
-    virtual String GetMIDISettingStr(MIDISetting::Type type);
-    virtual bool SetMIDISettingFromStr(MIDISetting::Type type, String str);
-    virtual void LearnMIDI(MIDISetting::Type type, int port, MidiMessage msg);
+    virtual void ReceivedMIDIAction(ActionType t, int val) override;
 
     virtual float Evaluate(float angle) const = 0;
 
@@ -95,8 +92,6 @@ public:
     
 protected:
     String name;
-    
-    OwnedArray<MIDISetting> midisettings;
 
     void RefreshComponent();
 
@@ -147,10 +142,7 @@ public:
     inline MagicValue *GetLoValue() { return &lovalue; }
     inline MagicValue *GetHiValue() { return &hivalue; }
 
-    virtual void HandleMIDI(int port, MidiMessage msg) override;
-    virtual String GetMIDISettingStr(MIDISetting::Type type) override;
-    virtual bool SetMIDISettingFromStr(MIDISetting::Type, String str) override;
-    virtual void LearnMIDI(MIDISetting::Type type, int port, MidiMessage msg) override;
+    virtual void ReceivedMIDIAction(ActionType t, int val) override;
 
     virtual float Evaluate(float angle) const override;
 

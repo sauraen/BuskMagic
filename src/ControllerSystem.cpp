@@ -65,24 +65,19 @@ Controller::Controller()
     for(int i=0; i<ControllerSystem::NumStates(); ++i){
         states_enabled.add(false);
     }
-    midisettings.add(new MIDISetting(false, false)); //en_on
-    midisettings.add(new MIDISetting(false, false)); //en_off
-    midisettings.add(new MIDISetting(false, false)); //en_toggle
-    midisettings.add(new MIDISetting(true,  false)); //en_out_on
-    midisettings.add(new MIDISetting(true,  false)); //en_out_off
+    AddAction(MIDIUser::in_on);
+    AddAction(MIDIUser::in_off);
+    AddAction(MIDIUser::in_toggle);
+    AddAction(MIDIUser::out_on);
+    AddAction(MIDIUser::out_off);
 }
 
 Controller::~Controller() {}
-Controller::Controller(const Controller &other)
-    : pos(other.pos + Point<int>(100,100)), nostate(other.nostate),
-      name(other.name + " 2"), group(other.group),
-      color(other.color), groupColor(other.groupColor),
-      states_enabled(other.states_enabled), component(nullptr)
-{
-    for(int i=0; i<other.midisettings.size(); ++i){
-        midisettings.add(new MIDISetting(*other.midisettings[i]));
-    }
-}
+Controller::Controller(const Controller &other) : MIDIUser(other),
+    pos(other.pos + Point<int>(100,100)), nostate(other.nostate),
+    name(other.name + " 2"), group(other.group),
+    color(other.color), groupColor(other.groupColor),
+    states_enabled(other.states_enabled), component(nullptr) {}
 
 String Controller::GetName() const{
     LS_LOCK_READ();
@@ -147,7 +142,7 @@ void Controller::SetEnabledDisplay(bool en){
     if(states_enabled[ds] == en) return;
     states_enabled.set(ds, en);
     if(en){
-        midisettings[MIDISetting::en_out_on]->SendMsg();
+        SendMIDIAction(MIDIUser::out_on);
         if(group > 0){
             for(int i=0; i<ControllerSystem::NumControllers(); ++i){
                 Controller *ctrlr = ControllerSystem::GetController(i);
@@ -159,7 +154,7 @@ void Controller::SetEnabledDisplay(bool en){
             }
         }
     }else{
-        midisettings[MIDISetting::en_out_off]->SendMsg();
+        SendMIDIAction(MIDIUser::out_off);
     }
     RefreshComponent();
 }
@@ -167,9 +162,9 @@ void Controller::SetEnabledDisplay(bool en){
 void Controller::DisplayStateChanged(){
     LS_LOCK_READ();
     if(states_enabled[ControllerSystem::GetDisplayState()]){
-        midisettings[MIDISetting::en_out_on]->SendMsg();
+        SendMIDIAction(MIDIUser::out_on);
     }else{
-        midisettings[MIDISetting::en_out_off]->SendMsg();
+        SendMIDIAction(MIDIUser::out_off);
     }
     RefreshComponent();
 }
@@ -184,47 +179,14 @@ void Controller::CopyState(int dst, int src){
     states_enabled.set(dst, states_enabled[src]);
 }
 
-void Controller::HandleMIDI(int port, MidiMessage msg){
+void Controller::ReceivedMIDIAction(ActionType t, int val){
     LS_LOCK_READ();
-    if(midisettings[MIDISetting::en_on]->Matches(port, msg)){
+    if(t == MIDIUser::in_on){
         SetEnabledDisplay(true);
-    }else if(midisettings[MIDISetting::en_off]->Matches(port, msg)){
+    }else if(t == MIDIUser::in_off){
         SetEnabledDisplay(false);
-    }else if(midisettings[MIDISetting::en_toggle]->Matches(port, msg)){
+    }else if(t == MIDIUser::in_toggle){
         SetEnabledDisplay(!states_enabled[ControllerSystem::GetDisplayState()]);
-    }
-}
-
-String Controller::GetMIDISettingStr(MIDISetting::Type type){
-    LS_LOCK_READ();
-    if(type > MIDISetting::en_out_off || type < 0){
-        jassertfalse;
-        return "Error";
-    }
-    return midisettings[type]->GetStr();
-}
-
-bool Controller::SetMIDISettingFromStr(MIDISetting::Type type, String str){
-    LS_LOCK_WRITE();
-    if(type > MIDISetting::en_out_off || type < 0){
-        jassertfalse;
-        return false;
-    }
-    return midisettings[type]->FromStr(str);
-}
-void Controller::LearnMIDI(MIDISetting::Type type, int port, MidiMessage msg){
-    switch(type){
-    case MIDISetting::en_on:
-        midisettings[MIDISetting::en_on]->Learn(port, msg, false);
-        midisettings[MIDISetting::en_out_on]->Learn(port, msg, false);
-        break;
-    case MIDISetting::en_off:
-        midisettings[MIDISetting::en_off]->Learn(port, msg, false);
-        midisettings[MIDISetting::en_out_off]->Learn(port, msg, false);
-        break;
-    case MIDISetting::en_toggle:
-        midisettings[MIDISetting::en_toggle]->Learn(port, msg, false);
-        break;
     }
 }
 
@@ -276,10 +238,10 @@ ContinuousController::ContinuousController()
         states_knob.add(0.0f);
     }
     name = "Continuous Controller";
-    midisettings.add(new MIDISetting(false, true )); //ct_in
-    midisettings.add(new MIDISetting(false, false)); //ct_goto_lo
-    midisettings.add(new MIDISetting(false, false)); //ct_goto_hi
-    midisettings.add(new MIDISetting(true,  true )); //ct_out
+    AddMIDIAction(MIDIUser::in_val);
+    AddMIDIAction(MIDIUser::in_goto_lo);
+    AddMIDIAction(MIDIUser::in_goto_hi);
+    AddMIDIAction(MIDIUser::out_val);
 }
 
 ContinuousController::~ContinuousController() {}
@@ -298,12 +260,12 @@ void ContinuousController::SetKnobDisplay(float k){
     LS_LOCK_READ();
     jassert(k >= 0.0f && k <= 1.0f);
     states_knob.set(ControllerSystem::GetDisplayState(), k);
-    midisettings[MIDISetting::ct_out]->SendMsg((int)(k * 127.0f));
+    SendMIDIAction(MIDIUser::out_val, (int)(k * 127.0f));
 }
 
 void ContinuousController::DisplayStateChanged(){
     LS_LOCK_READ();
-    midisettings[MIDISetting::ct_out]->SendMsg((int)(ControllerSystem::GetDisplayState() * 127.0f));
+    SendMIDIAction(MIDIUser::out_val, (int)(ControllerSystem::GetDisplayState() * 127.0f));
     Controller::DisplayStateChanged(); //Calls RefreshComponent()
 }
 void ContinuousController::NumStatesChanged(){
@@ -319,51 +281,18 @@ void ContinuousController::CopyState(int dst, int src){
     states_knob.set(dst, states_knob[src]);
 }
 
-void ContinuousController::HandleMIDI(int port, MidiMessage msg) {
+void ContinuousController::ReceivedMIDIAction(ActionType t, int val) {
     LS_LOCK_READ();
-    Controller::HandleMIDI(port, msg);
-    if(midisettings[MIDISetting::ct_in]->Matches(port, msg)){
-        SetKnobDisplay((float)midisettings[MIDISetting::ct_in]->GetValueFrom(msg) / 127.0f);
+    Controller::ReceivedMIDIAction(t, val);
+    if(t == MIDIUser::in_val){
+        SetKnobDisplay((float)val / 127.0f);
         RefreshComponent();
-    }else if(midisettings[MIDISetting::ct_goto_lo]->Matches(port, msg)){
+    }else if(t == MIDIUser::in_goto_lo){
         SetKnobDisplay(0.0f);
         RefreshComponent();
-    }else if(midisettings[MIDISetting::ct_goto_hi]->Matches(port, msg)){
+    }else if(t == MIDIUser::in_goto_hi){
         SetKnobDisplay(1.0f);
         RefreshComponent();
-    }
-}
-String ContinuousController::GetMIDISettingStr(MIDISetting::Type type) {
-    LS_LOCK_READ();
-    if(type <= MIDISetting::en_out_off) return Controller::GetMIDISettingStr(type);
-    if(type > MIDISetting::ct_out){
-        std::cout << "Invalid usage of ContinuousController::GetMIDISettingStr()!\n";
-        return "Error";
-    }
-    return midisettings[type]->GetStr();
-}
-bool ContinuousController::SetMIDISettingFromStr(MIDISetting::Type type, String str) {
-    LS_LOCK_WRITE();
-    if(type <= MIDISetting::en_out_off) return Controller::SetMIDISettingFromStr(type, str);
-    if(type > MIDISetting::ct_out){
-        std::cout << "Invalid usage of ContinuousController::SetMIDISettingFromStr()!\n";
-        return false;
-    }
-    return midisettings[type]->FromStr(str);
-}
-void ContinuousController::LearnMIDI(MIDISetting::Type type, int port, MidiMessage msg){
-    Controller::LearnMIDI(type, port, msg);
-    switch(type){
-    case MIDISetting::ct_in:
-        midisettings[MIDISetting::ct_in]->Learn(port, msg, false);
-        midisettings[MIDISetting::ct_out]->Learn(port, msg, false);
-        break;
-    case MIDISetting::ct_goto_lo:
-        midisettings[MIDISetting::ct_goto_lo]->Learn(port, msg, false);
-        break;
-    case MIDISetting::ct_goto_hi:
-        midisettings[MIDISetting::ct_goto_hi]->Learn(port, msg, false);
-        break;
     }
 }
 

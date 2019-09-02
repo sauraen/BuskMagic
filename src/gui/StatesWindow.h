@@ -1,47 +1,39 @@
 /*
 * BuskMagic - Live lighting control system
 * Copyright (C) 2019 Sauraen
-* 
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-* 
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-* 
+*
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
-
 #pragma once
 
 #include "JuceHeader.h"
 #include "Common.h"
 
-#include "MIDISystem.h"
-#include "gui/SynthButton.h"
-#include "gui/Popup/PopupWindow.h"
+#include "ControllerSystem.h"
+#include "gui/TriggerButton.h"
 
-class TriggerButton : public SynthButton, public MIDIUser, private Timer
+class StatesWindow : public Component, public Button::Listener
 {
 public:
-    TriggerButton(Button::Listener *l);
-    ~TriggerButton() {}
+    StatesWindow();
+    ~StatesWindow();
     
-    void mouseDown(const MouseEvent &event) override;
+    void paint(Graphics &g) override;
+    void resized() override;
     
-    void ReceivedMIDIAction(ActionType t, int val) override;
-
+    void buttonClicked(Button *buttonThatWasClicked) override;
+    
 private:
-    Button::Listener *parent;
-    
-    PopupWindow popup;
-    
-    void timerCallback() override;
-    void TriggeredInternal();
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TriggerButton)
+    OwnedArray<TriggerButton> state_triggers;
 };

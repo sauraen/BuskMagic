@@ -236,6 +236,99 @@ void MIDISetting::Learn(int port_, MidiMessage msg, bool invert){
     if(out && type == 0x8 && vel >= 0) vel = 0;
 }
 
+MIDIUser::MIDIUser(){
+    for(int i=0; i<ActionType_SIZE; ++i){
+        settings.add(nullptr);
+    }
+}
+MIDIUser::~MIDIUser(){
+    MIDISystem::LearnMIDIStop();
+    for(int i=0; i<ActionType_SIZE; ++i){
+        if(settings[i] != nullptr) delete settings[i];
+    }
+}
+MIDIUser::MIDIUser(const MIDIUser &other){
+    for(int i=0; i<ActionType_SIZE; ++i){
+        if(other.settings[i] == nullptr){
+            settings.add(nullptr);
+        }else{
+            settings.add(new MIDISetting(other.settings[i]));
+        }
+    }
+}
+
+void MIDIUser::AddMIDIAction(ActionType t){
+    if(t < 0 || t >= ActionType_SIZE) return;
+    if(settings[t] != nullptr) return;
+    settings.set(t, new MIDISetting(IsOutput(t), IsContinuous(t)));
+}
+String MIDIUser::GetMIDISettingStr(ActionType t){
+    if(t < 0 || t >= ActionType_SIZE) return "ERROR";
+    if(settings[t] == nullptr) return "ERROR";
+    return settings[t]->GetStr();
+}
+bool MIDIUser::SetMIDISettingFromStr(ActionType t, String str){
+    if(t < 0 || t >= ActionType_SIZE) return "ERROR";
+    if(settings[t] == nullptr) return "ERROR";
+    return settings[t]->FromStr(str);
+}
+
+void MIDIUser::SendMIDIAction(ActionType t, int val){
+    if(t < 0 || t >= ActionType_SIZE) return;
+    if(settings[t] == nullptr) return;
+    settings[t]->SendMsg(val);
+}
+
+void MIDIUser::HandleMIDI(int port, MidiMessage msg){
+    for(int i=0; i<ActionType_SIZE; ++i){
+        if(settings[i] == nullptr) continue;
+        if(settings[i]->Matches(port, msg)){
+            int val = settings[i]->GetValueFrom(msg);
+            ReceivedAction(i, val);
+        }
+    }
+}
+void MIDIUser::LearnMIDIStart(ActionType t){
+    learn_target = t;
+    MIDISystem::LearnMIDIStart(this);
+}
+void MIDIUser::LearnMIDI(int port, MidiMessage msg){
+    if(learn_target < 0 || learn_target >= ActionType_SIZE || settings[learn_target] == nullptr){
+        jassertfalse;
+        return;
+    }
+    switch(learn_target){
+    case out_val:
+    case in_val:
+        settings[out_val]->Learn(port, msg, false); 
+        settings[in_val]->Learn(port, msg, false); 
+        break;
+    case out_on:
+    case in_on:
+        settings[out_on]->Learn(port, msg, false);
+        settings[in_on]->Learn(port, msg, false);
+        settings[out_off]->Learn(port, msg, true);
+        settings[in_off]->Learn(port, msg, true);
+        break;
+    case out_off:
+    case in_off:
+        settings[out_off]->Learn(port, msg, false);
+        settings[in_off]->Learn(port, msg, false);
+        settings[out_on]->Learn(port, msg, true);
+        settings[in_on]->Learn(port, msg, true);
+        break;
+    case in_toggle:
+    case in_trigger:
+        settings[learn_target]->Learn(port, msg, false);
+        settings[out_on]->Learn(port, msg, false);
+        settings[out_off]->Learn(port, msg, true);
+        break;
+    default:
+        settings[learn_target]->Learn(port, msg, false);
+    }
+    if(refreshable != nullptr) refreshable->RefreshAfterMIDILearn();
+}
+
 namespace MIDISystem {
     
     MIDILearner *learner;

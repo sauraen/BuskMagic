@@ -83,9 +83,11 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o \
   $(JUCE_OBJDIR)/ControllerWindow_e8832740.o \
   $(JUCE_OBJDIR)/FixtureEditor_fac650c.o \
+  $(JUCE_OBJDIR)/HoldButton_cf2dd625.o \
   $(JUCE_OBJDIR)/MatrixEditor_5dbd37a2.o \
   $(JUCE_OBJDIR)/MIDISetup_7c6b09b2.o \
   $(JUCE_OBJDIR)/Patcher_67e4906b.o \
+  $(JUCE_OBJDIR)/StatesWindow_308c11a6.o \
   $(JUCE_OBJDIR)/StatusBar_2cfd19f7.o \
   $(JUCE_OBJDIR)/TextListBox_a5daddd6.o \
   $(JUCE_OBJDIR)/TimingWindow_d6faf9ee.o \
@@ -196,6 +198,11 @@ $(JUCE_OBJDIR)/FixtureEditor_fac650c.o: ../../src/gui/FixtureEditor.cpp
 	@echo "Compiling FixtureEditor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
+$(JUCE_OBJDIR)/HoldButton_cf2dd625.o: ../../src/gui/HoldButton.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling HoldButton.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
 $(JUCE_OBJDIR)/MatrixEditor_5dbd37a2.o: ../../src/gui/MatrixEditor.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling MatrixEditor.cpp"
@@ -209,6 +216,11 @@ $(JUCE_OBJDIR)/MIDISetup_7c6b09b2.o: ../../src/gui/MIDISetup.cpp
 $(JUCE_OBJDIR)/Patcher_67e4906b.o: ../../src/gui/Patcher.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling Patcher.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/StatesWindow_308c11a6.o: ../../src/gui/StatesWindow.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling StatesWindow.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/StatusBar_2cfd19f7.o: ../../src/gui/StatusBar.cpp

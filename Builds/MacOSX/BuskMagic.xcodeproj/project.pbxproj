@@ -109,6 +109,10 @@
 			isa = PBXBuildFile;
 			fileRef = 94298B9627920B56EDAA4E0E;
 		};
+		7E0248C5D13EBA643BBCE56F = {
+			isa = PBXBuildFile;
+			fileRef = FDD6E678EA6ECDAC3652F70B;
+		};
 		D698DAD2F167E46FCC270083 = {
 			isa = PBXBuildFile;
 			fileRef = BB829DB2A94FBA2620D41463;
@@ -120,6 +124,10 @@
 		5CBD7F35C97B5078FD17F046 = {
 			isa = PBXBuildFile;
 			fileRef = 7FA3B0461695560468F96C5E;
+		};
+		105138B8CC2455E20609AE9F = {
+			isa = PBXBuildFile;
+			fileRef = 5F02C3FA7C49888865893EBA;
 		};
 		92FE66EC0A061510F8D80AB5 = {
 			isa = PBXBuildFile;
@@ -415,6 +423,13 @@
 			path = ../../src/gui/Popup/MagicValueEditor.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		46AFCF72384B4D81E0C18251 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = StatesWindow.h;
+			path = ../../src/gui/StatesWindow.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		46C6FB0157622C02EE45D2E6 = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -434,6 +449,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = TimingWindow.cpp;
 			path = ../../src/gui/TimingWindow.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		5F02C3FA7C49888865893EBA = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = StatesWindow.cpp;
+			path = ../../src/gui/StatesWindow.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		60460D52CB47B649B9E5D77B = {
@@ -737,6 +759,13 @@
 			path = ../../src/gui/Popup/CtrlrEditor.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		CAE116F54DD1C332140AF74E = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = HoldButton.h;
+			path = ../../src/gui/HoldButton.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		CAEE9482CE2EC5AA713872EB = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -863,6 +892,13 @@
 			path = ../../src/gui/StatusBar.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		FDD6E678EA6ECDAC3652F70B = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = HoldButton.cpp;
+			path = ../../src/gui/HoldButton.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		340CC79BF702A45FEA1F3D1B = {
 			isa = PBXGroup;
 			children = (
@@ -936,6 +972,8 @@
 				753DC3BD6F96C713FEE8E28B,
 				94298B9627920B56EDAA4E0E,
 				B0661EF0EE418B85855C1950,
+				FDD6E678EA6ECDAC3652F70B,
+				CAE116F54DD1C332140AF74E,
 				98540CC143144A4D6F69DA70,
 				BB829DB2A94FBA2620D41463,
 				AB433E20DA875E3E36B1484E,
@@ -943,6 +981,8 @@
 				8D1240203F285B28C57C55E2,
 				7FA3B0461695560468F96C5E,
 				0EDBA19AEB539032826F1829,
+				5F02C3FA7C49888865893EBA,
+				46AFCF72384B4D81E0C18251,
 				FD1180090C881E3443424B3D,
 				20679837855052ACD6FD3ACF,
 				1244CD3566D40BF6A1447627,
@@ -1280,9 +1320,11 @@
 				16FBF7251CA38AB7C3B2999F,
 				3057EB35B57670330D5511E3,
 				182FF3B58EFBCAE6F9B7C7E7,
+				7E0248C5D13EBA643BBCE56F,
 				D698DAD2F167E46FCC270083,
 				373DBAE866ED8F17906C1266,
 				5CBD7F35C97B5078FD17F046,
+				105138B8CC2455E20609AE9F,
 				92FE66EC0A061510F8D80AB5,
 				D3546F2CB119364535E95500,
 				DA0EDF645241327129E2CC38,

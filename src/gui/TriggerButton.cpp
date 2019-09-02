@@ -25,9 +25,9 @@ TriggerButton::TriggerButton(Button::Listener *l) : parent(l) {
     addListener(l);
     SetColor(Colours::red);
     setTriggeredOnMouseDown(true);
-    midisettings.add(new MIDISetting(false, false)); //tr_trigger - tr_trigger
-    midisettings.add(new MIDISetting(true,  false)); //tr_out_on - tr_trigger
-    midisettings.add(new MIDISetting(true,  false)); //tr_out_off - tr_trigger
+    AddMIDIAction(MIDIUser::in_trigger);
+    AddMIDIAction(MIDIUser::out_on);
+    AddMIDIAction(MIDIUser::out_off);
 }
 
 void TriggerButton::mouseDown(const MouseEvent &event) {
@@ -40,44 +40,23 @@ void TriggerButton::mouseDown(const MouseEvent &event) {
     }
 }
 
-void TriggerButton::HandleMIDI(int port, MidiMessage msg){
+void TriggerButton::ReceivedMIDIAction(ActionType t, int val){
     LS_LOCK_READ();
-    if(midisettings[MIDISetting::tr_trig-MIDISetting::tr_trig]->Matches(port, msg)){
+    if(t == MIDIUser::in_trigger){
         const MessageManagerLock mml(Thread::getCurrentThread());
         if(!mml.lockWasGained()) return;
         triggerClick();
         TriggeredInternal();
     }
 }
-String TriggerButton::GetMIDISettingStr(MIDISetting::Type type){
-    LS_LOCK_READ();
-    if(type < MIDISetting::tr_trig || type > MIDISetting::tr_out_off){
-        jassertfalse;
-        return "Error";
-    }
-    return midisettings[type-MIDISetting::tr_trig]->GetStr();
-}
-bool TriggerButton::SetMIDISettingFromStr(MIDISetting::Type type, String str){
-    LS_LOCK_WRITE();
-    if(type < MIDISetting::tr_trig || type > MIDISetting::tr_out_off){
-        jassertfalse;
-        return "Error";
-    }
-    return midisettings[type-MIDISetting::tr_trig]->FromStr(str);
-}
-void TriggerButton::LearnMIDI(int port, MidiMessage msg){
-    midisettings[MIDISetting::tr_trig-MIDISetting::tr_trig]->Learn(port, msg, false);
-    midisettings[MIDISetting::tr_out_on-MIDISetting::tr_trig]->Learn(port, msg, false);
-    midisettings[MIDISetting::tr_out_off-MIDISetting::tr_trig]->Learn(port, msg, true);
-}
 
 void TriggerButton::timerCallback(){
     setToggleState(false, dontSendNotification);
-    midisettings[MIDISetting::tr_out_off-MIDISetting::tr_trig]->SendMsg();
+    SendMIDIAction(MIDIUser::out_off);
     stopTimer();
 }
 void TriggerButton::TriggeredInternal(){
     setToggleState(true, dontSendNotification);
-    midisettings[MIDISetting::tr_out_on-MIDISetting::tr_trig]->SendMsg();
+    SendMIDIAction(MIDIUser::out_on);
     startTimer(100);
 }

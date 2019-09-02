@@ -25,23 +25,28 @@
 #include "gui/SynthButton.h"
 #include "gui/Popup/PopupWindow.h"
 
-class TriggerButton : public SynthButton, public MIDIUser, private Timer
+class HoldButton : public SynthButton, private Timer
 {
 public:
-    TriggerButton(Button::Listener *l);
-    ~TriggerButton() {}
+    HoldButton(Button::Listener *l);
+    ~HoldButton() {}
     
     void mouseDown(const MouseEvent &event) override;
+    void mouseUp(const MouseEvent &event) override;
     
-    void ReceivedMIDIAction(ActionType t, int val) override;
+    void HandleMIDI(int port, MidiMessage msg);
+    String GetMIDISettingStr(MIDISetting::Type type);
+    bool SetMIDISettingFromStr(MIDISetting::Type type, String str);
+    void LearnMIDI(int port, MidiMessage msg);
 
 private:
     Button::Listener *parent;
     
     PopupWindow popup;
+    OwnedArray<MIDISetting> midisettings;
     
     void timerCallback() override;
     void TriggeredInternal();
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TriggerButton)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HoldButton)
 };
