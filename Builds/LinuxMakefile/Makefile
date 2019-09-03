@@ -75,11 +75,9 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/RGBA_5b18822b.o \
   $(JUCE_OBJDIR)/Color_368bd47f.o \
   $(JUCE_OBJDIR)/Generic_9e9f733.o \
-  $(JUCE_OBJDIR)/ButtonMIDI_c4f5be4a.o \
   $(JUCE_OBJDIR)/CtrlrEditor_540c3ce7.o \
-  $(JUCE_OBJDIR)/KnobMIDI_76846a0e.o \
+  $(JUCE_OBJDIR)/MIDIEditor_b3755f45.o \
   $(JUCE_OBJDIR)/PhasorEditor_1cb2b851.o \
-  $(JUCE_OBJDIR)/TriggerMIDI_b2f8c78c.o \
   $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o \
   $(JUCE_OBJDIR)/ControllerWindow_e8832740.o \
   $(JUCE_OBJDIR)/FixtureEditor_fac650c.o \
@@ -158,29 +156,19 @@ $(JUCE_OBJDIR)/Generic_9e9f733.o: ../../src/gui/FixParamEd/Generic.cpp
 	@echo "Compiling Generic.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
-$(JUCE_OBJDIR)/ButtonMIDI_c4f5be4a.o: ../../src/gui/Popup/ButtonMIDI.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling ButtonMIDI.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
-
 $(JUCE_OBJDIR)/CtrlrEditor_540c3ce7.o: ../../src/gui/Popup/CtrlrEditor.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling CtrlrEditor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
-$(JUCE_OBJDIR)/KnobMIDI_76846a0e.o: ../../src/gui/Popup/KnobMIDI.cpp
+$(JUCE_OBJDIR)/MIDIEditor_b3755f45.o: ../../src/gui/Popup/MIDIEditor.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling KnobMIDI.cpp"
+	@echo "Compiling MIDIEditor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/PhasorEditor_1cb2b851.o: ../../src/gui/Popup/PhasorEditor.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling PhasorEditor.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
-
-$(JUCE_OBJDIR)/TriggerMIDI_b2f8c78c.o: ../../src/gui/Popup/TriggerMIDI.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling TriggerMIDI.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/ArtNetSetup_5dec4c59.o: ../../src/gui/ArtNetSetup.cpp

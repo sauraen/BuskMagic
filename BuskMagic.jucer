@@ -36,8 +36,6 @@
           <FILE id="HURtag" name="Generic.h" compile="0" resource="0" file="src/gui/FixParamEd/Generic.h"/>
         </GROUP>
         <GROUP id="{6322B70C-AD27-4F6C-ACFF-D700AC80132F}" name="Popup">
-          <FILE id="T0XZY8" name="ButtonMIDI.cpp" compile="1" resource="0" file="src/gui/Popup/ButtonMIDI.cpp"/>
-          <FILE id="hfVJsC" name="ButtonMIDI.h" compile="0" resource="0" file="src/gui/Popup/ButtonMIDI.h"/>
           <FILE id="BjZDnG" name="ChannelOpEditor.h" compile="0" resource="0"
                 file="src/gui/Popup/ChannelOpEditor.h"/>
           <FILE id="ljzNSe" name="CtrlrEditor.cpp" compile="1" resource="0" file="src/gui/Popup/CtrlrEditor.cpp"/>
@@ -46,16 +44,14 @@
                 file="src/gui/Popup/DefaultValueEditor.h"/>
           <FILE id="QVYH4u" name="FreeChannelEditor.h" compile="0" resource="0"
                 file="src/gui/Popup/FreeChannelEditor.h"/>
-          <FILE id="PdYUSN" name="KnobMIDI.cpp" compile="1" resource="0" file="src/gui/Popup/KnobMIDI.cpp"/>
-          <FILE id="dKximt" name="KnobMIDI.h" compile="0" resource="0" file="src/gui/Popup/KnobMIDI.h"/>
           <FILE id="klKozR" name="MagicValueEditor.h" compile="0" resource="0"
                 file="src/gui/Popup/MagicValueEditor.h"/>
+          <FILE id="ZKgAvV" name="MIDIEditor.cpp" compile="1" resource="0" file="src/gui/Popup/MIDIEditor.cpp"/>
+          <FILE id="q50m3A" name="MIDIEditor.h" compile="0" resource="0" file="src/gui/Popup/MIDIEditor.h"/>
           <FILE id="UyBGjC" name="PhasorEditor.cpp" compile="1" resource="0"
                 file="src/gui/Popup/PhasorEditor.cpp"/>
           <FILE id="wNhBYw" name="PhasorEditor.h" compile="0" resource="0" file="src/gui/Popup/PhasorEditor.h"/>
           <FILE id="ocjfNK" name="PopupWindow.h" compile="0" resource="0" file="src/gui/Popup/PopupWindow.h"/>
-          <FILE id="UqZqJQ" name="TriggerMIDI.cpp" compile="1" resource="0" file="src/gui/Popup/TriggerMIDI.cpp"/>
-          <FILE id="XIl3NS" name="TriggerMIDI.h" compile="0" resource="0" file="src/gui/Popup/TriggerMIDI.h"/>
         </GROUP>
         <FILE id="nGOUXC" name="ArtNetSetup.cpp" compile="1" resource="0" file="src/gui/ArtNetSetup.cpp"/>
         <FILE id="PuyiPs" name="ArtNetSetup.h" compile="0" resource="0" file="src/gui/ArtNetSetup.h"/>

@@ -252,8 +252,24 @@ MIDIUser::MIDIUser(const MIDIUser &other){
         if(other.settings[i] == nullptr){
             settings.add(nullptr);
         }else{
-            settings.add(new MIDISetting(other.settings[i]));
+            settings.add(new MIDISetting(*other.settings[i]));
         }
+    }
+}
+
+String MIDIUser::GetActionName(ActionType t){
+    switch(t){
+        case in_val: return "In:";
+        case in_on: return "On:";
+        case in_off: return "Off:";
+        case in_toggle: return "Toggle:";
+        case in_trigger: return "Trigger:";
+        case in_goto_lo: return "Goto Lo:";
+        case in_goto_hi: return "Goto Hi:";
+        case out_val: return "Out:";
+        case out_on: return "Out on:";
+        case out_off: return "Out off:";
+        default: return "ERROR";
     }
 }
 
@@ -261,6 +277,10 @@ void MIDIUser::AddMIDIAction(ActionType t){
     if(t < 0 || t >= ActionType_SIZE) return;
     if(settings[t] != nullptr) return;
     settings.set(t, new MIDISetting(IsOutput(t), IsContinuous(t)));
+}
+bool MIDIUser::HasMIDIAction(ActionType t){
+    if(t < 0 || t >= ActionType_SIZE) return false;
+    return settings[t] != nullptr;
 }
 String MIDIUser::GetMIDISettingStr(ActionType t){
     if(t < 0 || t >= ActionType_SIZE) return "ERROR";
@@ -281,15 +301,18 @@ void MIDIUser::SendMIDIAction(ActionType t, int val){
 
 void MIDIUser::HandleMIDI(int port, MidiMessage msg){
     for(int i=0; i<ActionType_SIZE; ++i){
+        ActionType action = static_cast<ActionType>(i);
         if(settings[i] == nullptr) continue;
+        if(IsOutput(action)) continue;
         if(settings[i]->Matches(port, msg)){
             int val = settings[i]->GetValueFrom(msg);
-            ReceivedAction(i, val);
+            ReceivedMIDIAction(action, val);
         }
     }
 }
-void MIDIUser::LearnMIDIStart(ActionType t){
+void MIDIUser::LearnMIDIStart(ActionType t, Refreshable *r){
     learn_target = t;
+    refreshable = r;
     MIDISystem::LearnMIDIStart(this);
 }
 void MIDIUser::LearnMIDI(int port, MidiMessage msg){
@@ -331,7 +354,7 @@ void MIDIUser::LearnMIDI(int port, MidiMessage msg){
 
 namespace MIDISystem {
     
-    MIDILearner *learner;
+    MIDIUser *learner;
     
     void HandleMIDIInput(int port, const MidiMessage &message){
         if(message.isSysEx() || message.isMetaEvent()) return;
@@ -350,9 +373,9 @@ namespace MIDISystem {
         //TODO handle by other systems
     }
     
-    void LearnMIDIStart(MIDILearner *l){
+    void LearnMIDIStart(MIDIUser *u){
         LS_LOCK_WRITE();
-        learner = l;
+        learner = u;
     }
     void LearnMIDIStop(){
         LS_LOCK_WRITE();

@@ -24,7 +24,7 @@
 int PhasorEditor::snapangles = 7;
 
 PhasorEditor::PhasorEditor(void *data) : gml(*this) {
-    PhasorEditorStartup *startup = (PhasorEditorStartup*)data;
+    Startup *startup = (Startup*)data;
     phasor = startup->phasor;
     channel = startup->channel;
     invalidated = false;

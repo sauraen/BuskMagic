@@ -23,7 +23,7 @@
 #include "gui/SynthButton.h"
 #include "ControllerSystem.h"
 #include "gui/Popup/PopupWindow.h"
-#include "gui/Popup/ButtonMIDI.h"
+#include "gui/Popup/MIDIEditor.h"
 
 class EnableButton : public SynthButton
 {
@@ -47,7 +47,8 @@ public:
     void mouseDown(const MouseEvent &event) override {
         if(isRightClick(event)){
             Point<int> mouse = getMouseXYRelative();
-            popup.show<ButtonMIDI>(mouse.x + getScreenX(), mouse.y + getScreenY(), controller);
+            MIDIEditor::Startup startup(controller, 1);
+            popup.show<MIDIEditor>(mouse.x + getScreenX(), mouse.y + getScreenY(), &startup);
         }else{
             SynthButton::mouseDown(event);
         }

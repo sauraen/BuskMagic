@@ -65,11 +65,11 @@ Controller::Controller()
     for(int i=0; i<ControllerSystem::NumStates(); ++i){
         states_enabled.add(false);
     }
-    AddAction(MIDIUser::in_on);
-    AddAction(MIDIUser::in_off);
-    AddAction(MIDIUser::in_toggle);
-    AddAction(MIDIUser::out_on);
-    AddAction(MIDIUser::out_off);
+    AddMIDIAction(MIDIUser::in_on);
+    AddMIDIAction(MIDIUser::in_off);
+    AddMIDIAction(MIDIUser::in_toggle);
+    AddMIDIAction(MIDIUser::out_on);
+    AddMIDIAction(MIDIUser::out_off);
 }
 
 Controller::~Controller() {}

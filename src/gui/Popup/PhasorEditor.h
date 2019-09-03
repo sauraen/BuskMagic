@@ -22,17 +22,17 @@
 struct Phasor;
 class Channel;
 
-struct PhasorEditorStartup{
-    Phasor *phasor;
-    Channel *channel;
-    PhasorEditorStartup(Phasor *p, Channel *c) : phasor(p), channel(c) {}
-};
-
 class PhasorEditor : public Component, 
                      public TextEditor::Listener,
                      public Button::Listener
 {
 public:
+    struct Startup {
+        Phasor *phasor;
+        Channel *channel;
+        Startup(Phasor *p, Channel *c) : phasor(p), channel(c) {}
+    };
+    
     PhasorEditor(void *data);
     ~PhasorEditor();
 

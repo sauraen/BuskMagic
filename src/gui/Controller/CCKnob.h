@@ -22,7 +22,7 @@
 #include "Common.h"
 #include "ControllerSystem.h"
 #include "gui/Popup/PopupWindow.h"
-#include "gui/Popup/KnobMIDI.h"
+#include "gui/Popup/MIDIEditor.h"
 
 class CCKnob : public Slider
 {
@@ -49,7 +49,8 @@ public:
     void mouseDown(const MouseEvent &event) override {
         if(isRightClick(event)){
             Point<int> mouse = getMouseXYRelative();
-            popup.show<KnobMIDI>(mouse.x + getScreenX(), mouse.y + getScreenY(), ccontroller);
+            MIDIEditor::Startup startup(ccontroller, 2);
+            popup.show<MIDIEditor>(mouse.x + getScreenX(), mouse.y + getScreenY(), &startup);
         }else{
             Slider::mouseDown(event);
         }

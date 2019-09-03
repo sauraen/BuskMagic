@@ -66,27 +66,30 @@ public:
     
     class Refreshable {
     public:
-        ~Refreshable() {}
-        void RefreshAfterMIDILearn() = 0;
+        virtual ~Refreshable() {}
+        virtual void RefreshAfterMIDILearn() = 0;
     };
     
-    enum ActionType {
-        out_val,
-        out_on,
-        out_off,
+    enum ActionType : uint32_t {
         in_val,
         in_on,
         in_off,
         in_toggle,
         in_trigger,
-        in_goto_hi,
         in_goto_lo,
+        in_goto_hi,
+        out_val,
+        out_on,
+        out_off,
         ActionType_SIZE
     };
-    inline static bool IsOutput(ActionType t) { return t <= out_off; }
+    inline static bool IsOutput(ActionType t) { return t >= out_val; }
     inline static bool IsContinuous(ActionType t) { return t == out_val || t == in_val; }
+    inline static bool IsKnobRelated(ActionType t) { return IsContinuous(t) || t == in_goto_lo || t == in_goto_hi; }
+    static String GetActionName(ActionType t);
     
     void AddMIDIAction(ActionType t);
+    bool HasMIDIAction(ActionType t);
     String GetMIDISettingStr(ActionType t);
     bool SetMIDISettingFromStr(ActionType t, String str);
     

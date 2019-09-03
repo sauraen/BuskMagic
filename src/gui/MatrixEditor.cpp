@@ -294,7 +294,7 @@ void MatrixEditor::mouseDown(const MouseEvent &event){
             //Right click in phasors area
             if(r < 0 || r >= ctSet.size()) return;
             Controller *ct = ctSet[r];
-            PhasorEditorStartup startup(ch->GetPhasorForController(ct, true), ch);
+            PhasorEditor::Startup startup(ch->GetPhasorForController(ct, true), ch);
             Point<int> corner(getScreenX() + c*col_width - view.x + ct_width + (col_width/2) - 70,
                               getScreenY() + r*row_height - view.y + row_height + (row_height/2) - 70);
             popup.show<PhasorEditor>(corner.x, corner.y, &startup);

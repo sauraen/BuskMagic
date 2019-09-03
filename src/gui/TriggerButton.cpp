@@ -18,7 +18,7 @@
 
 #include "TriggerButton.h"
 
-#include "gui/Popup/TriggerMIDI.h"
+#include "gui/Popup/MIDIEditor.h"
 #include "LightingSystem.h"
 
 TriggerButton::TriggerButton(Button::Listener *l) : parent(l) {
@@ -33,7 +33,8 @@ TriggerButton::TriggerButton(Button::Listener *l) : parent(l) {
 void TriggerButton::mouseDown(const MouseEvent &event) {
     if(isRightClick(event)){
         Point<int> mouse = getMouseXYRelative();
-        popup.show<TriggerMIDI>(mouse.x + getScreenX(), mouse.y + getScreenY(), this);
+        MIDIEditor::Startup startup(this, 0);
+        popup.show<MIDIEditor>(mouse.x + getScreenX(), mouse.y + getScreenY(), &startup);
     }else{
         SynthButton::mouseDown(event); //This calls Listener::buttonClicked()
         TriggeredInternal();
