@@ -20,3 +20,38 @@
 
 #include "JuceHeader.h"
 #include "Common.h"
+
+#include "MIDISystem.h"
+#include "gui/SynthButton.h"
+#include "gui/Popup/PopupWindow.h"
+
+///Button which requires holding from MIDI, but click-to-toggle from GUI
+///Does not send buttonClicked events, instead HoldButton::Listener events
+class HoldButton : public SynthButton, public MIDIUser
+{
+public:
+    class Listener{
+    public:
+        virtual ~Listener() {}
+        virtual void holdButtonStateChanged(HoldButton *buttonWhoseStateChanged) = 0;
+    };
+    
+    HoldButton(Listener *l);
+    ~HoldButton() {}
+    
+    void mouseDown(const MouseEvent &event) override;
+    
+    void ReceivedMIDIAction(ActionType t, int val) override;
+    
+    void setHoldState(bool h);
+
+protected:
+    void clicked() override;
+    
+private:
+    Listener *parent;
+    
+    PopupWindow popup;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HoldButton)
+};

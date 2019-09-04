@@ -21,7 +21,8 @@
 #include "gui/Popup/MIDIEditor.h"
 #include "LightingSystem.h"
 
-TriggerButton::TriggerButton(Button::Listener *l) : parent(l) {
+TriggerButton::TriggerButton(Button::Listener *l, bool manuallight) 
+        : parent(l), manual(manuallight) {
     addListener(l);
     SetColor(Colours::red);
     setTriggeredOnMouseDown(true);
@@ -51,12 +52,23 @@ void TriggerButton::ReceivedMIDIAction(ActionType t, int val){
     }
 }
 
+void TriggerButton::SetLight(bool l){
+    if(!manual){
+        jassertfalse;
+        return;
+    }
+    setToggleState(l, dontSendNotification);
+    SendMIDIAction(l ? MIDIUser::out_on : MIDIUser::out_off);
+}
+
 void TriggerButton::timerCallback(){
+    if(manual) return;
     setToggleState(false, dontSendNotification);
     SendMIDIAction(MIDIUser::out_off);
     stopTimer();
 }
 void TriggerButton::TriggeredInternal(){
+    if(manual) return;
     setToggleState(true, dontSendNotification);
     SendMIDIAction(MIDIUser::out_on);
     startTimer(100);

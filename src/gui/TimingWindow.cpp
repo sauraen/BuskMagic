@@ -108,31 +108,31 @@ TimingWindow::TimingWindow ()
 
     //[UserPreSize]
 
-    trgUp.reset(new TriggerButton(this));
+    trgUp.reset(new TriggerButton(this, false));
     addAndMakeVisible(trgUp.get());
     trgUp->setTopLeftPosition(120, 8);
 
-    trgDown.reset(new TriggerButton(this));
+    trgDown.reset(new TriggerButton(this, false));
     addAndMakeVisible(trgDown.get());
     trgDown->setTopLeftPosition(120, 64);
 
-    trgDouble.reset(new TriggerButton(this));
+    trgDouble.reset(new TriggerButton(this, false));
     addAndMakeVisible(trgDouble.get());
     trgDouble->setTopLeftPosition(184, 8);
 
-    trgHalf.reset(new TriggerButton(this));
+    trgHalf.reset(new TriggerButton(this, false));
     addAndMakeVisible(trgHalf.get());
     trgHalf->setTopLeftPosition(184, 64);
 
-    trgTapBeat.reset(new TriggerButton(this));
+    trgTapBeat.reset(new TriggerButton(this, false));
     addAndMakeVisible(trgTapBeat.get());
     trgTapBeat->setTopLeftPosition(8, 120);
 
-    trgTapMeasure.reset(new TriggerButton(this));
+    trgTapMeasure.reset(new TriggerButton(this, false));
     addAndMakeVisible(trgTapMeasure.get());
     trgTapMeasure->setTopLeftPosition(104, 120);
 
-    trgFreeze.reset(new TriggerButton(this));
+    trgFreeze.reset(new TriggerButton(this, false));
     addAndMakeVisible(trgFreeze.get());
     trgFreeze->setTopLeftPosition(184, 120);
 
@@ -421,4 +421,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

@@ -22,8 +22,11 @@
 
 #include "ControllerSystem.h"
 #include "gui/TriggerButton.h"
+#include "gui/HoldButton.h"
 
-class StatesWindow : public Component, public Button::Listener
+class StatesWindow 
+    : public Component, public Button::Listener, public HoldButton::Listener, 
+    private Timer
 {
 public:
     StatesWindow();
@@ -33,7 +36,21 @@ public:
     void resized() override;
     
     void buttonClicked(Button *buttonThatWasClicked) override;
+    void holdButtonStateChanged(HoldButton *buttonWhoseStateChanged) override;
     
 private:
     OwnedArray<TriggerButton> state_triggers;
+    std::unique_ptr<HoldButton> btnCopy;
+    std::unique_ptr<HoldButton> btnBlind;
+    std::unique_ptr<TextButton> btnAdd;
+    std::unique_ptr<TextButton> btnRemove;
+    int guistate;
+    int copyfrom;
+    
+    bool blinker;
+    void timerCallback() override;
+    
+    void MakeButton(int i);
+    void ChangeSize();
+    void SetOnlyLight(int i);
 };

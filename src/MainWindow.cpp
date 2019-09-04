@@ -22,6 +22,7 @@
 #include "gui/MIDISetup.h"
 #include "gui/Patcher.h"
 #include "gui/ControllerWindow.h"
+#include "gui/StatesWindow.h"
 #include "gui/TimingWindow.h"
 
 #include "ArtNetSystem.h"
@@ -79,7 +80,7 @@ private:
 
 namespace {
     std::unique_ptr<SubWindow> artnetWindow, midiWindow, patcherWindow, 
-        controllersWindow, timingWindow;
+        controllersWindow, statesWindow, timingWindow;
 }
 
 MainWindow::MainWindow() 
@@ -101,12 +102,14 @@ MainWindow::MainWindow()
     ArtNetSystem::Init();
     MIDISystem::Init();
     TimingSystem::Init();
+    ControllerSystem::Init();
     LightingSystem::Init();
     //GUI startup
     artnetWindow.reset(new SubWindow("BuskMagic - Art-Net Setup", false, new ArtNetSetup()));
     midiWindow.reset(new SubWindow("BuskMagic - MIDI Setup", false, new MIDISetup()));
     patcherWindow.reset(new SubWindow("BuskMagic - Patcher", false, new Patcher()));
     controllersWindow.reset(new SubWindow("BuskMagic - Controllers", true, new ControllerWindow()));
+    statesWindow.reset(new SubWindow("BuskMagic - States", false, new StatesWindow()));
     timingWindow.reset(new SubWindow("BuskMagic - Timing (Tempo)", false, new TimingWindow()));
 }
 
@@ -117,9 +120,11 @@ MainWindow::~MainWindow() {
     midiWindow = nullptr;
     patcherWindow = nullptr;
     controllersWindow = nullptr;
+    statesWindow = nullptr;
     timingWindow = nullptr;
     //Application finalize
     LightingSystem::Finalize();
+    ControllerSystem::Finalize();
     TimingSystem::Finalize();
     MIDISystem::Finalize();
     ArtNetSystem::Finalize();
@@ -152,7 +157,9 @@ PopupMenu MainMenus::getMenuForIndex(int topLevelMenuIndex, const String &menuNa
     }else if(topLevelMenuIndex == 2){
         PopupMenu menu;
         menu.addItem(0x3000, "Controllers...");
-        menu.addItem(0x3001, "Timing (Tempo)...");
+        menu.addItem(0x3001, "States...");
+        menu.addSeparator();
+        menu.addItem(0x3010, "Timing (Tempo)...");
         return menu;
     }else{
         PopupMenu menu;
@@ -189,6 +196,9 @@ void MainMenus::menuItemSelected(int menuItemID, int topLevelMenuIndex){
         controllersWindow->show();
         break;
     case 0x3001:
+        statesWindow->show();
+        break;
+    case 0x3010:
         timingWindow->show();
         break;
     case 0x9001:

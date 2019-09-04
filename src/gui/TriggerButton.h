@@ -28,15 +28,18 @@
 class TriggerButton : public SynthButton, public MIDIUser, private Timer
 {
 public:
-    TriggerButton(Button::Listener *l);
+    TriggerButton(Button::Listener *l, bool manuallight);
     ~TriggerButton() {}
     
     void mouseDown(const MouseEvent &event) override;
     
     void ReceivedMIDIAction(ActionType t, int val) override;
+    
+    void SetLight(bool l);
 
 private:
     Button::Listener *parent;
+    bool manual;
     
     PopupWindow popup;
     

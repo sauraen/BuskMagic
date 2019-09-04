@@ -17,3 +17,49 @@
 */
 
 #include "HoldButton.h"
+
+#include "gui/Popup/MIDIEditor.h"
+#include "LightingSystem.h"
+
+HoldButton::HoldButton(HoldButton::Listener *l) : parent(l) {
+    SetColor(Colours::red);
+    AddMIDIAction(MIDIUser::in_on);
+    AddMIDIAction(MIDIUser::in_off);
+    AddMIDIAction(MIDIUser::out_on);
+    AddMIDIAction(MIDIUser::out_off);
+}
+
+void HoldButton::mouseDown(const MouseEvent &event) {
+    if(isRightClick(event)){
+        Point<int> mouse = getMouseXYRelative();
+        MIDIEditor::Startup startup(this, 0);
+        popup.show<MIDIEditor>(mouse.x + getScreenX(), mouse.y + getScreenY(), &startup);
+    }else{
+        setHoldState(!getToggleState());
+        SynthButton::mouseDown(event);
+    }
+}
+
+void HoldButton::clicked(){
+    //Do nothing, do not pass this on to the listener
+}
+
+void HoldButton::ReceivedMIDIAction(ActionType t, int val){
+    LS_LOCK_READ();
+    if(t == MIDIUser::in_on){
+        const MessageManagerLock mml(Thread::getCurrentThread());
+        if(!mml.lockWasGained()) return;
+        setHoldState(true);
+    }else if(t == MIDIUser::in_off){
+        const MessageManagerLock mml(Thread::getCurrentThread());
+        if(!mml.lockWasGained()) return;
+        setHoldState(false);
+    }
+}
+
+void HoldButton::setHoldState(bool h){
+    if(h == getToggleState()) return;
+    setToggleState(h, dontSendNotification);
+    SendMIDIAction(h ? MIDIUser::out_on : MIDIUser::out_off);
+    parent->holdButtonStateChanged(this);
+}
