@@ -108,12 +108,12 @@ inline bool isRightClick(const MouseEvent &event){
     return event.mods.isRightButtonDown() || (isMac() && event.mods.isCtrlDown());
 }
 
-inline void WarningBox(String text){
-    NativeMessageBox::showMessageBoxAsync(AlertWindow::WarningIcon, "BuskMagic", text);
+inline void WarningBox(String text, String title = "BuskMagic"){
+    NativeMessageBox::showMessageBoxAsync(AlertWindow::WarningIcon, title, text);
 }
 
-inline void InfoBox(String text){
-    NativeMessageBox::showMessageBoxAsync(AlertWindow::InfoIcon, "BuskMagic", text);
+inline void InfoBox(String text, String title = "BuskMagic"){
+    NativeMessageBox::showMessageBoxAsync(AlertWindow::InfoIcon, title, text);
 }
 
 #define NULLSTATEMENT ((void)0)

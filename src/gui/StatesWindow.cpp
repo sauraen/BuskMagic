@@ -18,18 +18,19 @@
 
 #include "StatesWindow.h"
 
-static const int leftsecwidth = 64;
 static const int colwidth = 64;
+
+StatesWindow *StatesWindow::sw_static = nullptr;
 
 void StatesWindow::MakeButton(int i){
     TriggerButton *trg = new TriggerButton(this, true);
     addAndMakeVisible(trg);
-    trg->setTopLeftPosition(leftsecwidth + (colwidth*i) + 8, 56);
-    state_triggers.add(trg);
+    trg->setTopLeftPosition((colwidth*i) + 8, 80);
+    trgsState.add(trg);
 }
 
 void StatesWindow::ChangeSize(){
-    setSize(leftsecwidth + colwidth*ControllerSystem::NumStates(), 144);
+    setSize(jmax(colwidth*ControllerSystem::NumStates(), 448), 120);
     if(getParentComponent() != nullptr){
         getParentComponent()->setSize(getWidth(), getHeight());
     }
@@ -37,33 +38,42 @@ void StatesWindow::ChangeSize(){
 
 void StatesWindow::SetOnlyLight(int i){
     for(int j=0; j<ControllerSystem::NumStates(); ++j){
-        state_triggers[j]->SetLight(j == i);
+        trgsState[j]->SetLight(j == i);
     }
 }
 
 StatesWindow::StatesWindow(){
+    jassert(sw_static == nullptr);
+    sw_static = this;
+    //
     btnCopy.reset(new HoldButton(this));
     btnBlind.reset(new HoldButton(this));
     addAndMakeVisible(btnCopy.get());
     addAndMakeVisible(btnBlind.get());
-    btnCopy->setTopLeftPosition(8, 48);
-    btnBlind->setTopLeftPosition(8, 96);
+    btnCopy->setTopLeftPosition(64, 8);
+    btnBlind->setTopLeftPosition(120, 8);
     //
     btnAdd.reset(new TextButton("btnAdd"));
     addAndMakeVisible(btnAdd.get());
     btnAdd->addListener(this);
     btnAdd->setButtonText("+");
     btnAdd->setConnectedEdges(Button::ConnectedOnRight);
-    btnAdd->setBounds(8, 16, 24, 24);
+    btnAdd->setBounds(8, 20, 24, 24);
     btnRemove.reset(new TextButton("btnRemove"));
     addAndMakeVisible(btnRemove.get());
     btnRemove->addListener(this);
     btnRemove->setButtonText(CharPointer_UTF8("\xe2\x88\x92"));
     btnRemove->setConnectedEdges(Button::ConnectedOnLeft);
-    btnRemove->setBounds(32, 16, 24, 24);
+    btnRemove->setBounds(32, 20, 24, 24);
+    chkProtected.reset(new ToggleButton("Protected"));
+    addAndMakeVisible(chkProtected.get());
+    chkProtected->addListener(this);
+    chkProtected->setBounds(176, 12, 100, 24);
+    chkProtected->setToggleState(ControllerSystem::IsStateProtected(
+            ControllerSystem::GetDisplayState()), dontSendNotification);
     //
     for(int i=0; i<ControllerSystem::NumStates(); ++i) MakeButton(i);
-    SetOnlyLight(ControllerSystem::GetDisplayState());
+    SetOnlyLight(ControllerSystem::GetDisplayState()-1);
     //
     guistate = 0;
     blinker = false;
@@ -72,24 +82,27 @@ StatesWindow::StatesWindow(){
     startTimer(100);
 }
 StatesWindow::~StatesWindow(){
-    
+    sw_static = nullptr;
 }
 
 void StatesWindow::paint(Graphics &g){
     g.fillAll(LFWindowColor());
     g.setColour(Colours::white);
     g.setFont(GetNormalFont());
-    g.drawText("States:", 10, 0, leftsecwidth-10, 16, Justification::centredLeft, false);
-    g.drawText("Copy", 0, 80, leftsecwidth, 16, Justification::centred, false);
-    g.drawText("Blind", 0, 128, leftsecwidth, 16, Justification::centred, false);
+    g.drawText("States:", 10, 4, 54, 16, Justification::centredLeft, false);
+    g.drawText("Copy", 64, 40, 48, 16, Justification::centred, false);
+    g.drawText("Blind", 120, 40, 48, 16, Justification::centred, false);
     String helpstr;
     switch(guistate){
     case 0: {
         int ss = ControllerSystem::GetStageState();
         int bs = ControllerSystem::GetDisplayState();
-        helpstr = "State " + String(ss+1);
+        helpstr = "State " + String(ss);
         if(ss != bs){
-            helpstr += ", blind " + String(bs+1);
+            helpstr += ", blind " + String(bs);
+            if(ControllerSystem::IsStateProtected(bs)){
+                helpstr += " (WARNING: Editing protected state!)";
+            }
         }
         }break;
     case 1: helpstr = "Select state to view blind"; break;
@@ -97,20 +110,20 @@ void StatesWindow::paint(Graphics &g){
     case 3: helpstr = "Select state to copy TO"; break;
     default: helpstr = "Error"; break;
     }
-    g.drawText(helpstr, leftsecwidth+2, 128, 300, 16, Justification::centredLeft, true);
+    g.drawText(helpstr, 280, 0, getWidth()-200, 48, Justification::centredLeft, true);
     for(int i=0; i<ControllerSystem::NumStates(); ++i){
-        g.drawText(String(i+1), leftsecwidth + (colwidth*i), 0, colwidth, 24, Justification::centred, false);
+        g.drawText(String(i+1), colwidth*i, 56, colwidth, 24, Justification::centred, false);
     }
 }
 void StatesWindow::resized() {}
 
 void StatesWindow::timerCallback() {
     if(guistate == 3){
-        state_triggers[copyfrom]->SetLight(blinker);
+        trgsState[copyfrom]->SetLight(blinker);
     }else if(guistate == 2){
         //don't flash the blind state
     }else if(ControllerSystem::GetStageState() != ControllerSystem::GetDisplayState()){
-        state_triggers[ControllerSystem::GetStageState()]->SetLight(blinker);
+        trgsState[ControllerSystem::GetStageState()-1]->SetLight(blinker);
     }
     blinker = !blinker;
 }
@@ -121,22 +134,31 @@ void StatesWindow::buttonClicked(Button *buttonThatWasClicked){
         ControllerSystem::AddState();
         MakeButton(ns);
         ChangeSize();
+        repaint();
     }else if(buttonThatWasClicked == btnRemove.get()){
         if(ns == 1) return;
-        state_triggers.remove(ns-1);
+        trgsState.remove(ns-1);
         ControllerSystem::RemoveState();
         ChangeSize();
+        repaint();
+    }else if(buttonThatWasClicked == chkProtected.get()){
+        ControllerSystem::ProtectState(ControllerSystem::GetDisplayState(), 
+                chkProtected->getToggleState());
     }else{
         for(int i=0; i<ns; ++i){
-            if(buttonThatWasClicked == state_triggers[i]){
+            if(buttonThatWasClicked == trgsState[i]){
                 switch(guistate){
                 case 0:
-                    ControllerSystem::ActivateState(i);
+                    ControllerSystem::ActivateState(i+1);
+                    chkProtected->setToggleState(ControllerSystem::IsStateProtected(
+                            ControllerSystem::GetDisplayState()), dontSendNotification);
                     SetOnlyLight(i);
                     repaint();
                     break;
                 case 1:
-                    ControllerSystem::BlindState(i);
+                    ControllerSystem::BlindState(i+1);
+                    chkProtected->setToggleState(ControllerSystem::IsStateProtected(
+                            ControllerSystem::GetDisplayState()), dontSendNotification);
                     SetOnlyLight(i);
                     btnBlind->setHoldState(false);
                     break;
@@ -146,7 +168,7 @@ void StatesWindow::buttonClicked(Button *buttonThatWasClicked){
                     repaint();
                     break;
                 case 3:
-                    ControllerSystem::CopyState(i, copyfrom);
+                    ControllerSystem::CopyState(i+1, copyfrom+1);
                     btnCopy->setHoldState(false);
                     break;
                 }
@@ -162,7 +184,7 @@ void StatesWindow::holdButtonStateChanged(HoldButton *buttonWhoseStateChanged){
             guistate = 2;
             repaint();
         }else{
-            SetOnlyLight(ControllerSystem::GetDisplayState());
+            SetOnlyLight(ControllerSystem::GetDisplayState()-1);
             guistate = 0;
             repaint();
         }
@@ -175,4 +197,12 @@ void StatesWindow::holdButtonStateChanged(HoldButton *buttonWhoseStateChanged){
             repaint();
         }
     }
+}
+
+void StatesWindow::HandleMIDI(int port, MidiMessage msg){
+    for(int i=0; i<ControllerSystem::NumStates(); ++i){
+        trgsState[i]->HandleMIDI(port, msg);
+    }
+    btnCopy->HandleMIDI(port, msg);
+    btnBlind->HandleMIDI(port, msg);
 }

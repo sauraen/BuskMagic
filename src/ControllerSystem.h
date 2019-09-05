@@ -94,6 +94,8 @@ protected:
     String name;
 
     void RefreshComponent();
+    int GetEffectiveStageState() const;
+    int GetEffectiveDisplayState() const;
 
 private:
     friend class MagicValue;
@@ -199,13 +201,24 @@ namespace ControllerSystem {
 
     void HandleMIDI(int port, MidiMessage msg);
     
+    /**
+     * States are 1-indexed, because state 0 is special. (E.g. if NumStates()
+     * == 1, there are states 0 and 1, where state 1 is the only normal state.)
+     * State 0 serves two purposes:
+     * - When a protected state is activated, it's actually copied to state 0
+     *   and then state 0 is activated instead. Thus, edits happen to state 0
+     *   and then get subsequently overwritten.
+     * - Controllers with ``nostate'' set are always in state 0.
+    */
     int NumStates();
     void AddState();
     void RemoveState();
-    void CopyState(int dst, int src);
+    void CopyState(int dst, int src); //1-indexed, but 0 allowed here only
     
     int GetStageState();
     int GetDisplayState();
-    void ActivateState(int s);
-    void BlindState(int s);
+    void ActivateState(int s); //1-indexed, see above
+    void BlindState(int s); //1-indexed, see above
+    bool IsStateProtected(int s); //1-indexed, see above
+    void ProtectState(int s, bool protect); //1-indexed, see above
 }

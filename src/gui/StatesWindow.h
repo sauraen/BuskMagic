@@ -29,6 +29,8 @@ class StatesWindow
     private Timer
 {
 public:
+    static StatesWindow *sw_static;
+    
     StatesWindow();
     ~StatesWindow();
     
@@ -38,8 +40,11 @@ public:
     void buttonClicked(Button *buttonThatWasClicked) override;
     void holdButtonStateChanged(HoldButton *buttonWhoseStateChanged) override;
     
+    void HandleMIDI(int port, MidiMessage msg);
+    
 private:
-    OwnedArray<TriggerButton> state_triggers;
+    OwnedArray<TriggerButton> trgsState;
+    std::unique_ptr<ToggleButton> chkProtected;
     std::unique_ptr<HoldButton> btnCopy;
     std::unique_ptr<HoldButton> btnBlind;
     std::unique_ptr<TextButton> btnAdd;

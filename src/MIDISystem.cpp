@@ -19,8 +19,10 @@
 #include "MIDISystem.h"
 
 #include "ControllerSystem.h"
-#include "gui/TimingWindow.h"
 #include "LightingSystem.h"
+
+#include "gui/TimingWindow.h"
+#include "gui/StatesWindow.h"
 
 #include <vector>
 
@@ -370,6 +372,7 @@ namespace MIDISystem {
         //    << ": " << message.getDescription() << "\n";
         ControllerSystem::HandleMIDI(port, message);
         if(TimingWindow::tw_static != nullptr) TimingWindow::tw_static->HandleMIDI(port, message);
+        if(StatesWindow::sw_static != nullptr) StatesWindow::sw_static->HandleMIDI(port, message);
         //TODO handle by other systems
     }
     

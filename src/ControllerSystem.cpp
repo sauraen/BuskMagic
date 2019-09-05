@@ -63,7 +63,7 @@ Controller::Controller()
       component(nullptr)
 {
     for(int i=0; i<ControllerSystem::NumStates(); ++i){
-        states_enabled.add(false);
+        states_enabled.add(true);
     }
     AddMIDIAction(MIDIUser::in_on);
     AddMIDIAction(MIDIUser::in_off);
@@ -129,16 +129,16 @@ void Controller::SetGroupColor(Colour col){
 
 bool Controller::IsEnabledStage() const{
     LS_LOCK_READ();
-    return states_enabled[ControllerSystem::GetStageState()];
+    return states_enabled[GetEffectiveStageState()];
 }
 bool Controller::IsEnabledDisplay() const{
     LS_LOCK_READ();
-    return states_enabled[ControllerSystem::GetDisplayState()];
+    return states_enabled[GetEffectiveDisplayState()];
 }
 
 void Controller::SetEnabledDisplay(bool en){
     LS_LOCK_READ();
-    int ds = ControllerSystem::GetDisplayState();
+    int ds = GetEffectiveDisplayState();
     if(states_enabled[ds] == en) return;
     states_enabled.set(ds, en);
     if(en){
@@ -160,23 +160,31 @@ void Controller::SetEnabledDisplay(bool en){
 }
 
 void Controller::DisplayStateChanged(){
-    LS_LOCK_READ();
-    if(states_enabled[ControllerSystem::GetDisplayState()]){
-        SendMIDIAction(MIDIUser::out_on);
-    }else{
-        SendMIDIAction(MIDIUser::out_off);
-    }
+    //LS_LOCK_READ(); Should already be locked
+    if(nostate) return; //don't care
+    SendMIDIAction(states_enabled[GetEffectiveDisplayState()] ? 
+        MIDIUser::out_on : MIDIUser::out_off);
     RefreshComponent();
 }
 void Controller::NumStatesChanged(){
-    LS_LOCK_READ();
+    //LS_LOCK_READ(); Should already be locked
     int ns = ControllerSystem::NumStates();
     while(states_enabled.size() > ns) states_enabled.remove(states_enabled.size()-1);
     while(states_enabled.size() < ns) states_enabled.add(false);
 }
 void Controller::CopyState(int dst, int src){
-    LS_LOCK_READ();
+    //LS_LOCK_READ(); Should already be locked
+    if(nostate && dst == 0) return;
     states_enabled.set(dst, states_enabled[src]);
+}
+int Controller::GetEffectiveStageState() const{
+    int ss = ControllerSystem::GetStageState();
+    return (nostate || ControllerSystem::IsStateProtected(ss)) ? 0 : ss;
+}
+int Controller::GetEffectiveDisplayState() const{
+    int ds = ControllerSystem::GetDisplayState();
+    int ss = ControllerSystem::GetStageState();
+    return (nostate || (ds == ss && ControllerSystem::IsStateProtected(ss))) ? 0 : ds;
 }
 
 void Controller::ReceivedMIDIAction(ActionType t, int val){
@@ -186,7 +194,7 @@ void Controller::ReceivedMIDIAction(ActionType t, int val){
     }else if(t == MIDIUser::in_off){
         SetEnabledDisplay(false);
     }else if(t == MIDIUser::in_toggle){
-        SetEnabledDisplay(!states_enabled[ControllerSystem::GetDisplayState()]);
+        SetEnabledDisplay(!states_enabled[GetEffectiveDisplayState()]);
     }
 }
 
@@ -254,29 +262,31 @@ Controller *ContinuousController::clone() const{
 
 float ContinuousController::GetKnobDisplay(){
     LS_LOCK_READ();
-    return states_knob[ControllerSystem::GetDisplayState()];
+    return states_knob[GetEffectiveDisplayState()];
 }
 void ContinuousController::SetKnobDisplay(float k){
     LS_LOCK_READ();
     jassert(k >= 0.0f && k <= 1.0f);
-    states_knob.set(ControllerSystem::GetDisplayState(), k);
+    states_knob.set(GetEffectiveDisplayState(), k);
     SendMIDIAction(MIDIUser::out_val, (int)(k * 127.0f));
 }
 
 void ContinuousController::DisplayStateChanged(){
-    LS_LOCK_READ();
-    SendMIDIAction(MIDIUser::out_val, (int)(ControllerSystem::GetDisplayState() * 127.0f));
+    //LS_LOCK_READ(); Should already be locked
+    if(nostate) return; //don't care
+    SendMIDIAction(MIDIUser::out_val, (int)(states_knob[GetEffectiveDisplayState()] * 127.0f));
     Controller::DisplayStateChanged(); //Calls RefreshComponent()
 }
 void ContinuousController::NumStatesChanged(){
-    LS_LOCK_READ();
+    //LS_LOCK_READ(); Should already be locked
     Controller::NumStatesChanged();
     int ns = ControllerSystem::NumStates();
     while(states_knob.size() > ns) states_knob.remove(states_knob.size()-1);
     while(states_knob.size() < ns) states_knob.add(0.0f);
 }
 void ContinuousController::CopyState(int dst, int src){
-    LS_LOCK_READ();
+    //LS_LOCK_READ(); Should already be locked
+    if(nostate && dst == 0) return;
     Controller::CopyState(dst, src);
     states_knob.set(dst, states_knob[src]);
 }
@@ -300,7 +310,7 @@ float ContinuousController::Evaluate(float angle) const {
     //LS_LOCK_READ(); //Not locking because channel evaluation will lock
     float l = lovalue.Evaluate(angle);
     float h = hivalue.Evaluate(angle);
-    float k = states_knob[ControllerSystem::GetStageState()];
+    float k = states_knob[GetEffectiveStageState()];
     return (l * (1.0f - k)) + (h * k);
 }
 
@@ -451,10 +461,12 @@ namespace ControllerSystem {
     
     int nstates;
     int dstate, sstate;
+    Array<bool> states_protected;
     
     void Init(){
         nstates = 10;
-        dstate = sstate = 0;
+        for(int i=0; i<=nstates; ++i) states_protected.add(false);
+        dstate = sstate = 1;
     }
     void Finalize(){
         //
@@ -474,18 +486,28 @@ namespace ControllerSystem {
         LS_LOCK_WRITE();
         if(nstates == 1) return;
         --nstates;
+        if(dstate > nstates) dstate = nstates;
+        if(sstate > nstates) sstate = nstates;
         for(int i=0; i<ctrlrs.size(); ++i){
             ctrlrs[i]->NumStatesChanged();
         }
     }
+    void AllCtrlrsDisplayStateChanged(){
+        for(int i=0; i<ctrlrs.size(); ++i){
+            ctrlrs[i]->DisplayStateChanged();
+        }
+    }
     void CopyState(int dst, int src){
         LS_LOCK_READ();
-        if(dst < 0 || src < 0 || dst >= nstates || src >= nstates){
+        if(dst < 0 || src < 0 || dst > nstates || src > nstates){
             jassertfalse;
             return;
         }
         for(int i=0; i<ctrlrs.size(); ++i){
             ctrlrs[i]->CopyState(dst, src);
+        }
+        if(dst == dstate || (states_protected[dstate] && dst == 0)){
+            AllCtrlrsDisplayStateChanged();
         }
     }
 
@@ -497,16 +519,35 @@ namespace ControllerSystem {
     }
     void ActivateState(int s){
         LS_LOCK_READ();
-        dstate = sstate = s;
-        for(int i=0; i<ctrlrs.size(); ++i){
-            ctrlrs[i]->DisplayStateChanged();
+        jassert(s >= 1 && s <= nstates);
+        if(states_protected[s]){
+            CopyState(0, s);
         }
+        dstate = sstate = s;
+        AllCtrlrsDisplayStateChanged();
     }
     void BlindState(int s){
         LS_LOCK_READ();
+        jassert(s >= 1 && s <= nstates);
         dstate = s;
-        for(int i=0; i<ctrlrs.size(); ++i){
-            ctrlrs[i]->DisplayStateChanged();
+        AllCtrlrsDisplayStateChanged();
+    }
+    bool IsStateProtected(int s){
+        LS_LOCK_READ();
+        jassert(s >= 1 && s <= nstates);
+        return states_protected[s];
+    }
+    void ProtectState(int s, bool protect){
+        LS_LOCK_WRITE();
+        jassert(s >= 1 && s <= nstates);
+        if(states_protected[s] == protect) return;
+        if(s == sstate){
+            if(protect){
+                CopyState(0, s);
+            }else{
+                CopyState(s, 0);
+            }
         }
+        states_protected.set(s, protect);
     }
 }

@@ -6,3 +6,6 @@
     more support in TimingSystem
   * Multiple display modes for values across the program (e.g. percent, hex byte)
   * Optional nonlinearity at end of channel, then optional clip/wrap/ignore
+  * Reorder display of channels to be grouped by channel name first, then
+    fixture ID
+  * Select/edit multiple entires in MatrixEditor
