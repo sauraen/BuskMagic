@@ -27,6 +27,8 @@ void ControllerCmp::mouseDrag(const MouseEvent &event) {
     MouseEvent c_event = event.getEventRelativeTo(canvas);
     MouseEvent v_event = event.getEventRelativeTo(viewport);
     controller->pos = c_event.getPosition() - dragbegin_local;
+    controller->pos.x = ((controller->pos.x + 4) >> 3) << 3;
+    controller->pos.y = ((controller->pos.y + 4) >> 3) << 3;
     if(controller->pos.x < 0) controller->pos.x = 0;
     if(controller->pos.y < 0) controller->pos.y = 0;
     if(controller->pos.x > canvas->getWidth() - getWidth()) controller->pos.x = canvas->getWidth() - getWidth();

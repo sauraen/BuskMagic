@@ -334,7 +334,18 @@ void MatrixEditor::mouseUp(const MouseEvent &event){
                 --drag_dest;
             }
             if(drag_ct >= 0 && drag_dest >= 0){
-                ControllerSystem::ChangeControllerOrder(drag_ct, drag_dest);
+                Controller *drag_ct_ct = ctSet[drag_ct];
+                Controller *drag_dest_ct = ctSet[drag_dest];
+                jassert(drag_ct_ct != nullptr && drag_dest_ct != nullptr);
+                int drag_ct_ctidx = -1, drag_dest_ctidx = -1;
+                for(int i=0; i<ControllerSystem::NumControllers(); ++i){
+                    Controller *ctrlr = ControllerSystem::GetController(i);
+                    if(ctrlr == drag_ct_ct) drag_ct_ctidx = i;
+                    else if(ctrlr == drag_dest_ct) drag_dest_ctidx = i;
+                }
+                jassert(drag_ct_ctidx >= 0 && drag_dest_ctidx >= 0);
+                ControllerSystem::ChangeControllerOrder(drag_ct_ctidx, drag_dest_ctidx);
+                RefreshVisibleControllerSet();
             }
             drag_ct = -1;
             drag_dest = -1;
@@ -355,6 +366,7 @@ void MatrixEditor::RefreshControllerFilters(){
     ctnames.sortNatural();
     lstCtGroup->syncToSortedList(ctgroups);
     lstCtName->syncToSortedList(ctnames);
+    repaint();
 }
 
 void MatrixEditor::RefreshChannelFilters(){
@@ -378,6 +390,7 @@ void MatrixEditor::RefreshChannelFilters(){
     lstFixID->syncToSortedList(fixids, true);
     lstFixName->syncToSortedList(fixnames);
     lstChName->syncToSortedList(chnames);
+    repaint();
 }
 
 

@@ -190,7 +190,7 @@ public:
         ConfigureOptionButton(optBeat, this, 2, textcolor, "Beat", mc->GetTimeBase() == ModulatorController::beat);
         ConfigureOptionButton(optSecond, this, 2, textcolor, "Second", mc->GetTimeBase() == ModulatorController::second);
         
-        setSize(300, 96);
+        setSize(296, 96);
         texty = 12;
         textwidth = 64;
         btnEnable->setTopLeftPosition(8, 40);

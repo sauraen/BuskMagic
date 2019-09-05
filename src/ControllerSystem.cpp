@@ -62,7 +62,7 @@ Controller::Controller()
       color(Colours::red), groupColor(Colours::lightgrey),
       component(nullptr)
 {
-    for(int i=0; i<ControllerSystem::NumStates(); ++i){
+    for(int i=0; i<=ControllerSystem::NumStates(); ++i){
         states_enabled.add(true);
     }
     AddMIDIAction(MIDIUser::in_on);
@@ -77,7 +77,14 @@ Controller::Controller(const Controller &other) : MIDIUser(other),
     pos(other.pos + Point<int>(100,100)), nostate(other.nostate),
     name(other.name + " 2"), group(other.group),
     color(other.color), groupColor(other.groupColor),
-    states_enabled(other.states_enabled), component(nullptr) {}
+    states_enabled(other.states_enabled), component(nullptr) 
+{
+    if(group > 0){
+        for(int i=0; i<=ControllerSystem::NumStates(); ++i){
+            states_enabled.set(i, false);
+        }
+    }
+}
 
 String Controller::GetName() const{
     LS_LOCK_READ();
@@ -168,9 +175,9 @@ void Controller::DisplayStateChanged(){
 }
 void Controller::NumStatesChanged(){
     //LS_LOCK_READ(); Should already be locked
-    int ns = ControllerSystem::NumStates();
+    int ns = ControllerSystem::NumStates()+1;
     while(states_enabled.size() > ns) states_enabled.remove(states_enabled.size()-1);
-    while(states_enabled.size() < ns) states_enabled.add(false);
+    while(states_enabled.size() < ns) states_enabled.add(group <= 0);
 }
 void Controller::CopyState(int dst, int src){
     //LS_LOCK_READ(); Should already be locked
@@ -242,7 +249,7 @@ void SimpleController::RemoveAllMagicValuesForChannel(const Channel *chn){
 ContinuousController::ContinuousController()
     : Controller(),
     lovalue(this), hivalue(this, 1.0f) {
-    for(int i=0; i<ControllerSystem::NumStates(); ++i){
+    for(int i=0; i<=ControllerSystem::NumStates(); ++i){
         states_knob.add(0.0f);
     }
     name = "Continuous Controller";
@@ -280,7 +287,7 @@ void ContinuousController::DisplayStateChanged(){
 void ContinuousController::NumStatesChanged(){
     //LS_LOCK_READ(); Should already be locked
     Controller::NumStatesChanged();
-    int ns = ControllerSystem::NumStates();
+    int ns = ControllerSystem::NumStates()+1;
     while(states_knob.size() > ns) states_knob.remove(states_knob.size()-1);
     while(states_knob.size() < ns) states_knob.add(0.0f);
 }
