@@ -69,7 +69,7 @@ void PhasorEditor::paint (Graphics& g) {
     //
     g.setColour(Colours::darkgrey);
     for(int i=0; i<snapangles; ++i){
-        float angle = 2.0f * M_PI * (float)i / (float)snapangles;
+        float angle = MathConstants<float>::twoPi * (float)i / (float)snapangles;
         g.drawLine(70, 70, 70 + 100*std::cos(angle), 70 + 100*std::sin(angle));
     }
     g.drawEllipse(20, 20, 100, 100, 2);
@@ -180,7 +180,7 @@ void PhasorEditor::mouseDrag(const MouseEvent &event){
     Point<float> center = (getScreenPosition() + Point<int>(70, 70)).toFloat();
     Point<float> end = event.getScreenPosition().toFloat();
     float mag = center.getDistanceFrom(end);
-    float angle = center.getAngleToPoint(end)/ (2.0f * M_PI);
+    float angle = center.getAngleToPoint(end)/ MathConstants<float>::twoPi;
     mag /= 50.0f; //radius of circle
     angle = 0.25f - angle; //correct for stupid Juce angle system clockwise from up
     if(mag < 1e-7){ //correct for zero magnitude giving 0.25 angle

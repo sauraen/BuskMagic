@@ -376,7 +376,7 @@ float ModulatorController::Evaluate(float angle) const {
     float riseshape = (h-l)*(t_frac-pw)/(1.0f-pw) + l;
     switch(shape){
     case ModulatorShape::cosine:
-        return (h-l)*std::cos(2.0f * M_PI * t_frac) + l;
+        return (h-l)*std::cos(MathConstants<float>::twoPi * t_frac) + l;
     case ModulatorShape::triangle:
         return t_frac < pw ? fallshape : riseshape;
     case ModulatorShape::noise:

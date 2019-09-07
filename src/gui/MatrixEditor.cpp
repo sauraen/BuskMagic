@@ -193,7 +193,7 @@ void MatrixEditor::paint (Graphics& g) {
             }
             float midx = x + (col_width / 2);
             float midy = y + (row_height / 2);
-            float angle = 2.0f * M_PI * phasor->angle;
+            float angle = MathConstants<float>::twoPi * phasor->angle;
             float fit_in_box = 0.8f * 0.5f * std::min(row_height, col_width);
             if(std::abs(phasor->mag) < 0.0001f) fit_in_box = 0.0f;
             float endx = midx + std::cos(angle) * fit_in_box;

@@ -36,7 +36,7 @@ struct Phasor {
     
     Point<float> GetEditorXY() {
         float e_mag = 50.0f * mag;
-        float e_angle = 2.0f * M_PI * angle;
+        float e_angle = MathConstants<float>::twoPi * angle;
         return Point<float>(70 + e_mag * std::cos(e_angle), 
                             70 - e_mag * std::sin(e_angle));
     }
