@@ -50,15 +50,18 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindowComponent)
 };
 
+class MainWindow;
+
 class MainMenus : public MenuBarModel {
 public:
-    MainMenus() {}
+    MainMenus(MainWindow *mw);
     ~MainMenus() {}
     
     StringArray getMenuBarNames() override;
     PopupMenu getMenuForIndex(int topLevelMenuIndex, const String &menuName) override;
     void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
 private:
+    MainWindow *parent;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainMenus)
 };
 
@@ -68,7 +71,16 @@ public:
     ~MainWindow();
     
     void closeButtonPressed() override;
+    
+    void requestedQuit();
 private:
+    friend class MainMenus;
+    void Init(ValueTree showfile_node = ValueTree());
+    void Finalize();
+    void Load();
+    void Save(bool saveas);
+    File curshowfile;
+    
     std::unique_ptr<MainMenus> mainmenus;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
 };

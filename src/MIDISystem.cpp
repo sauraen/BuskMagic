@@ -26,6 +26,8 @@
 
 #include <vector>
 
+static Identifier idMIDISystem("midisystem");
+
 MIDISetting::MIDISetting(bool out_, bool continuous_)
     : out(out_), continuous(continuous_), 
       port(-1), channel(-1), type(-1), note(60), vel(-1) {}
@@ -409,7 +411,7 @@ namespace MIDISystem {
     };
     static MIDISystemCallback callback;
     
-    void Init(){
+    void Init(ValueTree ms_node){
         learner = nullptr;
         AddInPort();
         AddOutPort();
@@ -428,12 +430,8 @@ namespace MIDISystem {
         outports.clear();
     }
     
-    void Load(ValueTree v){
-        std::cout << "TODO loading not implemented yet\n";
-    }
     ValueTree Save(){
-        std::cout << "TODO saving not implemented yet\n";
-        return ValueTree();
+        return ValueTree(idMIDISystem);
     }
     
     int NumInPorts() { return (int)inports.size(); }

@@ -245,3 +245,9 @@ inline ValueTree VT_Load(File f, Identifier topleveltype){
     }
     return v;
 }
+
+inline bool VT_Save(ValueTree vt, File f, String extension, String commentinsides){
+    std::unique_ptr<XmlElement> xml(vt.createXml());
+    return xml->writeToFile(f.withFileExtension(extension), 
+        "<!-- " + commentinsides + " -->", "UTF-8", 80);
+}

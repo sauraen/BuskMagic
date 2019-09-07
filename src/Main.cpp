@@ -37,10 +37,10 @@ public:
     }
 
     void systemRequestedQuit() override {
-        quit();
+        mainWindow->requestedQuit();
     }
     void anotherInstanceStarted (const String& commandLine) override {
-        WarningBox("You may not run multiple instances of BuskMagic at the same time.");
+        WarningBox("This text should never appear. Shoutouts to <insert favorite YouTuber here>");
     }
 private:
     std::unique_ptr<MainWindow> mainWindow;

@@ -24,6 +24,7 @@
 
 #include "gui/MatrixEditor.h"
 
+static Identifier idChannelSystem("channelsystem");
 
 static void RefreshMatrixEditor(bool invalidate){
     MatrixEditor::mtxed_static->RefreshChannelFilters();
@@ -297,5 +298,15 @@ namespace ChannelSystem {
                 FixtureSystem::Fix(i)->GetChannel(j)->SortPhasors();
             }
         }
+    }
+    
+    void Init(ValueTree cs_node){
+        //TODO
+    }
+    void Finalize(){
+        //TODO
+    }
+    ValueTree Save(){
+        return ValueTree(idChannelSystem);
     }
 }

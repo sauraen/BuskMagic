@@ -18,6 +18,8 @@
 
 #include "TimingSystem.h"
 
+static Identifier idTimingSystem("timingsystem");
+
 namespace TimingSystem {
     
     uint64_t GetTimeMS(){
@@ -174,14 +176,17 @@ namespace TimingSystem {
     }
     bool IsFrozen() { return frozen; }
     
-    void Init(){
+    void Init(ValueTree ts_node){
         origin = GetTimeMS();
         tempo_msperbeat = 60000.0 / 120.0;
         measurelen = 4;
         frozen = false;
     }
     void Finalize(){
-        
+        //TODO
+    }
+    ValueTree Save(){
+        return ValueTree(idTimingSystem);
     }
     
 }

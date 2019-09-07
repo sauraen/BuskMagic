@@ -57,12 +57,12 @@ namespace ArtNetSystem {
         String GetDescription();
         
         ArtNetDevice();
+        ArtNetDevice(ValueTree dev_node);
+        ValueTree Save();
     };
 
-    void Init();
+    void Init(ValueTree as_node = ValueTree());
     void Finalize();
-    
-    void Load(ValueTree v);
     ValueTree Save();
     
     int GetPollMode();

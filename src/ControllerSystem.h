@@ -187,8 +187,9 @@ private:
 
 namespace ControllerSystem {
 
-    void Init();
+    void Init(ValueTree cs_node = ValueTree());
     void Finalize();
+    ValueTree Save();
     
     int NumControllers();
     Controller *GetController(int i);

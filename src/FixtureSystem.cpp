@@ -23,6 +23,8 @@
 
 #include "gui/MatrixEditor.h"
 
+Identifier idFixtureSystem("fixturesystem");
+
 Identifier idFixDefs("fixdefs");
 Identifier idFixture("fixture");
 Identifier idInUse("inuse");
@@ -426,6 +428,16 @@ namespace FixtureSystem {
         LS_LOCK_WRITE();
         FixtureComparator fc;
         fixtures.sort(fc, false);
+    }
+    
+    void Init(ValueTree fs_node){
+        //TODO
+    }
+    void Finalize(){
+        //TODO
+    }
+    ValueTree Save(){
+        return ValueTree(idFixtureSystem);
     }
     
 }

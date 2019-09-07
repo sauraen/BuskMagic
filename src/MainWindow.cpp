@@ -26,11 +26,14 @@
 #include "gui/TimingWindow.h"
 
 #include "ArtNetSystem.h"
+#include "ChannelSystem.h"
+#include "ControllerSystem.h"
+#include "FixtureSystem.h"
+#include "LightingSystem.h"
 #include "MIDISystem.h"
 #include "TimingSystem.h"
-#include "LightingSystem.h"
 
-static Image app_icon;
+static Image *app_icon = nullptr;
 
 class SubWindow : public Component {
 public:
@@ -51,7 +54,7 @@ public:
         ComponentPeer *peer = getPeer();
         peer->setVisible(false);
         peer->setTitle(name);
-        peer->setIcon(app_icon);
+        peer->setIcon(*app_icon);
     }
     ~SubWindow() {
         contents = nullptr;
@@ -85,58 +88,117 @@ namespace {
         controllersWindow, statesWindow, timingWindow;
 }
 
-MainWindow::MainWindow() 
-    : DocumentWindow("BuskMagic", LFWindowColor(), DocumentWindow::allButtons, true)
-{
-    setUsingNativeTitleBar(true);
-    setResizable(true, false);
-    centreWithSize(getWidth(), getHeight());
-    app_icon = ImageCache::getFromMemory(BinaryData::logo_128_png, BinaryData::logo_128_pngSize);
-    setIcon(app_icon);
-    getPeer()->setIcon(app_icon);
-    mainmenus.reset(new MainMenus());
-    setMenuBar(mainmenus.get());
-    #ifdef JUCE_MAC
-        MenuBarModel::setMacMainMenu(mainmenus.get());
-    #endif
-    setContentOwned(new MainWindowComponent(), false);
-    setVisible(true);
-    setSize(800, 600);
-    //Application startup
-    ArtNetSystem::Init();
-    MIDISystem::Init();
-    TimingSystem::Init();
-    ControllerSystem::Init();
-    LightingSystem::Init();
-    //GUI startup
+void MainWindow::Init(ValueTree showfile_node){
+    ArtNetSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("artnetsystem") : ValueTree());
+    MIDISystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("midisystem") : ValueTree());
+    TimingSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("timingsystem") : ValueTree());
+    ControllerSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("controllersystem") : ValueTree());
+    ChannelSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("channelsystem") : ValueTree());
+    FixtureSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("fixturesystem") : ValueTree());
+    LightingSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("lightingsystem") : ValueTree());
     artnetWindow.reset(new SubWindow("BuskMagic - Art-Net Setup", false, new ArtNetSetup()));
     midiWindow.reset(new SubWindow("BuskMagic - MIDI Setup", false, new MIDISetup()));
     patcherWindow.reset(new SubWindow("BuskMagic - Patcher", false, new Patcher()));
     controllersWindow.reset(new SubWindow("BuskMagic - Controllers", true, new ControllerWindow()));
     statesWindow.reset(new SubWindow("BuskMagic - States", false, new StatesWindow()));
     timingWindow.reset(new SubWindow("BuskMagic - Timing (Tempo)", false, new TimingWindow()));
+    setContentOwned(new MainWindowComponent(), false);
+    setVisible(true);
 }
-
-MainWindow::~MainWindow() {
-    setMenuBar(nullptr);
-    //GUI finalize
-    artnetWindow = nullptr;
-    midiWindow = nullptr;
-    patcherWindow = nullptr;
-    controllersWindow = nullptr;
-    statesWindow = nullptr;
+void MainWindow::Finalize(){
+    setVisible(false);
+    clearContentComponent();
     timingWindow = nullptr;
-    //Application finalize
+    statesWindow = nullptr;
+    controllersWindow = nullptr;
+    patcherWindow = nullptr;
+    midiWindow = nullptr;
+    artnetWindow = nullptr;
     LightingSystem::Finalize();
+    FixtureSystem::Finalize();
+    ChannelSystem::Finalize();
     ControllerSystem::Finalize();
     TimingSystem::Finalize();
     MIDISystem::Finalize();
     ArtNetSystem::Finalize();
 }
 
+void MainWindow::Load(){
+    if(!NativeMessageBox::showYesNoBox(AlertWindow::WarningIcon, "BuskMagic",
+            "Are you sure you want to erase the current showfile and load a new one?")) return;
+    FileChooser fc("Load showfile...", File::getSpecialLocation(File::userHomeDirectory), "*.bmshow");
+    if(!fc.browseForFileToOpen()) return;
+    File showfile = fc.getResult();
+    ValueTree showfile_node = VT_Load(showfile, Identifier("buskmagicshow"));
+    if(!showfile_node.isValid()){
+        WarningBox(showfile.getFullPathName() + " is not a valid BuskMagic showfile!");
+        return;
+    }
+    Finalize();
+    Init(showfile_node);
+    curshowfile = showfile;
+}
+void MainWindow::Save(bool saveas){
+    File showfile;
+    if(saveas || curshowfile.getFullPathName() == ""){
+        FileChooser fc("Save showfile as...", File::getSpecialLocation(File::userHomeDirectory), "*.bmshow");
+        if(!fc.browseForFileToSave(true)) return;
+        showfile = fc.getResult();
+    }else{
+        showfile = curshowfile;
+    }
+    ValueTree showfile_node(Identifier("buskmagicshow"));
+    showfile_node.addChild(ArtNetSystem::Save(), -1, nullptr);
+    showfile_node.addChild(MIDISystem::Save(), -1, nullptr);
+    showfile_node.addChild(TimingSystem::Save(), -1, nullptr);
+    showfile_node.addChild(ControllerSystem::Save(), -1, nullptr);
+    showfile_node.addChild(ChannelSystem::Save(), -1, nullptr);
+    showfile_node.addChild(FixtureSystem::Save(), -1, nullptr);
+    showfile_node.addChild(LightingSystem::Save(), -1, nullptr);
+    if(!VT_Save(showfile_node, showfile, "bmshow", "BuskMagic Showfile")){
+        WarningBox("Could not save showfile " + showfile.getFullPathName());
+        return;
+    }
+    curshowfile = showfile;
+}
+
+MainWindow::MainWindow() 
+    : DocumentWindow("BuskMagic", LFWindowColor(), DocumentWindow::allButtons, true)
+{
+    setUsingNativeTitleBar(true);
+    setResizable(true, false);
+    centreWithSize(getWidth(), getHeight());
+    app_icon = new Image(ImageCache::getFromMemory(BinaryData::logo_128_png, BinaryData::logo_128_pngSize));
+    setIcon(*app_icon);
+    getPeer()->setIcon(*app_icon);
+    mainmenus.reset(new MainMenus(this));
+    setMenuBar(mainmenus.get());
+    #ifdef JUCE_MAC
+        MenuBarModel::setMacMainMenu(mainmenus.get());
+    #endif
+    setSize(800, 600);
+    Init(ValueTree()); //TODO command line parameters
+}
+
+MainWindow::~MainWindow() {
+    Finalize();
+    setMenuBar(nullptr);
+    delete app_icon; app_icon = nullptr;
+}
+
 void MainWindow::closeButtonPressed() {
     JUCEApplication::getInstance()->systemRequestedQuit();
 }
+
+void MainWindow::requestedQuit(){
+    int res = NativeMessageBox::showYesNoCancelBox(AlertWindow::WarningIcon, "BuskMagic",
+            "Save current showfile before quitting?");
+    if(res == 0) return;
+    if(res == 1) Save(false);
+    JUCEApplication::getInstance()->quit();
+}
+
+MainMenus::MainMenus(MainWindow *mw) : parent(mw) {}
 
 StringArray MainMenus::getMenuBarNames() {
     return StringArray("File", "Setup", "Live");
@@ -176,13 +238,13 @@ PopupMenu MainMenus::getMenuForIndex(int topLevelMenuIndex, const String &menuNa
 void MainMenus::menuItemSelected(int menuItemID, int topLevelMenuIndex){
     switch(menuItemID){
     case 0x1000:
-        WarningBox("Load showfile not yet implemented!");
+        parent->Load();
         break;
     case 0x1001:
-        WarningBox("Save showfile not yet implemented!");
+        parent->Save(false);
         break;
     case 0x1002:
-        WarningBox("Save showfile as not yet implemented!");
+        parent->Save(true);
         break;
     case 0x1010:
         JUCEApplication::getInstance()->systemRequestedQuit();

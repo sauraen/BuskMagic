@@ -26,6 +26,7 @@
 #include "gui/Controller/ControllerCmps.h"
 #include "gui/Controller/ControllerCanvas.h"
 
+static Identifier idControllerSystem("controllersystem");
 
 static void RefreshMatrixEditor(bool invalidate){
     MatrixEditor::mtxed_static->RefreshControllerFilters();
@@ -470,13 +471,16 @@ namespace ControllerSystem {
     int dstate, sstate;
     Array<bool> states_protected;
     
-    void Init(){
+    void Init(ValueTree as_node){
         nstates = 10;
         for(int i=0; i<=nstates; ++i) states_protected.add(false);
         dstate = sstate = 1;
     }
     void Finalize(){
-        //
+        //TODO
+    }
+    ValueTree Save(){
+        return ValueTree(idControllerSystem);
     }
     
     int NumStates(){

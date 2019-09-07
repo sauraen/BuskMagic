@@ -16,3 +16,5 @@
 
   * Optional nonlinearity at end of channel, then optional clip/wrap/ignore
   * Select/edit multiple entires in MatrixEditor
+  * Status messages, e.g. save successful
+  * Autosave system

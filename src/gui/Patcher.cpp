@@ -580,8 +580,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
         FileChooser fc("Save fixture as...",
                 dir.isDirectory() ? dir : File::getSpecialLocation(File::userHomeDirectory), "*.xml");
         if(!fc.browseForFileToSave(true)) return;
-        std::unique_ptr<XmlElement> xml(v.createXml());
-        if(!xml->writeToFile(fc.getResult().withFileExtension("xml"), "<!-- BuskMagic Fixture File -->", "UTF-8", 80)){
+        if(!VT_Save(v, fc.getResult(), "xml", "BuskMagic Fixture File")){
             WarningBox("Could not save fixture file.");
         }else{
             fillDirBox();

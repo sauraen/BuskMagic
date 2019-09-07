@@ -108,10 +108,8 @@ private:
 
 namespace MIDISystem {
     
-    void Init();
+    void Init(ValueTree ms_node = ValueTree());
     void Finalize();
-    
-    void Load(ValueTree v);
     ValueTree Save();
     
     int NumInPorts();

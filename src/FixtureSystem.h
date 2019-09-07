@@ -107,4 +107,8 @@ namespace FixtureSystem {
     int NumFixtures();
     Fixture *Fix(int i);
     void SortFixtures();
+    
+    void Init(ValueTree fs_node = ValueTree());
+    void Finalize();
+    ValueTree Save();
 }

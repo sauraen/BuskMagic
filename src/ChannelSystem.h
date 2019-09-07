@@ -103,4 +103,9 @@ namespace ChannelSystem {
     
     void RemoveAllPhasorsForController(Controller *c);
     void SortAllChannelPhasors();
+    
+    void Init(ValueTree cs_node = ValueTree());
+    void Finalize();
+    ValueTree Save();
+    
 }

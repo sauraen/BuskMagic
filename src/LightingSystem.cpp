@@ -23,6 +23,8 @@
 
 #include <cstring>
 
+static Identifier idLightingSystem("lightingsystem");
+
 namespace LightingSystem {
     ReadWriteLock mutex;
     
@@ -55,7 +57,7 @@ namespace LightingSystem {
     };
     static LightingThread *lth = nullptr;
     
-    void Init(){
+    void Init(ValueTree ls_node){
         if(lth != nullptr){
             std::cout << "LightingSystem multiply initted!\n";
             return;
@@ -67,5 +69,9 @@ namespace LightingSystem {
         lth->stopTimer();
         delete lth;
         lth = nullptr;
+    }
+    
+    ValueTree Save(){
+        return ValueTree(idLightingSystem);
     }
 }

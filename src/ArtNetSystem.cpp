@@ -22,6 +22,27 @@
 
 #include <cstring>
 
+static Identifier idArtNetSystem("artnetsystem");
+static Identifier idPollMode("pollmode");
+static Identifier idArtNetDevice("artnetdevice");
+static Identifier idMode("mode");
+static Identifier idStyle("style");
+static Identifier idMap("map");
+static Identifier idNet("net");
+static Identifier idMapNet("map_net");
+static Identifier idSubnet("subnet");
+static Identifier idMapSubnet("map_subnet");
+static Identifier idUniverse("universe");
+static Identifier idInUni("inuni");
+static Identifier idOutUni("outuni");
+static Identifier idMapInUni("map_inuni");
+static Identifier idMapOutUni("map_outuni");
+static Identifier idBindIndex("bindindex");
+static Identifier idIP("ip");
+static Identifier idShortName("shortname");
+static Identifier idLongName("longname");
+
+
 namespace ArtNetSystem {
     
     ReadWriteLock mutex;
@@ -97,8 +118,67 @@ namespace ArtNetSystem {
         shortname("<Short name>"), 
         longname("<Device long name>"), 
         nodereport("(Have not received ArtPollReply from this device)") {}
+        
+    #define LOAD_FOUR_UNI_VALUES(idSomething, somethinguni) { \
+        ValueTree temp = dev_node.getChildWithName(idSomething); \
+        if(!temp.isValid()) { jassertfalse; return; } \
+        if(!temp.getNumChildren() == 4) { jassertfalse; return; } \
+        for(int i=0; i<4; ++i) somethinguni[i] = (int)temp.getChild(i).getProperty(idUniverse, 0x7F); \
+    } REQUIRESEMICOLON
+    
+    ArtNetDevice::ArtNetDevice(ValueTree dev_node) :
+        status{0xFF, 0xFF}, oem(0x0000), esta(0x4F4E), fw(0x0000),
+        nodereport("(Have not received ArtPollReply from this device)") {
+        if(!dev_node.isValid()) { jassertfalse; return; }
+        mode = static_cast<Mode>((uint8_t)(int)dev_node.getProperty(idMode, 0));
+        style = static_cast<Style>((uint8_t)(int)dev_node.getProperty(idStyle, 0));
+        net = (int)dev_node.getProperty(idNet, 0);
+        subnet = (int)dev_node.getProperty(idSubnet, 0);
+        LOAD_FOUR_UNI_VALUES(idInUni, inuni);
+        LOAD_FOUR_UNI_VALUES(idOutUni, outuni);
+        map = dev_node.getProperty(idMap, false);
+        map_net = (int)dev_node.getProperty(idMapNet, 0);
+        map_subnet = (int)dev_node.getProperty(idMapSubnet, 0);
+        LOAD_FOUR_UNI_VALUES(idMapInUni, map_inuni);
+        LOAD_FOUR_UNI_VALUES(idMapOutUni, map_outuni);
+        bindindex = (int)dev_node.getProperty(idBindIndex, 0);
+        ip = IPAddress(dev_node.getProperty(idIP, "").toString());
+        shortname = dev_node.getProperty(idShortName, "<Short name>").toString();
+        longname = dev_node.getProperty(idLongName, "<Device long name>").toString();
+    }
+    
+    #define SAVE_FOUR_UNI_VALUES(idSomething, somethinguni) { \
+        ValueTree temp(idSomething); \
+        for(int i=0; i<4; ++i){ \
+            ValueTree temptemp(idSomething); \
+            temptemp.setProperty(idUniverse, somethinguni[i], nullptr); \
+            temp.addChild(temptemp, -1, nullptr); \
+        } \
+        ret.addChild(temp, -1, nullptr); \
+    } REQUIRESEMICOLON
+    
+    ValueTree ArtNetDevice::Save(){
+        ValueTree ret(idArtNetDevice);
+        ret.setProperty(idMode, (int)static_cast<uint8_t>(mode), nullptr);
+        ret.setProperty(idStyle, (int)static_cast<uint8_t>(style), nullptr);
+        ret.setProperty(idNet, (int)net, nullptr);
+        ret.setProperty(idSubnet, (int)subnet, nullptr);
+        SAVE_FOUR_UNI_VALUES(idInUni, inuni);
+        SAVE_FOUR_UNI_VALUES(idOutUni, outuni);
+        ret.setProperty(idMap, map, nullptr);
+        ret.setProperty(idMapNet, (int)map_net, nullptr);
+        ret.setProperty(idMapSubnet, (int)map_subnet, nullptr);
+        SAVE_FOUR_UNI_VALUES(idMapInUni, map_inuni);
+        SAVE_FOUR_UNI_VALUES(idMapOutUni, map_outuni);
+        ret.setProperty(idBindIndex, (int)bindindex, nullptr);
+        ret.setProperty(idIP, ip.toString(), nullptr);
+        ret.setProperty(idShortName, shortname, nullptr);
+        ret.setProperty(idLongName, longname, nullptr);
+        return ret;
+    }
     
     static OwnedArray<ArtNetDevice> devices;
+    
     int NumDevices() { return devices.size(); }
     ArtNetDevice *GetDevice(int d) {
         AS_LOCK_READ();
@@ -307,7 +387,7 @@ namespace ArtNetSystem {
         delete[] data;
     }
     
-    static int pollmode = 2; //0: disabled 1: static 2: DHCP
+    static int pollmode; //0: disabled 1: static 2: DHCP
     int GetPollMode() { return pollmode; }
     void SetPollMode(int pmode) { pollmode = pmode; }
     
@@ -504,11 +584,19 @@ namespace ArtNetSystem {
     };
     static ArtNetReceiver *receiver = nullptr;
     
-    void Init(){
-        AS_LOCK_READ();
+    void Init(ValueTree as_node){
+        AS_LOCK_WRITE();
         if(sendsock != nullptr){
-            std::cout << "ArtNetSystem already initted!\n";
+            std::cout << "ArtNetSystem nultiply initted!\n";
+            jassertfalse;
             return;
+        }
+        pollmode = 2;
+        if(as_node.isValid()){
+            pollmode = as_node.getProperty(idPollMode, 2);
+            for(int i=0; i<as_node.getNumChildren(); ++i){
+                devices.add(new ArtNetDevice(as_node.getChild(i)));
+            }
         }
         IPAddress localIP = IPAddress::getLocalAddress();
         dhcpBroadcast = IPAddress::getInterfaceBroadcastAddress(localIP);
@@ -529,14 +617,17 @@ namespace ArtNetSystem {
         delete receiver; receiver = nullptr;
         sendsock->shutdown();
         delete sendsock; sendsock = nullptr;
+        devices.clear();
     }
     
-    void Load(ValueTree v){
-        //TODO
-    }
     ValueTree Save(){
-        //TODO
-        return ValueTree();
+        AS_LOCK_READ();
+        ValueTree ret(idArtNetSystem);
+        ret.setProperty(idPollMode, pollmode, nullptr);
+        for(int i=0; i<devices.size(); ++i){
+            ret.addChild(devices[i]->Save(), -1, nullptr);
+        }
+        return ret;
     }
     
 }

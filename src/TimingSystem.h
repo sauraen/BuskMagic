@@ -23,8 +23,9 @@
 
 namespace TimingSystem {
     
-    void Init();
+    void Init(ValueTree ts_node = ValueTree());
     void Finalize();
+    ValueTree Save();
     
     uint64_t GetTimeMS();
     

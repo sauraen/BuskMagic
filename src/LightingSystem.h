@@ -29,6 +29,7 @@ namespace LightingSystem {
     
     void SignalRecursion();
     
-    void Init();
+    void Init(ValueTree ls_node = ValueTree());
     void Finalize();
+    ValueTree Save();
 }
