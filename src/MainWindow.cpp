@@ -30,6 +30,8 @@
 #include "TimingSystem.h"
 #include "LightingSystem.h"
 
+static Image app_icon;
+
 class SubWindow : public Component {
 public:
     SubWindow(String name, bool resizable, Component *ownedcontents) : Component(name){
@@ -49,7 +51,7 @@ public:
         ComponentPeer *peer = getPeer();
         peer->setVisible(false);
         peer->setTitle(name);
-        //TODO: peer->setIcon(const Image &blah);
+        peer->setIcon(app_icon);
     }
     ~SubWindow() {
         contents = nullptr;
@@ -89,7 +91,9 @@ MainWindow::MainWindow()
     setUsingNativeTitleBar(true);
     setResizable(true, false);
     centreWithSize(getWidth(), getHeight());
-    //TODO: setIcon(const Image &blah);
+    app_icon = ImageCache::getFromMemory(BinaryData::logo_128_png, BinaryData::logo_128_pngSize);
+    setIcon(app_icon);
+    getPeer()->setIcon(app_icon);
     mainmenus.reset(new MainMenus());
     setMenuBar(mainmenus.get());
     #ifdef JUCE_MAC

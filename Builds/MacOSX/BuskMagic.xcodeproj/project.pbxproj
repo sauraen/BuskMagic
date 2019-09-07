@@ -49,6 +49,10 @@
 			isa = PBXBuildFile;
 			fileRef = F32C4C6DA3B9375862D89018;
 		};
+		194B09BCE4E751D0758E12CC = {
+			isa = PBXBuildFile;
+			fileRef = 3100475F745C1E74C1C8D35E;
+		};
 		5D8CD718C1F02EA85BBFACE8 = {
 			isa = PBXBuildFile;
 			fileRef = 2228834872E4324176A77A1D;
@@ -173,6 +177,10 @@
 			isa = PBXBuildFile;
 			fileRef = C295FFBA813CD35D3D9745AF;
 		};
+		D3504958F2B68CBF580F43B2 = {
+			isa = PBXBuildFile;
+			fileRef = 34800D6BBF8C5C1155FC0BC1;
+		};
 		46383F447C575EB6A5F75FF5 = {
 			isa = PBXBuildFile;
 			fileRef = 810798F71E6AE967F565B83C;
@@ -254,6 +262,13 @@
 			path = ../../src/gui/Patcher.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		11F3D0A1E22E5CCAD983A374 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = "logo_128.png";
+			path = "../../data/logo_128.png";
+			sourceTree = "SOURCE_ROOT";
+		};
 		1244CD3566D40BF6A1447627 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -324,6 +339,13 @@
 			path = "../../JuceLibraryCode/include_juce_data_structures.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		293E53A466FD77267E319103 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = BinaryData.h;
+			path = ../../JuceLibraryCode/BinaryData.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		2B683993EEC67CFBEC9D46CB = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -345,11 +367,25 @@
 			path = ../../src/gui/FixParamEd/Color.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		3100475F745C1E74C1C8D35E = {
+			isa = PBXFileReference;
+			lastKnownFileType = file.icns;
+			name = Icon.icns;
+			path = Icon.icns;
+			sourceTree = "SOURCE_ROOT";
+		};
 		3102572C82C40B1591B33DDA = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = MainWindow.cpp;
 			path = ../../src/MainWindow.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		34800D6BBF8C5C1155FC0BC1 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = BinaryData.cpp;
+			path = ../../JuceLibraryCode/BinaryData.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		363442D52A030D802F0667D7 = {
@@ -490,6 +526,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = ControllerWindow.h;
 			path = ../../src/gui/ControllerWindow.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		792AA9F4AA6CF4B64BE8D02D = {
+			isa = PBXFileReference;
+			lastKnownFileType = file.ico;
+			name = logo.ico;
+			path = ../../data/logo.ico;
 			sourceTree = "SOURCE_ROOT";
 		};
 		7B3C80714475D7D2865F9DBA = {
@@ -814,6 +857,13 @@
 			path = ../../src/gui/FixParamEd/ColorMode/RGBA.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		E9A7376A5EAFFA7F67CEC243 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = "logo_24.png";
+			path = "../../data/logo_24.png";
+			sourceTree = "SOURCE_ROOT";
+		};
 		EC6ED210D4C280104F6EE723 = {
 			isa = PBXFileReference;
 			explicitFileType = wrapper.application;
@@ -986,6 +1036,9 @@
 			isa = PBXGroup;
 			children = (
 				2872E8F650557A7CE74A0E2E,
+				E9A7376A5EAFFA7F67CEC243,
+				11F3D0A1E22E5CCAD983A374,
+				792AA9F4AA6CF4B64BE8D02D,
 			);
 			name = BuskMagic;
 			sourceTree = "<group>";
@@ -994,6 +1047,8 @@
 			isa = PBXGroup;
 			children = (
 				2D192C8A1AEDBEC1F8A1C0A0,
+				34800D6BBF8C5C1155FC0BC1,
+				293E53A466FD77267E319103,
 				810798F71E6AE967F565B83C,
 				F60D67D8E646F5C5145AA5FF,
 				145D2CB7ADC5260455480C36,
@@ -1012,6 +1067,7 @@
 			children = (
 				C0FED846C1FAB6501FF3F422,
 				F32C4C6DA3B9375862D89018,
+				3100475F745C1E74C1C8D35E,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1258,6 +1314,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4078C90F845034F499B6113E,
+				194B09BCE4E751D0758E12CC,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1296,6 +1353,7 @@
 				B3CC698D9729C935327F6561,
 				7B1D415BADF2C14F9097CA68,
 				36B86E606A13426FEA9821F7,
+				D3504958F2B68CBF580F43B2,
 				46383F447C575EB6A5F75FF5,
 				2182685E7A92EF7A0146F1FB,
 				C3FB88DC35BE41A376019217,

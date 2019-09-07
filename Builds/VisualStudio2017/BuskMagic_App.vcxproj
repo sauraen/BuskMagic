@@ -169,6 +169,7 @@
     <ClCompile Include="..\..\src\MainWindow.cpp"/>
     <ClCompile Include="..\..\src\MIDISystem.cpp"/>
     <ClCompile Include="..\..\src\TimingSystem.cpp"/>
+    <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_devices.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_core.cpp"/>
@@ -221,7 +222,13 @@
     <ClInclude Include="..\..\src\MIDISystem.h"/>
     <ClInclude Include="..\..\src\TimingSystem.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h"/>
+    <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\data\logo_24.png"/>
+    <None Include="..\..\data\logo_128.png"/>
+    <None Include="..\..\data\logo.ico"/>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\resources.rc"/>

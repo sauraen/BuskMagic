@@ -2,16 +2,15 @@
 
 ## High priority
 
-  * Multiple display modes for values across the program (e.g. percent, hex byte)
+  * Random ModulatorShape not implemented in ModulatorController due to needed
+    more support in TimingSystem
+  * Smoothly changing seconds-based modulator period does not work
   
 ## Medium priority
 
-  * Random ModulatorShape not implemented in ModulatorController due to needed
-    more support in TimingSystem
+  * Multiple display modes for values across the program (e.g. percent, hex byte)
   * Reorder display of channels to be grouped by channel name first, then
     fixture ID
-  * Create and load program icon, ensure it ends up on all windows and on
-    executables cross-platform
     
 ## Low priority
 
