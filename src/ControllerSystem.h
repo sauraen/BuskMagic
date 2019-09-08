@@ -28,9 +28,13 @@ class Channel;
 
 class MagicValue {
 public:
+    MagicValue() = delete;
     MagicValue(Controller *parent, float litvalue = 0.0f);
     ~MagicValue() {}
     MagicValue(const MagicValue &other, Controller *newparent);
+    
+    MagicValue(ValueTree mv_node, Controller *parent);
+    ValueTree Save();
 
     inline bool IsMagic() const { return chan != nullptr; }
     inline float GetLiteral() const { return mugglevalue; }
@@ -61,6 +65,9 @@ public:
     virtual Controller *clone() const = 0;
     virtual String GetClassType() = 0;
     inline int64_t UUID() { return uuid; }
+    
+    Controller(ValueTree ct_node);
+    virtual ValueTree Save();
 
     Point<int> pos;
     bool nostate;
@@ -117,6 +124,9 @@ public:
     SimpleController(const SimpleController &other);
     virtual Controller *clone() const override;
     String GetClassType() override { return "Simple"; }
+    
+    SimpleController(ValueTree ct_node);
+    virtual ValueTree Save() override;
 
     inline MagicValue *GetValue() { return &value; }
 
@@ -135,7 +145,10 @@ public:
     ContinuousController(const ContinuousController &other);
     virtual Controller *clone() const override;
     String GetClassType() override { return "Continuous"; }
-
+    
+    ContinuousController(ValueTree ct_node);
+    virtual ValueTree Save() override;
+    
     float GetKnobDisplay();
     void SetKnobDisplay(float k);
     
@@ -163,7 +176,10 @@ public:
     ModulatorController(const ModulatorController &other);
     virtual Controller *clone() const override;
     String GetClassType() override { return "Modulator"; }
-
+    
+    ModulatorController(ValueTree ct_node);
+    virtual ValueTree Save() override;
+    
     enum ModulatorShape { cosine, triangle, noise, pulse, sawf, sawr };
     enum TimeBase { measure, beat, second };
 

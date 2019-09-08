@@ -23,44 +23,6 @@
 
 #include "gui/MatrixEditor.h"
 
-Identifier idFixtureSystem("fixturesystem");
-
-Identifier idFixDefs("fixdefs");
-Identifier idFixture("fixture");
-Identifier idInUse("inuse");
-Identifier idType("type");
-Identifier idName("name");
-Identifier idLetters("letters");
-Identifier idManufacturer("manufacturer");
-Identifier idProfile("profile");
-Identifier idFootprint("footprint");
-
-Identifier idParam("param");
-Identifier idChannel("channel");
-Identifier idNormal("normal");
-Identifier idFine("fine");
-Identifier idUltra("ultra");
-Identifier idHue("hue");
-Identifier idHueMix("huemix");
-Identifier idColorMode("colormode");
-
-Identifier idRed("red");
-Identifier idGreen("green");
-Identifier idBlue("blue");
-Identifier idAmber("amber");
-Identifier idWhite("white");
-Identifier idUV("uv");
-Identifier idCyan("cyan");
-Identifier idMagenta("magenta");
-Identifier idYellow("yellow");
-
-static Identifier idUUID("uuid");
-static Identifier idFixtures("fixtures");
-static Identifier idFixDir("fixdir");
-static Identifier idFixDef("fixdef");
-static Identifier idFixID("fixid");
-static Identifier idUniverse("universe");
-
 static void RefreshMatrixEditor(bool invalidate){
     MatrixEditor::mtxed_static->RefreshChannelFilters();
     if(invalidate) MatrixEditor::mtxed_static->RefreshVisibleChannelSet();
@@ -119,7 +81,7 @@ Fixture::Fixture(ValueTree fx_node){
     uni = (int)fx_node.getProperty(idUniverse, 0);
     chn = (int)fx_node.getProperty(idChannel, 1);
     for(int i=0; i<fx_node.getNumChildren(); ++i){
-        channels.add(new Channel(fx_node.getChild(i)));
+        channels.add(new Channel(fx_node.getChild(i), this));
     }
 }
 ValueTree Fixture::Save(){
@@ -493,8 +455,8 @@ namespace FixtureSystem {
         ValueTree ret(idFixtureSystem);
         ret.setProperty(idFixDir, fixdir.getFullPathName(), nullptr); //TODO relative to showfile
         for(int i=0; i<fixdefs.getNumChildren(); ++i){
-            if(fixdefs.getChild(i).hasProperty(idUUID)){
-                fixdefs.getChild().setProperty(idUUID, (int64)GenerateUUID(), nullptr);
+            if(!fixdefs.getChild(i).hasProperty(idUUID)){
+                fixdefs.getChild(i).setProperty(idUUID, (int64)GenerateUUID(), nullptr);
             }
         }
         ret.addChild(fixdefs, -1, nullptr);
@@ -502,7 +464,7 @@ namespace FixtureSystem {
         for(int i=0; i<fixtures.size(); ++i){
             fixnode.addChild(fixtures[i]->Save(), -1, nullptr);
         }
-        ret.addChild(fixnode);
+        ret.addChild(fixnode, -1, nullptr);
         return ret;
     }
     

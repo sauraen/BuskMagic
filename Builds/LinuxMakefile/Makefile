@@ -92,6 +92,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/TriggerButton_3d89cd40.o \
   $(JUCE_OBJDIR)/ArtNetSystem_e2a73c9.o \
   $(JUCE_OBJDIR)/ChannelSystem_70c63d9c.o \
+  $(JUCE_OBJDIR)/Common_ea839deb.o \
   $(JUCE_OBJDIR)/ControllerSystem_52a6cf2b.o \
   $(JUCE_OBJDIR)/FixtureSystem_7998ab22.o \
   $(JUCE_OBJDIR)/LightingSystem_a49be95b.o \
@@ -240,6 +241,11 @@ $(JUCE_OBJDIR)/ArtNetSystem_e2a73c9.o: ../../src/ArtNetSystem.cpp
 $(JUCE_OBJDIR)/ChannelSystem_70c63d9c.o: ../../src/ChannelSystem.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling ChannelSystem.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/Common_ea839deb.o: ../../src/Common.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling Common.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/ControllerSystem_52a6cf2b.o: ../../src/ControllerSystem.cpp

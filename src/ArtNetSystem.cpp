@@ -22,27 +22,6 @@
 
 #include <cstring>
 
-static Identifier idArtNetSystem("artnetsystem");
-static Identifier idPollMode("pollmode");
-static Identifier idArtNetDevice("artnetdevice");
-static Identifier idMode("mode");
-static Identifier idStyle("style");
-static Identifier idMap("map");
-static Identifier idNet("net");
-static Identifier idMapNet("map_net");
-static Identifier idSubnet("subnet");
-static Identifier idMapSubnet("map_subnet");
-static Identifier idUniverse("universe");
-static Identifier idInUni("inuni");
-static Identifier idOutUni("outuni");
-static Identifier idMapInUni("map_inuni");
-static Identifier idMapOutUni("map_outuni");
-static Identifier idBindIndex("bindindex");
-static Identifier idIP("ip");
-static Identifier idShortName("shortname");
-static Identifier idLongName("longname");
-
-
 namespace ArtNetSystem {
     
     ReadWriteLock mutex;

@@ -162,6 +162,7 @@
     <ClCompile Include="..\..\src\gui\TriggerButton.cpp"/>
     <ClCompile Include="..\..\src\ArtNetSystem.cpp"/>
     <ClCompile Include="..\..\src\ChannelSystem.cpp"/>
+    <ClCompile Include="..\..\src\Common.cpp"/>
     <ClCompile Include="..\..\src\ControllerSystem.cpp"/>
     <ClCompile Include="..\..\src\FixtureSystem.cpp"/>
     <ClCompile Include="..\..\src\LightingSystem.cpp"/>

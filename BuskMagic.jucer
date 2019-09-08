@@ -93,6 +93,7 @@
       <FILE id="Bp7DIQ" name="ChannelSystem.cpp" compile="1" resource="0"
             file="src/ChannelSystem.cpp"/>
       <FILE id="wmo7Ok" name="ChannelSystem.h" compile="0" resource="0" file="src/ChannelSystem.h"/>
+      <FILE id="nhC0oK" name="Common.cpp" compile="1" resource="0" file="src/Common.cpp"/>
       <FILE id="LqBOIb" name="Common.h" compile="0" resource="0" file="src/Common.h"/>
       <FILE id="W5Dv6F" name="ControllerSystem.cpp" compile="1" resource="0"
             file="src/ControllerSystem.cpp"/>

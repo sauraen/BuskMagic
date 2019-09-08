@@ -18,11 +18,6 @@
 
 #include "TimingSystem.h"
 
-static Identifier idTimingSystem("timingsystem");
-static Identifier idTempoMS("tempoms");
-static Identifier idMeasureLen("measurelen");
-static Identifier idOnlyInt("onlyint");
-
 namespace TimingSystem {
     
     uint64_t GetTimeMS(){

@@ -256,5 +256,113 @@ inline ValueTree VT_Load(File f, Identifier topleveltype){
 inline bool VT_Save(ValueTree vt, File f, String extension, String commentinsides){
     std::unique_ptr<XmlElement> xml(vt.createXml());
     return xml->writeToFile(f.withFileExtension(extension), 
-        "<!-- " + commentinsides + " -->", "UTF-8", 80);
+        "<!-- " + commentinsides + " -->", "UTF-8", 60);
 }
+
+//Identifiers
+extern Identifier idBuskMagicShow;
+extern Identifier idArtNetSystem;
+extern Identifier idMIDISystem;
+extern Identifier idTimingSystem;
+extern Identifier idChannelSystem;
+extern Identifier idFixtureSystem;
+extern Identifier idControllerSystem;
+extern Identifier idLightingSystem;
+//Common attributes
+extern Identifier idUUID;
+extern Identifier idName;
+extern Identifier idLetters;
+extern Identifier idType;
+extern Identifier idMode;
+extern Identifier idAction;
+extern Identifier idParam;
+//I/O attributes
+extern Identifier idNet;
+extern Identifier idMapNet;
+extern Identifier idSubnet;
+extern Identifier idMapSubnet;
+extern Identifier idUniverse;
+extern Identifier idChannel;
+extern Identifier idPort;
+extern Identifier idNote;
+extern Identifier idVel;
+//Objects
+extern Identifier idPhasor;
+extern Identifier idController;
+extern Identifier idFixDefs;
+extern Identifier idFixtures;
+extern Identifier idFixture;
+extern Identifier idStates;
+extern Identifier idState;
+extern Identifier idMIDIUser;
+extern Identifier idMIDISetting;
+//ArtNetSystem
+extern Identifier idPollMode;
+extern Identifier idArtNetDevice;
+extern Identifier idStyle;
+extern Identifier idMap;
+extern Identifier idInUni;
+extern Identifier idOutUni;
+extern Identifier idMapInUni;
+extern Identifier idMapOutUni;
+extern Identifier idBindIndex;
+extern Identifier idIP;
+extern Identifier idShortName;
+extern Identifier idLongName;
+//MIDISystem
+extern Identifier idInPorts;
+extern Identifier idInPort;
+extern Identifier idOutPorts;
+extern Identifier idOutPort;
+extern Identifier idDevName;
+extern Identifier idOut;
+extern Identifier idContinuous;
+//TimingSystem
+extern Identifier idTempoMS;
+extern Identifier idMeasureLen;
+extern Identifier idOnlyInt;
+//ChannelSystem
+extern Identifier idMag;
+extern Identifier idAngle;
+extern Identifier idDefaultValue;
+extern Identifier idOp;
+//FixtureSystem
+extern Identifier idInUse;
+extern Identifier idManufacturer;
+extern Identifier idProfile;
+extern Identifier idFootprint;
+extern Identifier idNormal;
+extern Identifier idFine;
+extern Identifier idUltra;
+extern Identifier idHue;
+extern Identifier idHueMix;
+extern Identifier idColorMode;
+extern Identifier idRed;
+extern Identifier idGreen;
+extern Identifier idBlue;
+extern Identifier idAmber;
+extern Identifier idWhite;
+extern Identifier idUV;
+extern Identifier idCyan;
+extern Identifier idMagenta;
+extern Identifier idYellow;
+extern Identifier idFixDir;
+extern Identifier idFixDef;
+extern Identifier idFixID;
+//ControllerSystem
+extern Identifier idMagicValue;
+extern Identifier idMuggleValue;
+extern Identifier idPosX;
+extern Identifier idPosY;
+extern Identifier idNoState;
+extern Identifier idGroup;
+extern Identifier idColor;
+extern Identifier idGroupColor;
+extern Identifier idEnabled;
+extern Identifier idKnob;
+extern Identifier idShape;
+extern Identifier idTimeBase;
+extern Identifier idNStates;
+extern Identifier idDState;
+extern Identifier idSState;
+extern Identifier idProtected;

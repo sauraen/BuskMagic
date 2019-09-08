@@ -113,6 +113,7 @@ namespace ChannelSystem {
     void RemoveAllPhasorsForController(Controller *c);
     void SortAllChannelPhasors();
     void ConvertAllPhasorsUUIDToPointer();
+    Channel *FindChannelByUUID(int64_t uuid);
     
     void Init(ValueTree cs_node = ValueTree());
     void Finalize();

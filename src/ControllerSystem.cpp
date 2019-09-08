@@ -26,8 +26,6 @@
 #include "gui/Controller/ControllerCmps.h"
 #include "gui/Controller/ControllerCanvas.h"
 
-static Identifier idControllerSystem("controllersystem");
-
 static void RefreshMatrixEditor(bool invalidate){
     MatrixEditor::mtxed_static->RefreshControllerFilters();
     if(invalidate) MatrixEditor::mtxed_static->RefreshVisibleControllerSet();
@@ -37,6 +35,27 @@ MagicValue::MagicValue(Controller *parent, float litvalue)
     : controller(parent), mugglevalue(litvalue), chan(nullptr) {}
 MagicValue::MagicValue(const MagicValue &other, Controller *newparent)
     : controller(newparent), mugglevalue(other.mugglevalue), chan(other.chan) {}
+    
+MagicValue::MagicValue(ValueTree mv_node, Controller *parent) : controller(parent) {
+    int64_t uuid = (int64)mv_node.getProperty(idChannel, 0);
+    if(uuid == 0){
+        chan = nullptr;
+    }else{
+        chan = ChannelSystem::FindChannelByUUID(uuid);
+        if(chan == nullptr){
+            WarningBox("Internally inconsistent channel UUIDs in showfile!\n"
+                    "Show is now corrupted!");
+        }
+    }
+    mugglevalue = mv_node.getProperty(idMuggleValue, 0.0f);
+}
+ValueTree MagicValue::Save(){
+    ValueTree ret(idMagicValue);
+    ret.setProperty(idChannel, (int64)(chan == nullptr ? 0 : chan->UUID()), nullptr);
+    ret.setProperty(idMuggleValue, mugglevalue, nullptr);
+    return ret;
+}
+
 void MagicValue::SetLiteral(float v) {
     mugglevalue = v;
     RefreshComponent();
@@ -85,6 +104,44 @@ Controller::Controller(const Controller &other) : MIDIUser(other),
             states_enabled.set(i, false);
         }
     }
+}
+
+Controller::Controller(ValueTree ct_node) : MIDIUser(ct_node.getChildWithName(idMIDIUser)) {
+    pos.x = ct_node.getProperty(idPosX, 0);
+    pos.y = ct_node.getProperty(idPosY, 0);
+    nostate = ct_node.getProperty(idNoState, false);
+    name = ct_node.getProperty(idName, "New Controller Blah blah");
+    uuid = (int64)ct_node.getProperty(idUUID, 0);
+    group = ct_node.getProperty(idGroup, 0);
+    color = Colour((uint32)(int)ct_node.getProperty(idColor, (int)0xFFFF0000));
+    groupColor = Colour((uint32)(int)ct_node.getProperty(idGroupColor, (int)0xFFFF0000));
+    ValueTree states_node = ct_node.getChildWithName(idStates);
+    if(!states_node.isValid()) { jassertfalse; return; }
+    for(int i=0; i<states_node.getNumChildren(); ++i){
+        states_enabled.add(states_node.getChild(i).getProperty(idEnabled));
+    }
+    component = nullptr;
+}
+ValueTree Controller::Save(){
+    ValueTree ret(idController);
+    ret.addChild(MIDIUser::Save(), -1, nullptr);
+    ret.setProperty(idType, GetClassType(), nullptr);
+    ret.setProperty(idPosX, pos.x, nullptr);
+    ret.setProperty(idPosY, pos.y, nullptr);
+    ret.setProperty(idNoState, nostate, nullptr);
+    ret.setProperty(idName, name, nullptr);
+    ret.setProperty(idUUID, (int64)uuid, nullptr);
+    ret.setProperty(idGroup, group, nullptr);
+    ret.setProperty(idColor, (int)color.getARGB(), nullptr);
+    ret.setProperty(idGroupColor, (int)groupColor.getARGB(), nullptr);
+    ValueTree states_node(idStates);
+    for(int i=0; i<states_enabled.size(); ++i){
+        ValueTree state_node(idState);
+        state_node.setProperty(idEnabled, states_enabled[i], nullptr);
+        states_node.addChild(state_node, -1, nullptr);
+    }
+    ret.addChild(states_node, -1, nullptr);
+    return ret;
 }
 
 String Controller::GetName() const{
@@ -237,6 +294,28 @@ Controller *SimpleController::clone() const{
     return new SimpleController(*this);
 }
 
+#define LOAD_CHILD_MAGICVALUE(mvalue) { \
+    ValueTree v = ct_node.getChildWithProperty(idType, #mvalue); \
+    if(!v.isValid()) { jassertfalse; return; } \
+    mvalue = MagicValue(v, this); \
+} REQUIRESEMICOLON
+
+#define SAVE_CHILD_MAGICVALUE(mvalue) { \
+    ValueTree v = mvalue.Save(); \
+    v.setProperty(idType, #mvalue, nullptr); \
+    ret.addChild(v, -1, nullptr); \
+} REQUIRESEMICOLON
+
+SimpleController::SimpleController(ValueTree ct_node) 
+    : Controller(ct_node), value(this) {
+    LOAD_CHILD_MAGICVALUE(value);
+}
+ValueTree SimpleController::Save(){
+    ValueTree ret = Controller::Save();
+    SAVE_CHILD_MAGICVALUE(value);
+    return ret;
+}
+
 float SimpleController::Evaluate(float angle) const {
     //LS_LOCK_READ(); //Not locking because channel evaluation will lock
     return value.Evaluate(angle);
@@ -267,6 +346,29 @@ ContinuousController::ContinuousController(const ContinuousController &other)
       hivalue(other.hivalue, this), states_knob(other.states_knob) {}
 Controller *ContinuousController::clone() const{
     return new ContinuousController(*this);
+}
+
+ContinuousController::ContinuousController(ValueTree ct_node) 
+    : Controller(ct_node), lovalue(this), hivalue(this) {
+    LOAD_CHILD_MAGICVALUE(lovalue);
+    LOAD_CHILD_MAGICVALUE(hivalue);
+    ValueTree states_node = ct_node.getChildWithName(idStates);
+    if(!states_node.isValid()) { jassertfalse; return; }
+    for(int i=0; i<states_node.getNumChildren(); ++i){
+        states_knob.add(states_node.getChild(i).getProperty(idKnob));
+    }
+}
+ValueTree ContinuousController::Save(){
+    ValueTree ret = Controller::Save();
+    SAVE_CHILD_MAGICVALUE(lovalue);
+    SAVE_CHILD_MAGICVALUE(hivalue);
+    ValueTree states_node = ret.getChildWithName(idStates);
+    if(!states_node.isValid()) { jassertfalse; return ValueTree(); }
+    jassert(states_knob.size() == states_node.getNumChildren());
+    for(int i=0; i<states_knob.size(); ++i){
+        states_node.getChild(i).setProperty(idKnob, states_knob[i], nullptr);
+    }
+    return ret;
 }
 
 float ContinuousController::GetKnobDisplay(){
@@ -347,6 +449,26 @@ ModulatorController::ModulatorController(const ModulatorController &other)
     freet_origin(TimingSystem::GetTimeMS()) {}
 Controller *ModulatorController::clone() const {
     return new ModulatorController(*this);
+}
+
+ModulatorController::ModulatorController(ValueTree ct_node) 
+    : Controller(ct_node), lovalue(this), hivalue(this), pwvalue(this), tvalue(this) {
+    LOAD_CHILD_MAGICVALUE(lovalue);
+    LOAD_CHILD_MAGICVALUE(hivalue);
+    LOAD_CHILD_MAGICVALUE(pwvalue);
+    LOAD_CHILD_MAGICVALUE(tvalue);
+    shape = (ModulatorShape)(int)ct_node.getProperty(idShape, 3);
+    timebase = (TimeBase)(int)ct_node.getProperty(idTimeBase, 1);
+}
+ValueTree ModulatorController::Save(){
+    ValueTree ret = Controller::Save();
+    SAVE_CHILD_MAGICVALUE(lovalue);
+    SAVE_CHILD_MAGICVALUE(hivalue);
+    SAVE_CHILD_MAGICVALUE(pwvalue);
+    SAVE_CHILD_MAGICVALUE(tvalue);
+    ret.setProperty(idShape, (int)shape, nullptr);
+    ret.setProperty(idTimeBase, (int)timebase, nullptr);
+    return ret;
 }
 
 float ModulatorController::Evaluate(float angle) const {
@@ -473,15 +595,59 @@ namespace ControllerSystem {
     Array<bool> states_protected;
     
     void Init(ValueTree as_node){
-        nstates = 10;
-        for(int i=0; i<=nstates; ++i) states_protected.add(false);
-        dstate = sstate = 1;
+        if(as_node.isValid()){
+            nstates = as_node.getProperty(idNStates, 10);
+            dstate = as_node.getProperty(idDState, 1);
+            sstate = as_node.getProperty(idSState, 1);
+            ValueTree states_node = as_node.getChildWithName(idStates);
+            if(!states_node.isValid()) { jassertfalse; return; }
+            jassert(states_node.getNumChildren() == nstates+1);
+            for(int i=0; i<=nstates; ++i){
+                states_protected.add(states_node.getChild(i).getProperty(idProtected, false));
+            }
+            for(int i=0; i<as_node.getNumChildren(); ++i){
+                ValueTree v = as_node.getChild(i);
+                if(!v.hasType(idController)) continue;
+                Controller *c;
+                String classtype = v.getProperty(idType, "").toString();
+                if(classtype == "Simple"){
+                    c = new SimpleController(v);
+                }else if(classtype == "Continuous"){
+                    c = new ContinuousController(v);
+                }else if(classtype == "Modulator"){
+                    c = new ModulatorController(v);
+                }else{
+                    jassertfalse;
+                    continue;
+                }
+                ctrlrs.add(c);
+            }
+        }else{
+            nstates = 10;
+            for(int i=0; i<=nstates; ++i) states_protected.add(false);
+            dstate = sstate = 1;
+        }
     }
     void Finalize(){
-        //TODO
+        ctrlrs.clear();
+        states_protected.clear();
     }
     ValueTree Save(){
-        return ValueTree(idControllerSystem);
+        ValueTree ret(idControllerSystem);
+        ret.setProperty(idNStates, nstates, nullptr);
+        ret.setProperty(idDState, dstate, nullptr);
+        ret.setProperty(idSState, sstate, nullptr);
+        ValueTree states_node(idStates);
+        for(int i=0; i<states_protected.size(); ++i){
+            ValueTree state_node(idState);
+            state_node.setProperty(idProtected, states_protected[i], nullptr);
+            states_node.addChild(state_node, -1, nullptr);
+        }
+        ret.addChild(states_node, -1, nullptr);
+        for(int i=0; i<ctrlrs.size(); ++i){
+            ret.addChild(ctrlrs[i]->Save(), -1, nullptr);
+        }
+        return ret;
     }
     
     int NumStates(){

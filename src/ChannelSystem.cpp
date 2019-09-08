@@ -24,17 +24,6 @@
 
 #include "gui/MatrixEditor.h"
 
-static Identifier idChannelSystem("channelsystem");
-
-static Identifier idPhasor("phasor");
-static Identifier idController("controller");
-static Identifier idMag("mag");
-static Identifier idAngle("angle");
-
-static Identifier idUUID("uuid");
-static Identifier idDefaultValue("defaultvalue");
-static Identifier idOp("op");
-
 static_assert(sizeof(void*) == sizeof(int64_t), "BuskMagic only supports 64-bit platforms!");
 
 Phasor::Phasor(ValueTree ph_node){
@@ -378,6 +367,22 @@ namespace ChannelSystem {
                 FixtureSystem::Fix(i)->GetChannel(j)->ConvertPhasorsUUIDToPointer();
             }
         }
+    }
+    
+    Channel *FindChannelByUUID(int64_t uuid){
+        for(int i=0; i<freechannels.size(); ++i){
+            if(freechannels[i]->UUID() == uuid){
+                return freechannels[i];
+            }
+        }
+        for(int i=0; i<FixtureSystem::NumFixtures(); ++i){
+            for(int j=0; j<FixtureSystem::Fix(i)->GetNumChannels(); ++j){
+                if(FixtureSystem::Fix(i)->GetChannel(j)->UUID() == uuid){
+                    return FixtureSystem::Fix(i)->GetChannel(j);
+                }
+            }
+        }
+        return nullptr;
     }
     
     void Init(ValueTree cs_node){

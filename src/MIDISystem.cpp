@@ -26,22 +26,36 @@
 
 #include <vector>
 
-static Identifier idMIDISystem("midisystem");
-static Identifier idInPorts("inports");
-static Identifier idInPort("inport");
-static Identifier idOutPorts("outports");
-static Identifier idOutPort("outport");
-static Identifier idDevName("devname");
-
 MIDISetting::MIDISetting(bool out_, bool continuous_)
     : out(out_), continuous(continuous_), 
-      port(-1), channel(-1), type(-1), note(60), vel(-1) {}
+      port(-1), channel(-1), type(-1), note(60), vel(-1) {} //Invalid type
 
 MIDISetting::~MIDISetting() {}
 MIDISetting::MIDISetting(const MIDISetting &other)
     : out(other.out), continuous(other.continuous),
       port(other.port), channel(other.channel), type(other.type),
       note(other.note), vel(other.vel) {}
+      
+MIDISetting::MIDISetting(ValueTree ms_node){
+    out = ms_node.getProperty(idOut, false);
+    continuous = ms_node.getProperty(idContinuous, false);
+    port = ms_node.getProperty(idPort, -1);
+    channel = ms_node.getProperty(idChannel, -1);
+    type = ms_node.getProperty(idType, 9);
+    note = ms_node.getProperty(idNote, 60);
+    vel = ms_node.getProperty(idVel, -1);
+}
+ValueTree MIDISetting::Save(){
+    ValueTree ret(idMIDISetting);
+    ret.setProperty(idOut, out, nullptr);
+    ret.setProperty(idContinuous, continuous, nullptr);
+    ret.setProperty(idPort, port, nullptr);
+    ret.setProperty(idChannel, channel, nullptr);
+    ret.setProperty(idType, type, nullptr);
+    ret.setProperty(idNote, note, nullptr);
+    ret.setProperty(idVel, vel, nullptr);
+    return ret;
+}
 
 String MIDISetting::GetHelpText(){
     return "MIDI setting text: P.C.CmdType.N.V\n"
@@ -266,6 +280,34 @@ MIDIUser::MIDIUser(const MIDIUser &other){
     }
 }
 
+MIDIUser::MIDIUser(ValueTree mu_node) : MIDIUser() {
+    for(int i=0; i<mu_node.getNumChildren(); ++i){
+        ValueTree v = mu_node.getChild(i);
+        jassert(v.hasType(idAction));
+        String atstr = v.getProperty(idAction, "").toString();
+        ActionType a = StringToActionType(atstr);
+        if(a < 0 || a >= ActionType_SIZE){
+            std::cout << "Showfile contains invalid MIDI action " << atstr << "!\n";
+            continue;
+        }
+        ValueTree s = v.getChild(0);
+        if(s.isValid()) settings.set(a, new MIDISetting(s));
+    }
+}
+ValueTree MIDIUser::Save(){
+    ValueTree ret(idMIDIUser);
+    for(int i=0; i<ActionType_SIZE; ++i){
+        ActionType a = (ActionType)i;
+        ValueTree v(idAction);
+        v.setProperty(idAction, ActionTypeToString(a), nullptr);
+        if(settings[i] != nullptr){
+            v.addChild(settings[i]->Save(), -1, nullptr);
+        }
+        ret.addChild(v, -1, nullptr);
+    }
+    return ret;
+}
+
 String MIDIUser::GetActionName(ActionType t){
     switch(t){
         case in_val: return "In:";
@@ -280,6 +322,32 @@ String MIDIUser::GetActionName(ActionType t){
         case out_off: return "Out off:";
         default: return "ERROR";
     }
+}
+
+String MIDIUser::ActionTypeToString(ActionType t){
+    switch(t){
+        case in_val: return "in_val";
+        case in_on: return "in_on";
+        case in_off: return "in_off";
+        case in_toggle: return "in_toggle";
+        case in_trigger: return "in_trigger";
+        case in_goto_lo: return "in_goto_lo";
+        case in_goto_hi: return "in_goto_hi";
+        case out_val: return "out_val";
+        case out_on: return "out_on";
+        case out_off: return "out_off";
+        default: return "ERROR";
+    }
+}
+MIDIUser::ActionType MIDIUser::StringToActionType(String s){
+    for(int i=0; i<ActionType_SIZE; ++i){
+        ActionType a = (ActionType)i;
+        if(s == ActionTypeToString(a)){
+            return a;
+        }
+    }
+    jassertfalse;
+    return (ActionType)(-1);
 }
 
 void MIDIUser::AddMIDIAction(ActionType t){

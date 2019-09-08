@@ -130,7 +130,7 @@ void MainWindow::Load(){
     FileChooser fc("Load showfile...", File::getSpecialLocation(File::userHomeDirectory), "*.bmshow");
     if(!fc.browseForFileToOpen()) return;
     File showfile = fc.getResult();
-    ValueTree showfile_node = VT_Load(showfile, Identifier("buskmagicshow"));
+    ValueTree showfile_node = VT_Load(showfile, idBuskMagicShow);
     if(!showfile_node.isValid()){
         WarningBox(showfile.getFullPathName() + " is not a valid BuskMagic showfile!");
         return;
@@ -150,7 +150,7 @@ void MainWindow::Save(bool saveas){
         showfile = curshowfile;
     }
     LS_LOCK_READ();
-    ValueTree showfile_node(Identifier("buskmagicshow"));
+    ValueTree showfile_node(idBuskMagicShow);
     showfile_node.addChild(ArtNetSystem::Save(), -1, nullptr);
     showfile_node.addChild(MIDISystem::Save(), -1, nullptr);
     showfile_node.addChild(TimingSystem::Save(), -1, nullptr);

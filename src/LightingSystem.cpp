@@ -23,8 +23,6 @@
 
 #include <cstring>
 
-static Identifier idLightingSystem("lightingsystem");
-
 namespace LightingSystem {
     ReadWriteLock mutex;
     

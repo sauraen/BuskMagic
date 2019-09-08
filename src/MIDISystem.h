@@ -26,6 +26,9 @@ public:
     ~MIDISetting();
     MIDISetting(const MIDISetting &other);
     
+    MIDISetting(ValueTree ms_node);
+    ValueTree Save();
+    
     static String GetHelpText();
     
     String GetStr();
@@ -64,6 +67,9 @@ public:
     virtual ~MIDIUser();
     MIDIUser(const MIDIUser &other);
     
+    MIDIUser(ValueTree mu_node);
+    ValueTree Save();
+    
     class Refreshable {
     public:
         virtual ~Refreshable() {}
@@ -87,6 +93,8 @@ public:
     inline static bool IsContinuous(ActionType t) { return t == out_val || t == in_val; }
     inline static bool IsKnobRelated(ActionType t) { return IsContinuous(t) || t == in_goto_lo || t == in_goto_hi; }
     static String GetActionName(ActionType t);
+    static String ActionTypeToString(ActionType t);
+    static ActionType StringToActionType(String s);
     
     void AddMIDIAction(ActionType t);
     bool HasMIDIAction(ActionType t);
