@@ -784,6 +784,7 @@ void Patcher::buttonClicked (Button* buttonThatWasClicked)
 
 void Patcher::rowSelected(TextListBox *parent, int row)
 {
+    ignoreUnused(row);
     if(parent == lstDir.get()){
         //
     }else if(parent == lstDefs.get()){
@@ -795,6 +796,7 @@ void Patcher::rowSelected(TextListBox *parent, int row)
 
 void Patcher::rowDoubleClicked(TextListBox* parent, int row)
 {
+    ignoreUnused(row);
     if(parent == lstDir.get()){
         //
     }else if(parent == lstDefs.get()){

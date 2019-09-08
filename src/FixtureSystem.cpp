@@ -54,6 +54,12 @@ Identifier idCyan("cyan");
 Identifier idMagenta("magenta");
 Identifier idYellow("yellow");
 
+static Identifier idUUID("uuid");
+static Identifier idFixtures("fixtures");
+static Identifier idFixDir("fixdir");
+static Identifier idFixDef("fixdef");
+static Identifier idFixID("fixid");
+static Identifier idUniverse("universe");
 
 static void RefreshMatrixEditor(bool invalidate){
     MatrixEditor::mtxed_static->RefreshChannelFilters();
@@ -91,6 +97,42 @@ Fixture::Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16
 }
 Fixture::~Fixture() {
     
+}
+
+Fixture::Fixture(ValueTree fx_node){
+    int64 defuuid = fx_node.getProperty(idFixDef);
+    def = ValueTree();
+    for(int i=0; i<FixtureSystem::GetFixtureDefs().getNumChildren(); ++i){
+        ValueTree temp = FixtureSystem::GetFixtureDefs().getChild(i);
+        if(defuuid == (int64)temp.getProperty(idUUID, 0)){
+            def = temp;
+            break;
+        }
+    }
+    if(!def.isValid()){
+        WarningBox("Internally inconsistent fixture definition UUIDs in showfile!\n"
+            "Show state is most likely corrupted!");
+        return;
+    }
+    name = fx_node.getProperty(idName, "name").toString();
+    fixid = fx_node.getProperty(idFixID, 0);
+    uni = (int)fx_node.getProperty(idUniverse, 0);
+    chn = (int)fx_node.getProperty(idChannel, 1);
+    for(int i=0; i<fx_node.getNumChildren(); ++i){
+        channels.add(new Channel(fx_node.getChild(i)));
+    }
+}
+ValueTree Fixture::Save(){
+    ValueTree ret(idFixture);
+    ret.setProperty(idFixDef, def.getProperty(idUUID, 0), nullptr);
+    ret.setProperty(idName, name, nullptr);
+    ret.setProperty(idFixID, fixid, nullptr);
+    ret.setProperty(idUniverse, (int)uni, nullptr);
+    ret.setProperty(idChannel, (int)chn, nullptr);
+    for(int i=0; i<channels.size(); ++i){
+        ret.addChild(channels[i]->Save(), -1, nullptr);
+    }
+    return ret;
 }
 
 String Fixture::GetDescription() const {
@@ -431,13 +473,37 @@ namespace FixtureSystem {
     }
     
     void Init(ValueTree fs_node){
-        //TODO
+        if(fs_node.isValid()){
+            fixdir = fs_node.getProperty(idFixDir, "").toString();
+            ValueTree d = fs_node.getChildWithName(idFixDefs);
+            if(!d.isValid()) { jassertfalse; return; }
+            fixdefs = d;
+            ValueTree fixnode = fs_node.getChildWithName(idFixtures);
+            if(!fixnode.isValid()) { jassertfalse; return; }
+            for(int i=0; i<fixnode.getNumChildren(); ++i){
+                fixtures.add(new Fixture(fixnode.getChild(i)));
+            }
+        }
     }
     void Finalize(){
-        //TODO
+        fixtures.clear();
+        fixdefs = ValueTree(idFixDefs);
     }
     ValueTree Save(){
-        return ValueTree(idFixtureSystem);
+        ValueTree ret(idFixtureSystem);
+        ret.setProperty(idFixDir, fixdir.getFullPathName(), nullptr); //TODO relative to showfile
+        for(int i=0; i<fixdefs.getNumChildren(); ++i){
+            if(fixdefs.getChild(i).hasProperty(idUUID)){
+                fixdefs.getChild().setProperty(idUUID, (int64)GenerateUUID(), nullptr);
+            }
+        }
+        ret.addChild(fixdefs, -1, nullptr);
+        ValueTree fixnode(idFixtures);
+        for(int i=0; i<fixtures.size(); ++i){
+            fixnode.addChild(fixtures[i]->Save(), -1, nullptr);
+        }
+        ret.addChild(fixnode);
+        return ret;
     }
     
 }

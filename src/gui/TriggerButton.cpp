@@ -43,6 +43,7 @@ void TriggerButton::mouseDown(const MouseEvent &event) {
 }
 
 void TriggerButton::ReceivedMIDIAction(ActionType t, int val){
+    ignoreUnused(val);
     LS_LOCK_READ();
     if(t == MIDIUser::in_trigger){
         const MessageManagerLock mml(Thread::getCurrentThread());

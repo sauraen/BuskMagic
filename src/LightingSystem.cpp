@@ -58,6 +58,7 @@ namespace LightingSystem {
     static LightingThread *lth = nullptr;
     
     void Init(ValueTree ls_node){
+        ignoreUnused(ls_node);
         if(lth != nullptr){
             std::cout << "LightingSystem multiply initted!\n";
             return;

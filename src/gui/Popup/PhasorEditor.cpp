@@ -55,6 +55,7 @@ PhasorEditor::~PhasorEditor() {
 }
 
 void PhasorEditor::focusGained(FocusChangeType cause){
+    ignoreUnused(cause);
     if(invalidated) return;
     if(initialDragDone) return;
     Point<float> mouse = phasor->GetEditorXY() + getScreenPosition().toFloat();
@@ -117,7 +118,7 @@ void PhasorEditor::textEditorTextChanged(TextEditor &editorThatWasChanged){
 }
 
 void PhasorEditor::buttonClicked (Button* buttonThatWasClicked){
-    
+    ignoreUnused(buttonThatWasClicked); //TODO
 }
 
 void PhasorEditor::closeEditor(){
@@ -125,6 +126,7 @@ void PhasorEditor::closeEditor(){
 }
 
 void PhasorEditor::globalMouseUp(const MouseEvent &event){
+    ignoreUnused(event);
     initialDragDone = true;
     if(exitOnUp) closeEditor();
 }

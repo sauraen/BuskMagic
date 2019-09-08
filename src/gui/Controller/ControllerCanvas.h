@@ -40,6 +40,7 @@ public:
     }
 
     void mouseDown(const MouseEvent &event) override {
+        ignoreUnused(event);
         dragbegin_vp = findParentComponentOfClass<Viewport>()->getViewPosition();
     }
 

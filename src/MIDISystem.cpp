@@ -27,6 +27,11 @@
 #include <vector>
 
 static Identifier idMIDISystem("midisystem");
+static Identifier idInPorts("inports");
+static Identifier idInPort("inport");
+static Identifier idOutPorts("outports");
+static Identifier idOutPort("outport");
+static Identifier idDevName("devname");
 
 MIDISetting::MIDISetting(bool out_, bool continuous_)
     : out(out_), continuous(continuous_), 
@@ -413,8 +418,43 @@ namespace MIDISystem {
     
     void Init(ValueTree ms_node){
         learner = nullptr;
-        AddInPort();
-        AddOutPort();
+        if(ms_node.isValid()){
+            StringArray indevices = MidiInput::getDevices();
+            ValueTree inports_vt = ms_node.getChildWithName(idInPorts);
+            if(!inports_vt.isValid()) { jassertfalse; return; }
+            for(int i=0; i<inports_vt.getNumChildren(); ++i){
+                AddInPort();
+                ValueTree inport = inports_vt.getChild(i);
+                String devname = inport.getProperty(idDevName, "").toString();
+                if(!devname.isEmpty()){
+                    int idx = indevices.indexOf(devname);
+                    if(idx >= 0){
+                        AssignInDevice(idx, i);
+                    }else{
+                        std::cout << "Could not reopen MIDI input device " << devname << " from showfile\n";
+                    }
+                }
+            }
+            StringArray outdevices = MidiOutput::getDevices();
+            ValueTree outports_vt = ms_node.getChildWithName(idOutPorts);
+            if(!outports_vt.isValid()) { jassertfalse; return; }
+            for(int i=0; i<outports_vt.getNumChildren(); ++i){
+                AddOutPort();
+                ValueTree outport = outports_vt.getChild(i);
+                String devname = outport.getProperty(idDevName, "").toString();
+                if(!devname.isEmpty()){
+                    int idx = outdevices.indexOf(devname);
+                    if(idx >= 0){
+                        AssignOutDevice(idx, i);
+                    }else{
+                        std::cout << "Could not reopen MIDI output device " << devname << " from showfile\n";
+                    }
+                }
+            }
+        }else{
+            AddInPort();
+            AddOutPort();
+        }
     }
     void Finalize(){
         for(int i=0; i<inports.size(); ++i){
@@ -431,7 +471,26 @@ namespace MIDISystem {
     }
     
     ValueTree Save(){
-        return ValueTree(idMIDISystem);
+        ValueTree ret(idMIDISystem);
+        ValueTree inports_vt(idInPorts);
+        for(int i=0; i<inports.size(); ++i){
+            ValueTree temp(idInPort);
+            if(inports[i].device != nullptr){
+                temp.setProperty(idDevName, inports[i].device->getName(), nullptr);
+            }
+            inports_vt.addChild(temp, -1, nullptr);
+        }
+        ret.addChild(inports_vt, -1, nullptr);
+        ValueTree outports_vt(idOutPorts);
+        for(int i=0; i<outports.size(); ++i){
+            ValueTree temp(idOutPort);
+            if(outports[i].device != nullptr){
+                temp.setProperty(idDevName, outports[i].device->getName(), nullptr);
+            }
+            outports_vt.addChild(temp, -1, nullptr);
+        }
+        ret.addChild(outports_vt, -1, nullptr);
+        return ret;
     }
     
     int NumInPorts() { return (int)inports.size(); }
@@ -457,7 +516,10 @@ namespace MIDISystem {
         if(p < 0 || p >= inports.size()) return;
         if(inports[p].device != nullptr) return;
         MidiInput *device = MidiInput::openDevice(d, &callback);
-        if(device == nullptr) return;
+        if(device == nullptr){
+            std::cout << "Error opening MIDI input device " << d << "!\n";
+            return;
+        }
         inports[p].device = device;
         inports[p].devnum = d;
         device->start();
@@ -491,7 +553,10 @@ namespace MIDISystem {
         if(p < 0 || p >= outports.size()) return;
         if(outports[p].device != nullptr) return;
         MidiOutput *device = MidiOutput::openDevice(d);
-        if(device == nullptr) return;
+        if(device == nullptr){
+            std::cout << "Error opening MIDI input device " << d << "!\n";
+            return;
+        }
         outports[p].device = device;
         outports[p].devnum = d;
     }

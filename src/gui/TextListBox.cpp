@@ -18,7 +18,10 @@
 
 #include "TextListBox.h"
 
-void TextListBox::Listener::rowDoubleClicked(TextListBox* parent, int row) {}
+void TextListBox::Listener::rowDoubleClicked(TextListBox* parent, int row) {
+    ignoreUnused(parent);
+    ignoreUnused(row);
+}
 
 TextListBox::TextListBox(Listener *l, bool showAllNoneButtons, String headerCaption) 
         : ListBox("TextListBox", this), listener(l), font(15.0f), selectonadd(true) {
@@ -196,6 +199,7 @@ void TextListBox::selectedRowsChanged(int lastRowSelected){
 }
 
 void TextListBox::listBoxItemDoubleClicked(int row, const MouseEvent& e){
+    ignoreUnused(e);
     if(listener != nullptr) listener->rowDoubleClicked(this, row);
 }
 

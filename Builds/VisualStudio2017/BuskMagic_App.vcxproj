@@ -229,6 +229,7 @@
     <None Include="..\..\data\logo_24.png"/>
     <None Include="..\..\data\logo_128.png"/>
     <None Include="..\..\data\logo.ico"/>
+    <None Include=".\icon.ico"/>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\resources.rc"/>

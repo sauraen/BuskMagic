@@ -19,6 +19,9 @@
 #include "TimingSystem.h"
 
 static Identifier idTimingSystem("timingsystem");
+static Identifier idTempoMS("tempoms");
+static Identifier idMeasureLen("measurelen");
+static Identifier idOnlyInt("onlyint");
 
 namespace TimingSystem {
     
@@ -178,15 +181,26 @@ namespace TimingSystem {
     
     void Init(ValueTree ts_node){
         origin = GetTimeMS();
-        tempo_msperbeat = 60000.0 / 120.0;
-        measurelen = 4;
+        if(ts_node.isValid()){
+            tempo_msperbeat = (double)ts_node.getProperty(idTempoMS, 60000.0/120.0);
+            measurelen = ts_node.getProperty(idMeasureLen, 4);
+            onlyint = ts_node.getProperty(idOnlyInt, false);
+        }else{
+            tempo_msperbeat = 60000.0 / 120.0;
+            measurelen = 4;
+            onlyint = false;
+        }
         frozen = false;
     }
     void Finalize(){
-        //TODO
+        //nothing to do
     }
     ValueTree Save(){
-        return ValueTree(idTimingSystem);
+        ValueTree ret(idTimingSystem);
+        ret.setProperty(idTempoMS, tempo_msperbeat, nullptr);
+        ret.setProperty(idMeasureLen, measurelen, nullptr);
+        ret.setProperty(idOnlyInt, onlyint, nullptr);
+        return ret;
     }
     
 }

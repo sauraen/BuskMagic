@@ -414,6 +414,7 @@ void MIDISetup::refreshLists(){
 }
 
 void MIDISetup::rowSelected(TextListBox* parent, int row){
+    ignoreUnused(row);
     if(parent == lstInDevices.get()){
 
     }else if(parent == lstInPorts.get()){
@@ -499,4 +500,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

@@ -59,7 +59,7 @@ void MagicValue::RefreshComponent(){
 
 Controller::Controller()
     : pos(0,0), nostate(false),
-      name("New Controller Blah blah"), group(0),
+      name("New Controller Blah blah"), uuid(GenerateUUID()), group(0),
       color(Colours::red), groupColor(Colours::lightgrey),
       component(nullptr)
 {
@@ -74,11 +74,11 @@ Controller::Controller()
 }
 
 Controller::~Controller() {}
-Controller::Controller(const Controller &other) : MIDIUser(other),
-    pos(other.pos + Point<int>(100,100)), nostate(other.nostate),
-    name(other.name + " 2"), group(other.group),
-    color(other.color), groupColor(other.groupColor),
-    states_enabled(other.states_enabled), component(nullptr) 
+Controller::Controller(const Controller &other) : MIDIUser(other), 
+      pos(other.pos + Point<int>(100,100)), nostate(other.nostate),
+      name(other.name + " 2"), uuid(GenerateUUID()), group(other.group),
+      color(other.color), groupColor(other.groupColor),
+      states_enabled(other.states_enabled), component(nullptr) 
 {
     if(group > 0){
         for(int i=0; i<=ControllerSystem::NumStates(); ++i){
@@ -196,6 +196,7 @@ int Controller::GetEffectiveDisplayState() const{
 }
 
 void Controller::ReceivedMIDIAction(ActionType t, int val){
+    ignoreUnused(val);
     LS_LOCK_READ();
     if(t == MIDIUser::in_on){
         SetEnabledDisplay(true);

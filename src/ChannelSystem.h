@@ -34,6 +34,9 @@ struct Phasor {
     Phasor(const Phasor &other) = default;
     Phasor &operator=(const Phasor &other) = default;
     
+    Phasor(ValueTree ph_node);
+    ValueTree Save();
+    
     Point<float> GetEditorXY() {
         float e_mag = 50.0f * mag;
         float e_angle = MathConstants<float>::twoPi * angle;
@@ -46,6 +49,10 @@ class Channel {
 public:
     Channel(Fixture *parentornullptr);
     ~Channel();
+    inline int64_t UUID() { return uuid; }
+    
+    Channel(ValueTree ch_node, Fixture *parentornullptr);
+    ValueTree Save();
     
     enum ChannelOp {
         OpPrioTop, OpPrioBottom, 
@@ -76,9 +83,11 @@ public:
     void RemovePhasorForController(Controller *c);
     
     void SortPhasors();
+    void ConvertPhasorsUUIDToPointer();
     
     float Evaluate(float angle) const;
 private:
+    int64_t uuid;
     Fixture *parent;
     
     String name, letters;
@@ -103,6 +112,7 @@ namespace ChannelSystem {
     
     void RemoveAllPhasorsForController(Controller *c);
     void SortAllChannelPhasors();
+    void ConvertAllPhasorsUUIDToPointer();
     
     void Init(ValueTree cs_node = ValueTree());
     void Finalize();

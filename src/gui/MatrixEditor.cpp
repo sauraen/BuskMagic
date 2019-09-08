@@ -224,6 +224,7 @@ void MatrixEditor::resized() {
 }
 
 void MatrixEditor::rowSelected(TextListBox* parent, int row) {
+    ignoreUnused(row);
     if(parent == lstCtType.get()){
         RefreshVisibleControllerSet();
     }else if(parent == lstCtGroup.get()){

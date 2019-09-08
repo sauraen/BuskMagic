@@ -617,6 +617,7 @@ void ArtNetSetup::buttonClicked (Button* buttonThatWasClicked)
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void ArtNetSetup::rowSelected(TextListBox *parent, int row){
+    ignoreUnused(row);
     if(parent == lstDevices.get()){
         int r = lstDevices->getLastRowSelected();
         if(r < 0) return;
@@ -952,4 +953,3 @@ const int ArtNetSetup::artnet_logo_pngSize = 1613;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

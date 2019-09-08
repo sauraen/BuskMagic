@@ -60,6 +60,7 @@ public:
     Controller(const Controller &other);
     virtual Controller *clone() const = 0;
     virtual String GetClassType() = 0;
+    inline int64_t UUID() { return uuid; }
 
     Point<int> pos;
     bool nostate;
@@ -99,6 +100,7 @@ protected:
 
 private:
     friend class MagicValue;
+    int64_t uuid;
 
     int group;
     Colour color, groupColor;

@@ -210,6 +210,13 @@ inline Colour ShowColorChooserWindow(Colour initcolor, Component *optionalparent
     return colsel->getCurrentColour();
 }
 
+inline void SeedRNG(){
+    Random::getSystemRandom().setSeedRandomly();
+}
+inline int64_t GenerateUUID(){
+    return Random::getSystemRandom().nextInt64();
+}
+
 inline var VT_GetChildProperty(ValueTree v, Identifier cname, Identifier pname, const var &defval = ""){
     return v.getOrCreateChildWithName(cname, nullptr).getProperty(pname, defval);
 }

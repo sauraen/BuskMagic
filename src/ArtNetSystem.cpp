@@ -122,7 +122,7 @@ namespace ArtNetSystem {
     #define LOAD_FOUR_UNI_VALUES(idSomething, somethinguni) { \
         ValueTree temp = dev_node.getChildWithName(idSomething); \
         if(!temp.isValid()) { jassertfalse; return; } \
-        if(!temp.getNumChildren() == 4) { jassertfalse; return; } \
+        if(!(temp.getNumChildren() == 4)) { jassertfalse; return; } \
         for(int i=0; i<4; ++i) somethinguni[i] = (int)temp.getChild(i).getProperty(idUniverse, 0x7F); \
     } REQUIRESEMICOLON
     

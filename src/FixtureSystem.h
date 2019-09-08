@@ -51,7 +51,7 @@ extern Identifier idYellow;
 
 class Channel;
 
-#define DMXTEXTCHANGEDHANDLER \
+#define DMXTEXTCHANGEDHANDLER() \
     int dmx_normal, dmx_fine, dmx_ultra; \
     bool dmx_ok = FixtureSystem::ParseDMXText(text, \
             (int)param.getParent().getProperty(idFootprint, 1), \
@@ -62,6 +62,8 @@ class Fixture {
 public:
     Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16_t chn_);
     ~Fixture();
+    Fixture(ValueTree fx_node);
+    ValueTree Save();
     
     String GetDescription() const;
     

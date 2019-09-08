@@ -92,9 +92,10 @@ void MainWindow::Init(ValueTree showfile_node){
     ArtNetSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("artnetsystem") : ValueTree());
     MIDISystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("midisystem") : ValueTree());
     TimingSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("timingsystem") : ValueTree());
-    ControllerSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("controllersystem") : ValueTree());
     ChannelSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("channelsystem") : ValueTree());
     FixtureSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("fixturesystem") : ValueTree());
+    ControllerSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("controllersystem") : ValueTree());
+    if(showfile_node.isValid()) ChannelSystem::ConvertAllPhasorsUUIDToPointer();
     LightingSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("lightingsystem") : ValueTree());
     artnetWindow.reset(new SubWindow("BuskMagic - Art-Net Setup", false, new ArtNetSetup()));
     midiWindow.reset(new SubWindow("BuskMagic - MIDI Setup", false, new MIDISetup()));
@@ -115,9 +116,9 @@ void MainWindow::Finalize(){
     midiWindow = nullptr;
     artnetWindow = nullptr;
     LightingSystem::Finalize();
+    ControllerSystem::Finalize();
     FixtureSystem::Finalize();
     ChannelSystem::Finalize();
-    ControllerSystem::Finalize();
     TimingSystem::Finalize();
     MIDISystem::Finalize();
     ArtNetSystem::Finalize();
@@ -134,6 +135,7 @@ void MainWindow::Load(){
         WarningBox(showfile.getFullPathName() + " is not a valid BuskMagic showfile!");
         return;
     }
+    LS_LOCK_WRITE();
     Finalize();
     Init(showfile_node);
     curshowfile = showfile;
@@ -147,13 +149,14 @@ void MainWindow::Save(bool saveas){
     }else{
         showfile = curshowfile;
     }
+    LS_LOCK_READ();
     ValueTree showfile_node(Identifier("buskmagicshow"));
     showfile_node.addChild(ArtNetSystem::Save(), -1, nullptr);
     showfile_node.addChild(MIDISystem::Save(), -1, nullptr);
     showfile_node.addChild(TimingSystem::Save(), -1, nullptr);
-    showfile_node.addChild(ControllerSystem::Save(), -1, nullptr);
     showfile_node.addChild(ChannelSystem::Save(), -1, nullptr);
     showfile_node.addChild(FixtureSystem::Save(), -1, nullptr);
+    showfile_node.addChild(ControllerSystem::Save(), -1, nullptr);
     showfile_node.addChild(LightingSystem::Save(), -1, nullptr);
     if(!VT_Save(showfile_node, showfile, "bmshow", "BuskMagic Showfile")){
         WarningBox("Could not save showfile " + showfile.getFullPathName());
@@ -165,6 +168,8 @@ void MainWindow::Save(bool saveas){
 MainWindow::MainWindow() 
     : DocumentWindow("BuskMagic", LFWindowColor(), DocumentWindow::allButtons, true)
 {
+    LS_LOCK_WRITE();
+    SeedRNG();
     setUsingNativeTitleBar(true);
     setResizable(true, false);
     centreWithSize(getWidth(), getHeight());
@@ -181,6 +186,7 @@ MainWindow::MainWindow()
 }
 
 MainWindow::~MainWindow() {
+    LS_LOCK_WRITE();
     Finalize();
     setMenuBar(nullptr);
     delete app_icon; app_icon = nullptr;
@@ -205,6 +211,7 @@ StringArray MainMenus::getMenuBarNames() {
 }
 
 PopupMenu MainMenus::getMenuForIndex(int topLevelMenuIndex, const String &menuName){
+    ignoreUnused(menuName);
     if(topLevelMenuIndex == 0){
         PopupMenu menu;
         menu.addItem(0x1000, "Load...");
@@ -236,6 +243,7 @@ PopupMenu MainMenus::getMenuForIndex(int topLevelMenuIndex, const String &menuNa
 }
 
 void MainMenus::menuItemSelected(int menuItemID, int topLevelMenuIndex){
+    ignoreUnused(topLevelMenuIndex);
     switch(menuItemID){
     case 0x1000:
         parent->Load();

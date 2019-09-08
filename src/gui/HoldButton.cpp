@@ -45,6 +45,7 @@ void HoldButton::clicked(){
 }
 
 void HoldButton::ReceivedMIDIAction(ActionType t, int val){
+    ignoreUnused(val);
     LS_LOCK_READ();
     if(t == MIDIUser::in_on){
         const MessageManagerLock mml(Thread::getCurrentThread());

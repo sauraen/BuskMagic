@@ -57,6 +57,7 @@ public:
     }
     
     void focusOfChildComponentChanged(FocusChangeType cause) override {
+        ignoreUnused(cause);
         if(hasKeyboardFocus(true)) return;
         reset();
     }

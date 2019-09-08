@@ -26,6 +26,30 @@
 
 static Identifier idChannelSystem("channelsystem");
 
+static Identifier idPhasor("phasor");
+static Identifier idController("controller");
+static Identifier idMag("mag");
+static Identifier idAngle("angle");
+
+static Identifier idUUID("uuid");
+static Identifier idDefaultValue("defaultvalue");
+static Identifier idOp("op");
+
+static_assert(sizeof(void*) == sizeof(int64_t), "BuskMagic only supports 64-bit platforms!");
+
+Phasor::Phasor(ValueTree ph_node){
+    src = (Controller*)(int64)ph_node.getProperty(idController, 0);
+    mag = ph_node.getProperty(idMag, 0.0f);
+    angle = ph_node.getProperty(idAngle, 0.0f);
+}
+ValueTree Phasor::Save(){
+    ValueTree ret(idPhasor);
+    ret.setProperty(idController, (int64)(src == nullptr ? 0 : src->UUID()), nullptr);
+    ret.setProperty(idMag, mag, nullptr);
+    ret.setProperty(idAngle, angle, nullptr);
+    return ret;
+}
+
 static void RefreshMatrixEditor(bool invalidate){
     MatrixEditor::mtxed_static->RefreshChannelFilters();
     if(invalidate) MatrixEditor::mtxed_static->RefreshVisibleChannelSet();
@@ -59,13 +83,37 @@ String Channel::OpGetDescription(ChannelOp o){
     }
 }
 
-Channel::Channel(Fixture *parentornullptr) : parent(parentornullptr),
+Channel::Channel(Fixture *parentornullptr) : uuid(GenerateUUID()), parent(parentornullptr),
     name("New channel"), letters("N"), defaultvalue(0.0f), 
     op(OpAdd), beingevaluated(false) {
     
 }
 Channel::~Channel(){
     
+}
+
+Channel::Channel(ValueTree ch_node, Fixture *parentornullptr) : parent(parentornullptr){
+    uuid = (int64)ch_node.getProperty(idUUID, 0);
+    name = ch_node.getProperty(idName, "New channel");
+    letters = ch_node.getProperty(idLetters, "N");
+    defaultvalue = ch_node.getProperty(idDefaultValue, 0.0f);
+    op = (ChannelOp)(int)ch_node.getProperty(idOp, 0);
+    for(int i=0; i<ch_node.getNumChildren(); ++i){
+        phasors.add(new Phasor(ch_node.getChild(i)));
+    }
+}
+
+ValueTree Channel::Save(){
+    ValueTree ret(idChannel);
+    ret.setProperty(idUUID, (int64)uuid, nullptr);
+    ret.setProperty(idName, name, nullptr);
+    ret.setProperty(idLetters, letters, nullptr);
+    ret.setProperty(idDefaultValue, defaultvalue, nullptr);
+    ret.setProperty(idOp, (int)op, nullptr);
+    for(int i=0; i<phasors.size(); ++i){
+        ret.addChild(phasors[i]->Save(), -1, nullptr);
+    }
+    return ret;
 }
 
 String Channel::GetName() const{
@@ -152,6 +200,27 @@ void Channel::SortPhasors(){
         }
     }
     jassert(destpos == phasors.size());
+}
+
+void Channel::ConvertPhasorsUUIDToPointer(){
+    for(int j=0; j<phasors.size(); ++j){
+        uint64_t uuid = (uint64_t)phasors[j]->src;
+        bool flag = false;
+        for(int i=0; i<ControllerSystem::NumControllers(); ++i){
+            Controller *c = ControllerSystem::GetController(i);
+            if(uuid == c->UUID()){
+                phasors[j]->src = c;
+                flag = true;
+                break;
+            }
+        }
+        if(!flag){
+            phasors.remove(j);
+            --j;
+            WarningBox("Internally inconsistent controller UUIDs in showfile!\n"
+                "Show state is most likely corrupted!");
+        }
+    }
 }
 
 class EvaluatedTracker {
@@ -300,13 +369,32 @@ namespace ChannelSystem {
         }
     }
     
+    void ConvertAllPhasorsUUIDToPointer(){
+        for(int i=0; i<freechannels.size(); ++i){
+            freechannels[i]->ConvertPhasorsUUIDToPointer();
+        }
+        for(int i=0; i<FixtureSystem::NumFixtures(); ++i){
+            for(int j=0; j<FixtureSystem::Fix(i)->GetNumChannels(); ++j){
+                FixtureSystem::Fix(i)->GetChannel(j)->ConvertPhasorsUUIDToPointer();
+            }
+        }
+    }
+    
     void Init(ValueTree cs_node){
-        //TODO
+        if(cs_node.isValid()){
+            for(int i=0; i<cs_node.getNumChildren(); ++i){
+                freechannels.add(new Channel(cs_node.getChild(i), nullptr));
+            }
+        }
     }
     void Finalize(){
-        //TODO
+        freechannels.clear();
     }
     ValueTree Save(){
-        return ValueTree(idChannelSystem);
+        ValueTree ret(idChannelSystem);
+        for(int i=0; i<freechannels.size(); ++i){
+            ret.addChild(freechannels[i]->Save(), -1, nullptr);
+        }
+        return ret;
     }
 }
