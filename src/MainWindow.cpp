@@ -186,7 +186,6 @@ MainWindow::MainWindow()
 }
 
 MainWindow::~MainWindow() {
-    LS_LOCK_WRITE();
     Finalize();
     setMenuBar(nullptr);
     delete app_icon; app_icon = nullptr;
@@ -255,7 +254,7 @@ void MainMenus::menuItemSelected(int menuItemID, int topLevelMenuIndex){
         parent->Save(true);
         break;
     case 0x1010:
-        JUCEApplication::getInstance()->systemRequestedQuit();
+        parent->requestedQuit();
         break;
     case 0x2000:
         artnetWindow->show();

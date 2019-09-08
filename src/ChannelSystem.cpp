@@ -81,7 +81,8 @@ Channel::~Channel(){
     
 }
 
-Channel::Channel(ValueTree ch_node, Fixture *parentornullptr) : parent(parentornullptr){
+Channel::Channel(ValueTree ch_node, Fixture *parentornullptr) 
+    : parent(parentornullptr), beingevaluated(false) {
     uuid = (int64)ch_node.getProperty(idUUID, 0);
     name = ch_node.getProperty(idName, "New channel");
     letters = ch_node.getProperty(idLetters, "N");

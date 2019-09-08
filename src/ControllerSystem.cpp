@@ -161,13 +161,21 @@ void Controller::SetColor(Colour col){
 
 void Controller::SetGroup(int g){
     LS_LOCK_WRITE();
+    if(group == g) return;
     group = g;
     if(group > 0){
+        //Turn off if it was just added to a group
+        for(int i=0; i<=ControllerSystem::NumStates(); ++i){
+            states_enabled.set(i, false);
+        }
+        SendMIDIAction(MIDIUser::out_off);
+        //Copy color from another controller in the group
         for(int i=0; i<ControllerSystem::NumControllers(); ++i){
-            if(ControllerSystem::GetController(i)->group == group){
-                groupColor = ControllerSystem::GetController(i)->groupColor;
-                break;
-            }
+            Controller *ctrlr = ControllerSystem::GetController(i);
+            if(ctrlr == this) continue;
+            if(ctrlr->group != group) continue;
+            groupColor = ctrlr->groupColor;
+            break;
         }
     }
     RefreshComponent();
@@ -452,7 +460,8 @@ Controller *ModulatorController::clone() const {
 }
 
 ModulatorController::ModulatorController(ValueTree ct_node) 
-    : Controller(ct_node), lovalue(this), hivalue(this), pwvalue(this), tvalue(this) {
+    : Controller(ct_node), lovalue(this), hivalue(this), pwvalue(this), tvalue(this),
+    freet_origin(TimingSystem::GetTimeMS()) {
     LOAD_CHILD_MAGICVALUE(lovalue);
     LOAD_CHILD_MAGICVALUE(hivalue);
     LOAD_CHILD_MAGICVALUE(pwvalue);
@@ -500,7 +509,7 @@ float ModulatorController::Evaluate(float angle) const {
     float riseshape = (h-l)*(t_frac-pw)/(1.0f-pw) + l;
     switch(shape){
     case ModulatorShape::cosine:
-        return (h-l)*std::cos(MathConstants<float>::twoPi * t_frac) + l;
+        return (h-l)*((1.0f+std::cos(MathConstants<float>::twoPi * t_frac))*0.5f) + l;
     case ModulatorShape::triangle:
         return t_frac < pw ? fallshape : riseshape;
     case ModulatorShape::noise:

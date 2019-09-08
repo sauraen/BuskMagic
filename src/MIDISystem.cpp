@@ -387,9 +387,9 @@ void MIDIUser::HandleMIDI(int port, MidiMessage msg){
         }
     }
 }
-void MIDIUser::LearnMIDIStart(ActionType t, Refreshable *r){
+void MIDIUser::LearnMIDIStart(ActionType t, Refreshable *ref){
     learn_target = t;
-    refreshable = r;
+    refreshable = ref;
     MIDISystem::LearnMIDIStart(this);
 }
 void MIDIUser::LearnMIDI(int port, MidiMessage msg){

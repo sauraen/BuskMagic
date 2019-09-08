@@ -93,7 +93,7 @@ namespace ArtNetSystem {
         inuni{0x7F, 0x7F, 0x7F, 0x7F}, outuni{0x7F, 0x7F, 0x7F, 0x7F},
         map(false), map_net(0x00), map_subnet(0x0), 
         map_inuni{0x7F, 0x7F, 0x7F, 0x7F}, map_outuni{0x7F, 0x7F, 0x7F, 0x7F},
-        bindindex(0), artdmx_sequence(1),
+        bindindex(0), artdmx_sequence(1), ip(), mac(),
         shortname("<Short name>"), 
         longname("<Device long name>"), 
         nodereport("(Have not received ArtPollReply from this device)") {}
@@ -105,9 +105,7 @@ namespace ArtNetSystem {
         for(int i=0; i<4; ++i) somethinguni[i] = (int)temp.getChild(i).getProperty(idUniverse, 0x7F); \
     } REQUIRESEMICOLON
     
-    ArtNetDevice::ArtNetDevice(ValueTree dev_node) :
-        status{0xFF, 0xFF}, oem(0x0000), esta(0x4F4E), fw(0x0000),
-        nodereport("(Have not received ArtPollReply from this device)") {
+    ArtNetDevice::ArtNetDevice(ValueTree dev_node) : ArtNetDevice() {
         if(!dev_node.isValid()) { jassertfalse; return; }
         mode = static_cast<Mode>((uint8_t)(int)dev_node.getProperty(idMode, 0));
         style = static_cast<Style>((uint8_t)(int)dev_node.getProperty(idStyle, 0));

@@ -248,7 +248,7 @@ void CtrlrEditor::textEditorTextChanged(TextEditor &editorThatWasChanged)
         controller->SetName(text);
     }else if(&editorThatWasChanged == txtGroup.get()){
         if(text == ""){
-            controller->SetGroup(-1);
+            controller->SetGroup(0);
         }else if(isint && val >= 1){
             controller->SetGroup(val);
         }else{
