@@ -23,7 +23,7 @@ static const int colwidth = 64;
 StatesWindow *StatesWindow::sw_static = nullptr;
 
 void StatesWindow::MakeButton(int i){
-    TriggerButton *trg = new TriggerButton(this, true);
+    TriggerButton *trg = new TriggerButton(this, nullptr, true);
     addAndMakeVisible(trg);
     trg->setTopLeftPosition((colwidth*i) + 8, 80);
     trgsState.add(trg);

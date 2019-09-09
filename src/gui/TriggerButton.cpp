@@ -21,14 +21,17 @@
 #include "gui/Popup/MIDIEditor.h"
 #include "LightingSystem.h"
 
-TriggerButton::TriggerButton(Button::Listener *l, bool manuallight) 
-        : parent(l), manual(manuallight) {
+TriggerButton::TriggerButton(Button::Listener *l, HiSpeedListener *h_or_nullptr, 
+        bool manuallight) : parent(l), hsl(h_or_nullptr), manual(manuallight) {
     addListener(l);
     SetColor(Colours::red);
     setTriggeredOnMouseDown(true);
     AddMIDIAction(MIDIUser::in_trigger);
     AddMIDIAction(MIDIUser::out_on);
     AddMIDIAction(MIDIUser::out_off);
+    notNeedsTrigger.test_and_set();
+    turnOffCountdown = -1;
+    startTimer(33);
 }
 
 void TriggerButton::mouseDown(const MouseEvent &event) {
@@ -37,6 +40,7 @@ void TriggerButton::mouseDown(const MouseEvent &event) {
         MIDIEditor::Startup startup(this, 0);
         popup.show<MIDIEditor>(mouse.x + getScreenX(), mouse.y + getScreenY(), &startup);
     }else{
+        if(hsl != nullptr) hsl->triggeredHiSpeed(this);
         SynthButton::mouseDown(event); //This calls Listener::buttonClicked()
         TriggeredInternal();
     }
@@ -46,10 +50,8 @@ void TriggerButton::ReceivedMIDIAction(ActionType t, int val){
     ignoreUnused(val);
     LS_LOCK_READ();
     if(t == MIDIUser::in_trigger){
-        const MessageManagerLock mml(Thread::getCurrentThread());
-        if(!mml.lockWasGained()) return;
-        triggerClick();
-        TriggeredInternal();
+        if(hsl != nullptr) hsl->triggeredHiSpeed(this);
+        notNeedsTrigger.clear();
     }
 }
 
@@ -63,14 +65,23 @@ void TriggerButton::SetLight(bool l){
 }
 
 void TriggerButton::timerCallback(){
+    if(!notNeedsTrigger.test_and_set()){
+        triggerClick();
+        TriggeredInternal();
+    }
     if(manual) return;
-    setToggleState(false, dontSendNotification);
-    SendMIDIAction(MIDIUser::out_off);
-    stopTimer();
+    if(turnOffCountdown > 0){
+        --turnOffCountdown;
+        if(turnOffCountdown == 0){
+            turnOffCountdown = -1;
+            setToggleState(false, dontSendNotification);
+            SendMIDIAction(MIDIUser::out_off);
+        }
+    }
 }
 void TriggerButton::TriggeredInternal(){
     if(manual) return;
     setToggleState(true, dontSendNotification);
     SendMIDIAction(MIDIUser::out_on);
-    startTimer(100);
+    turnOffCountdown = 3;
 }

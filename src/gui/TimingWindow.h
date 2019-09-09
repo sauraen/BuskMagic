@@ -42,6 +42,9 @@
 #include "Common.h"
 
 #include "gui/TriggerButton.h"
+
+#include <atomic>
+
 //[/Headers]
 
 
@@ -56,6 +59,7 @@
 */
 class TimingWindow  : public Component,
                       public TextEditor::Listener,
+                      public TriggerButton::HiSpeedListener,
                       private Timer,
                       public Button::Listener
 {
@@ -69,7 +73,7 @@ public:
     static TimingWindow *tw_static;
 
     void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
-    void timerCallback() override;
+    void triggeredHiSpeed(TriggerButton *btn) override;
 
     void HandleMIDI(int port, MidiMessage msg);
 
@@ -90,6 +94,9 @@ private:
     std::unique_ptr<TriggerButton> trgTapBeat;
     std::unique_ptr<TriggerButton> trgTapMeasure;
     std::unique_ptr<TriggerButton> trgFreeze;
+    
+    std::atomic_flag notNeedsMeasureLenRefresh;
+    void timerCallback() override;
     //[/UserVariables]
 
     //==============================================================================

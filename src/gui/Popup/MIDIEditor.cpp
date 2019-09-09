@@ -61,6 +61,8 @@ MIDIEditor::MIDIEditor(void *data){
     //
     setOpaque(true);
     setSize(cmpwidth, h);
+    notNeedsMIDIRefresh.test_and_set();
+    startTimer(33);
 }
 MIDIEditor::~MIDIEditor(){
     MIDISystem::LearnMIDIStop();
@@ -112,8 +114,10 @@ void MIDIEditor::textEditorTextChanged(TextEditor &editorThatWasChanged){
     TEXTCHANGEDHANDLER_POST;
 }
 void MIDIEditor::RefreshAfterMIDILearn(){
-    const MessageManagerLock mml(Thread::getCurrentThread());
-    if(!mml.lockWasGained()) return;
+    notNeedsMIDIRefresh.clear();
+}
+void MIDIEditor::timerCallback(){
+    if(notNeedsMIDIRefresh.test_and_set()) return;
     for(int i=0; i<MIDIUser::ActionType_SIZE; ++i){
         MIDIUser::ActionType action = static_cast<MIDIUser::ActionType>(i);
         if(txtsSetting[i] != nullptr){

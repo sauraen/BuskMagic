@@ -277,10 +277,7 @@ void Controller::RegisterComponent(ControllerCmp *cmp){
     component = cmp;
 }
 void Controller::RefreshComponent(){
-    LS_LOCK_READ();
-    const MessageManagerLock mml(Thread::getCurrentThread());
-    if(!mml.lockWasGained()) return;
-    if(component != nullptr) component->repaint();
+    component->notifyRepaint();
 }
 ControllerCanvas *Controller::GetCanvas(){
     LS_LOCK_READ();

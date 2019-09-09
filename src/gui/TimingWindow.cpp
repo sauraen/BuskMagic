@@ -108,31 +108,31 @@ TimingWindow::TimingWindow ()
 
     //[UserPreSize]
 
-    trgUp.reset(new TriggerButton(this, false));
+    trgUp.reset(new TriggerButton(this, this, false));
     addAndMakeVisible(trgUp.get());
     trgUp->setTopLeftPosition(120, 8);
 
-    trgDown.reset(new TriggerButton(this, false));
+    trgDown.reset(new TriggerButton(this, this, false));
     addAndMakeVisible(trgDown.get());
     trgDown->setTopLeftPosition(120, 64);
 
-    trgDouble.reset(new TriggerButton(this, false));
+    trgDouble.reset(new TriggerButton(this, this, false));
     addAndMakeVisible(trgDouble.get());
     trgDouble->setTopLeftPosition(184, 8);
 
-    trgHalf.reset(new TriggerButton(this, false));
+    trgHalf.reset(new TriggerButton(this, this, false));
     addAndMakeVisible(trgHalf.get());
     trgHalf->setTopLeftPosition(184, 64);
 
-    trgTapBeat.reset(new TriggerButton(this, false));
+    trgTapBeat.reset(new TriggerButton(this, this, false));
     addAndMakeVisible(trgTapBeat.get());
     trgTapBeat->setTopLeftPosition(8, 120);
 
-    trgTapMeasure.reset(new TriggerButton(this, false));
+    trgTapMeasure.reset(new TriggerButton(this, this, false));
     addAndMakeVisible(trgTapMeasure.get());
     trgTapMeasure->setTopLeftPosition(104, 120);
 
-    trgFreeze.reset(new TriggerButton(this, false));
+    trgFreeze.reset(new TriggerButton(this, this, false));
     addAndMakeVisible(trgFreeze.get());
     trgFreeze->setTopLeftPosition(184, 120);
 
@@ -150,6 +150,7 @@ TimingWindow::TimingWindow ()
     txtMeasureLen->setText(String(TimingSystem::GetBeatsPerMeasure()), dontSendNotification);
     chkInt->setToggleState(TimingSystem::IsTempoOnlyInt(), dontSendNotification);
 
+    notNeedsMeasureLenRefresh.test_and_set();
     startTimer(33);
 
     //[/Constructor]
@@ -280,7 +281,6 @@ void TimingWindow::resized()
 void TimingWindow::buttonClicked (Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
-    float t = TimingSystem::GetTempo();
     //[/UserbuttonClicked_Pre]
 
     if (buttonThatWasClicked == btnBPMSet.get())
@@ -301,22 +301,6 @@ void TimingWindow::buttonClicked (Button* buttonThatWasClicked)
     }
 
     //[UserbuttonClicked_Post]
-    else if(buttonThatWasClicked == trgUp.get()){
-        TimingSystem::SetTempo(t == std::floor(t) ? t + 1.0f : std::ceil(t));
-    }else if(buttonThatWasClicked == trgDown.get()){
-        TimingSystem::SetTempo(t == std::floor(t) ? t - 1.0f : std::floor(t));
-    }else if(buttonThatWasClicked == trgDouble.get()){
-        TimingSystem::SetTempo(2.0f * t);
-    }else if(buttonThatWasClicked == trgHalf.get()){
-        TimingSystem::SetTempo(0.5f * t);
-    }else if(buttonThatWasClicked == trgTapBeat.get()){
-        TimingSystem::TapBeat();
-    }else if(buttonThatWasClicked == trgTapMeasure.get()){
-        TimingSystem::TapMeasure();
-        txtMeasureLen->setText(String(TimingSystem::GetBeatsPerMeasure()), dontSendNotification);
-    }else if(buttonThatWasClicked == trgFreeze.get()){
-        TimingSystem::ToggleFreeze();
-    }
     //[/UserbuttonClicked_Post]
 }
 
@@ -325,6 +309,9 @@ void TimingWindow::buttonClicked (Button* buttonThatWasClicked)
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
 void TimingWindow::timerCallback(){
+    if(!notNeedsMeasureLenRefresh.test_and_set()){
+        txtMeasureLen->setText(String(TimingSystem::GetBeatsPerMeasure()), dontSendNotification);
+    }
     String s = "";
     if(TimingSystem::IsFrozen()) s += "FRZ ";
     s += String(TimingSystem::GetTempo(), TimingSystem::IsFrozen() || TimingSystem::IsTempoOnlyInt() ? 0 : 3);
@@ -340,6 +327,25 @@ void TimingWindow::textEditorTextChanged(TextEditor &editorThatWasChanged){
         else TimingSystem::SetBeatsPerMeasure(val);
     }
     TEXTCHANGEDHANDLER_POST;
+}
+void TimingWindow::triggeredHiSpeed(TriggerButton *btn){
+    float t = TimingSystem::GetTempo();
+    if(btn == trgUp.get()){
+        TimingSystem::SetTempo(t == std::floor(t) ? t + 1.0f : std::ceil(t));
+    }else if(btn == trgDown.get()){
+        TimingSystem::SetTempo(t == std::floor(t) ? t - 1.0f : std::floor(t));
+    }else if(btn == trgDouble.get()){
+        TimingSystem::SetTempo(2.0f * t);
+    }else if(btn == trgHalf.get()){
+        TimingSystem::SetTempo(0.5f * t);
+    }else if(btn == trgTapBeat.get()){
+        TimingSystem::TapBeat();
+    }else if(btn == trgTapMeasure.get()){
+        TimingSystem::TapMeasure();
+        notNeedsMeasureLenRefresh.clear();
+    }else if(btn == trgFreeze.get()){
+        TimingSystem::ToggleFreeze();
+    }
 }
 
 void TimingWindow::HandleMIDI(int port, MidiMessage msg){
@@ -366,7 +372,7 @@ void TimingWindow::HandleMIDI(int port, MidiMessage msg){
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="TimingWindow" componentName=""
-                 parentClasses="public Component, public TextEditor::Listener, private Timer"
+                 parentClasses="public Component, public TextEditor::Listener, public TriggerButton::Listener, private Timer"
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.660" fixedSize="1" initialWidth="240"
                  initialHeight="176">

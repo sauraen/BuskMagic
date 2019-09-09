@@ -25,10 +25,18 @@
 #include "gui/SynthButton.h"
 #include "gui/Popup/PopupWindow.h"
 
+#include <atomic>
+
 class TriggerButton : public SynthButton, public MIDIUser, private Timer
 {
 public:
-    TriggerButton(Button::Listener *l, bool manuallight);
+    class HiSpeedListener {
+    public:
+        ~HiSpeedListener() {}
+        virtual void triggeredHiSpeed(TriggerButton *btn) = 0;
+    };
+    
+    TriggerButton(Button::Listener *l, HiSpeedListener *h_or_nullptr, bool manuallight);
     ~TriggerButton() {}
     
     void mouseDown(const MouseEvent &event) override;
@@ -39,10 +47,13 @@ public:
 
 private:
     Button::Listener *parent;
+    HiSpeedListener *hsl;
     bool manual;
     
     PopupWindow popup;
     
+    std::atomic_flag notNeedsTrigger;
+    int turnOffCountdown;
     void timerCallback() override;
     void TriggeredInternal();
 

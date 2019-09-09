@@ -22,8 +22,10 @@
 
 #include "MIDISystem.h"
 
+#include <atomic>
+
 class MIDIEditor : public Component, public TextEditor::Listener, 
-    public Button::Listener, public MIDIUser::Refreshable {
+    public Button::Listener, public MIDIUser::Refreshable, private Timer {
 public:
     struct Startup{
         MIDIUser *user;
@@ -46,4 +48,6 @@ private:
     Array<TextEditor*> txtsSetting;
     Array<TextButton*> btnsLearn;
     std::unique_ptr<TextButton> btnHelp;
+    std::atomic_flag notNeedsMIDIRefresh;
+    void timerCallback() override;
 };

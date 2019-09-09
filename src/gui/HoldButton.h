@@ -25,9 +25,11 @@
 #include "gui/SynthButton.h"
 #include "gui/Popup/PopupWindow.h"
 
+#include <atomic>
+
 ///Button which requires holding from MIDI, but click-to-toggle from GUI
 ///Does not send buttonClicked events, instead HoldButton::Listener events
-class HoldButton : public SynthButton, public MIDIUser
+class HoldButton : public SynthButton, public MIDIUser, private Timer
 {
 public:
     class Listener{
@@ -52,6 +54,10 @@ private:
     Listener *parent;
     
     PopupWindow popup;
+    
+    std::atomic_flag notNeedsHoldStateOn;
+    std::atomic_flag notNeedsHoldStateOff;
+    void timerCallback() override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HoldButton)
 };

@@ -27,6 +27,9 @@ HoldButton::HoldButton(HoldButton::Listener *l) : parent(l) {
     AddMIDIAction(MIDIUser::in_off);
     AddMIDIAction(MIDIUser::out_on);
     AddMIDIAction(MIDIUser::out_off);
+    notNeedsHoldStateOff.test_and_set();
+    notNeedsHoldStateOn.test_and_set();
+    startTimer(33);
 }
 
 void HoldButton::mouseDown(const MouseEvent &event) {
@@ -48,14 +51,15 @@ void HoldButton::ReceivedMIDIAction(ActionType t, int val){
     ignoreUnused(val);
     LS_LOCK_READ();
     if(t == MIDIUser::in_on){
-        const MessageManagerLock mml(Thread::getCurrentThread());
-        if(!mml.lockWasGained()) return;
-        setHoldState(true);
+        notNeedsHoldStateOn.clear();
     }else if(t == MIDIUser::in_off){
-        const MessageManagerLock mml(Thread::getCurrentThread());
-        if(!mml.lockWasGained()) return;
-        setHoldState(false);
+        notNeedsHoldStateOff.clear();
     }
+}
+
+void HoldButton::timerCallback(){
+    if(!notNeedsHoldStateOn.test_and_set()) setHoldState(true);
+    if(!notNeedsHoldStateOff.test_and_set()) setHoldState(false);
 }
 
 void HoldButton::setHoldState(bool h){

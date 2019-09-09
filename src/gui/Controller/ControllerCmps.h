@@ -28,9 +28,11 @@
 #include "gui/Popup/CtrlrEditor.h"
 #include "gui/MagicValueBox.h"
 
+#include <atomic>
+
 class ControllerCanvas;
 
-class ControllerCmp : public Component
+class ControllerCmp : public Component, private Timer
 {
 public:
     ControllerCmp(Controller *c) : controller(c), texty(10), textwidth(64){
@@ -40,6 +42,8 @@ public:
         addAndMakeVisible(btnEnable.get());
         btnEnable->setTopLeftPosition(0, 0); //To be overridden
         setSize(50, 50); //To be overridden
+        notNeedsRepaint.test_and_set();
+        startTimer(33);
     }
     ~ControllerCmp() {
         controller->RegisterComponent(nullptr);
@@ -64,6 +68,8 @@ public:
     }
 
     void mouseDrag(const MouseEvent &event) override;
+    
+    inline void notifyRepaint() { notNeedsRepaint.clear(); }
 
 protected:
     Controller *controller;
@@ -73,6 +79,11 @@ protected:
 private:
     Point<int> dragbegin_local;
     PopupWindow popup;
+    std::atomic_flag notNeedsRepaint;
+    
+    void timerCallback() override{
+        if(!notNeedsRepaint.test_and_set()) repaint();
+    }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ControllerCmp)
 };
