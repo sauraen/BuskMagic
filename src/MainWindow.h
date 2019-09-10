@@ -65,7 +65,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainMenus)
 };
 
-class MainWindow : public DocumentWindow {
+class MainWindow : public DocumentWindow, private Timer {
 public:
     MainWindow();
     ~MainWindow();
@@ -77,9 +77,14 @@ private:
     friend class MainMenus;
     void Init(ValueTree showfile_node = ValueTree());
     void Finalize();
+    bool LoadInternal(File showfile, bool doFinalize);
     void Load();
+    bool SaveInternal(File showfile);
     void Save(bool saveas);
     File curshowfile;
+    
+    int backupcounter;
+    void timerCallback() override;
     
     std::unique_ptr<MainMenus> mainmenus;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)

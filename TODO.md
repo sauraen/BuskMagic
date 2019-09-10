@@ -2,7 +2,6 @@
 
 ## High priority
 
-  * Load/Save MIDI mapping in StatesWindow and TimingWindow
   * Random ModulatorShape not implemented in ModulatorController due to needed
     more support in TimingSystem
   * Smoothly changing seconds-based modulator period does not work
@@ -19,5 +18,4 @@
   * Optional nonlinearity at end of channel, then optional clip/wrap/ignore
   * Select/edit multiple entires in MatrixEditor
   * Status messages, e.g. save successful
-  * Autosave system
   * Save window positions/sizes

@@ -133,15 +133,19 @@ void MainWindow::Load(){
     FileChooser fc("Load showfile...", File::getSpecialLocation(File::userHomeDirectory), "*.bmshow");
     if(!fc.browseForFileToOpen()) return;
     File showfile = fc.getResult();
+    if(!LoadInternal(showfile, true)) return;
+    curshowfile = showfile;
+}
+bool MainWindow::LoadInternal(File showfile, bool doFinalize){
     ValueTree showfile_node = VT_Load(showfile, idBuskMagicShow);
     if(!showfile_node.isValid()){
         WarningBox(showfile.getFullPathName() + " is not a valid BuskMagic showfile!");
-        return;
+        return false;
     }
     LS_LOCK_WRITE();
-    Finalize();
+    if(doFinalize) Finalize();
     Init(showfile_node);
-    curshowfile = showfile;
+    return true;
 }
 void MainWindow::Save(bool saveas){
     File showfile;
@@ -152,6 +156,13 @@ void MainWindow::Save(bool saveas){
     }else{
         showfile = curshowfile;
     }
+    if(!SaveInternal(showfile)){
+        WarningBox("Could not save showfile " + showfile.getFullPathName());
+        return;
+    }
+    curshowfile = showfile;
+}
+bool MainWindow::SaveInternal(File showfile){
     LS_LOCK_READ();
     ValueTree showfile_node(idBuskMagicShow);
     showfile_node.addChild(ArtNetSystem::Save(), -1, nullptr);
@@ -165,11 +176,22 @@ void MainWindow::Save(bool saveas){
     showfile_node.addChild(sw->Save(), -1, nullptr);
     TimingWindow *tw = dynamic_cast<TimingWindow*>(timingWindow->contents.get());
     showfile_node.addChild(tw->Save(), -1, nullptr);
-    if(!VT_Save(showfile_node, showfile, "bmshow", "BuskMagic Showfile")){
-        WarningBox("Could not save showfile " + showfile.getFullPathName());
+    return VT_Save(showfile_node, showfile, "bmshow", "BuskMagic Showfile"); 
+}
+void MainWindow::timerCallback(){
+    File backupdir = GetBackupDir();
+    String base = curshowfile.existsAsFile() ? curshowfile.getFileNameWithoutExtension() : "unsaved";
+    File backupfile = backupdir.getNonexistentChildFile(base + "_", ".bmshow", false);
+    if(!SaveInternal(backupfile)){
+        std::cout << "Failed to save backup file " << backupfile.getFullPathName() << "\n";
         return;
     }
-    curshowfile = showfile;
+    Array<File> backupfilesthisshow = backupdir.findChildFiles(
+            File::findFiles | File::ignoreHiddenFiles, false, base + "*.bmshow");
+    if(backupfilesthisshow.size() >= 8){
+        File oldest = FindOldestNewestFile(backupfilesthisshow, false);
+        if(oldest.existsAsFile()) oldest.deleteFile();
+    }
 }
 
 MainWindow::MainWindow() 
@@ -189,7 +211,27 @@ MainWindow::MainWindow()
         MenuBarModel::setMacMainMenu(mainmenus.get());
     #endif
     setSize(800, 600);
-    Init(ValueTree()); //TODO command line parameters
+    //Load backed up file
+    bool flag = false;
+    do{
+        if(!GetSettingsDir().getChildFile("crashed.flg").existsAsFile()) break;
+        Array<File> backupfiles = GetBackupDir().findChildFiles(
+                File::findFiles | File::ignoreHiddenFiles, false, "*.bmshow");
+        if(backupfiles.size() == 0) break;
+        File newest = FindOldestNewestFile(backupfiles, true);
+        if(!NativeMessageBox::showYesNoBox(AlertWindow::WarningIcon, "BuskMagic", 
+            "It looks like BuskMagic did not shut down correctly, and a backup showfile\n"
+            "was saved. Load this showfile?")) break;
+        if(!LoadInternal(newest, false)) break;
+        flag = true;
+    }while(false);
+    if(!flag){
+        Init(ValueTree()); //TODO command line parameters
+    }
+    GetSettingsDir().getChildFile("crashed.flg").create();
+    //Start backup system
+    backupcounter = 0;
+    startTimer(600000);
 }
 
 MainWindow::~MainWindow() {
@@ -199,6 +241,7 @@ MainWindow::~MainWindow() {
     #endif
     setMenuBar(nullptr);
     delete app_icon; app_icon = nullptr;
+    GetSettingsDir().getChildFile("crashed.flg").deleteFile();
 }
 
 void MainWindow::closeButtonPressed() {

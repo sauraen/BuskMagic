@@ -186,6 +186,36 @@ inline void ConfigureOptionButton(std::unique_ptr<ToggleButton> &opt,
     opt->setColour(ToggleButton::tickDisabledColourId, col);
 }
 
+inline File GetSettingsDir(){
+    File settingsdir = File::getSpecialLocation(File::userApplicationDataDirectory).getChildFile("BuskMagic");
+    if(!settingsdir.isDirectory()) settingsdir.createDirectory();
+    return settingsdir;
+}
+
+inline File GetBackupDir(){
+    File backupdir = GetSettingsDir().getChildFile("backup");
+    if(!backupdir.isDirectory()) backupdir.createDirectory();
+    return backupdir;
+}
+
+inline File FindOldestNewestFile(Array<File> fileset, bool newest){
+    Time bestt = newest ? Time(0) : Time::getCurrentTime();
+    int bestfile = -1;
+    for(int i=0; i<fileset.size(); ++i){
+        Time thist = fileset[i].getLastModificationTime();
+        if(newest ? (thist.toMilliseconds() > bestt.toMilliseconds()) :
+                (thist.toMilliseconds() < bestt.toMilliseconds())){
+            bestt = thist;
+            bestfile = i;
+        }
+    }
+    if(bestfile < 0){
+        jassertfalse;
+        return File();
+    }
+    return fileset[bestfile];
+}
+
 inline Font GetNormalFont(float size = 15.0f){
     return Font(size, Font::plain).withTypefaceStyle("Regular");
 }
