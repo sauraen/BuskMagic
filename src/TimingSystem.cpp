@@ -31,8 +31,9 @@ namespace TimingSystem {
     double tempo_msperbeat;
     int measurelen;
     
-    double freeze_posmsr;
+    double freeze_tpos;
     bool frozen;
+    
     bool onlyint;
     
     Array<uint64_t> taptimes;
@@ -45,30 +46,42 @@ namespace TimingSystem {
         beatsinmeasure_counter = 0;
     }
     
-    double GetPositionInMeasureInternal(){
-        if(frozen) return freeze_posmsr;
-        double dt = (double)(GetTimeMS() - origin);
-        dt /= (tempo_msperbeat * (double)measurelen);
-        return dt - std::floor(dt);
+    double GetTimePosition(){
+        if(frozen) return freeze_tpos;
+        double tpos = (double)(GetTimeMS() - origin);
+        tpos /= (tempo_msperbeat * (double)measurelen);
+        return tpos;
     }
-    void SetOriginForMsrPos(double posinmsr){
-        origin = GetTimeMS() - (uint64_t)(tempo_msperbeat * (double)measurelen * posinmsr);
+    void SetOriginForTimePosition(double tpos){
+        origin = GetTimeMS() - (uint64_t)(tempo_msperbeat * (double)measurelen * tpos);
     }
     
+    void ToggleFreeze(){
+        if(!frozen){
+            freeze_tpos = GetTimePosition();
+            frozen = true;
+        }else{
+            SetOriginForTimePosition(freeze_tpos);
+            frozen = false;
+        }
+    }
+    bool IsFrozen() { return frozen; }
+    
+    
     float GetPositionInMeasure(){
-        return (float)GetPositionInMeasureInternal();
+        double tpos = GetTimePosition();
+        return (float)(tpos - std::floor(tpos));
     }
     float GetPositionInBeat(){
-        double d = GetPositionInMeasureInternal();
-        d *= (double)measurelen;
-        return (float)(d - std::floor(d));
+        double tpos = GetTimePosition();
+        tpos *= (double)measurelen;
+        return (float)(tpos - std::floor(tpos));
+    }
+    int GetCurrentMeasure(){ //Counterintuitively, round to nearest measure number!
+        return (int)std::floor(GetTimePosition() + 0.5);
     }
     int GetCurrentBeat(){
-        double d = GetPositionInMeasureInternal();
-        d *= (double)measurelen;
-        d += 0.5;
-        d = std::floor(d);
-        return (int)d;
+        return (int)std::floor((GetPositionInMeasure() * (float)measurelen) + 0.5);
     }
     
     float GetTempo(){
@@ -77,9 +90,9 @@ namespace TimingSystem {
     void SetTempo(float bpm){
         ClearTapping();
         if(onlyint) bpm = std::round(bpm);
-        double orig_posinmsr = GetPositionInMeasureInternal();
+        double orig_tpos = GetTimePosition();
         tempo_msperbeat = 60000.0 / (double)bpm;
-        SetOriginForMsrPos(orig_posinmsr);
+        SetOriginForTimePosition(orig_tpos);
     }
     bool IsTempoOnlyInt() { return onlyint; }
     void SetTempoOnlyInt(bool tempoonlyint) { onlyint = tempoonlyint; }
@@ -91,16 +104,17 @@ namespace TimingSystem {
         if(beats <= 0) return;
         if(beats == measurelen) return;
         ClearTapping();
-        double orig_posinmsr = GetPositionInMeasureInternal();
-        orig_posinmsr *= (double)measurelen / (double)beats;
+        float orig_posinmsr = GetPositionInMeasure();
+        orig_posinmsr *= (float)measurelen / (float)beats;
         orig_posinmsr -= std::floor(orig_posinmsr);
         measurelen = beats;
-        SetOriginForMsrPos(orig_posinmsr);
+        SetOriginForTimePosition((double)orig_posinmsr); //Reset to 0th measure
     }
     
     void TapBeatInternal(bool ismeasure){
         uint64_t t = GetTimeMS();
         uint64_t dt = taptimes.size() > 0 ? t-taptimes[taptimes.size()-1] : 0;
+        int m = GetCurrentMeasure();
         int b = ismeasure ? 0 : GetCurrentBeat();
         static const uint64_t notap_delay = 1500;
         if(dt >= notap_delay) ClearTapping();
@@ -153,8 +167,8 @@ namespace TimingSystem {
         }else{
             if(beatsinmeasure_counter >= 1) ++beatsinmeasure_counter;
         }
-        //Keep beat in measure but adjust to beat
-        SetOriginForMsrPos((double)b / (double)measurelen);
+        //Set origin to rounded measure/beat
+        SetOriginForTimePosition((double)m + ((double)b / (double)measurelen));
     }
     void TapBeat(){
         TapBeatInternal(false);
@@ -163,16 +177,28 @@ namespace TimingSystem {
         TapBeatInternal(true);
     }
     
-    void ToggleFreeze(){
-        if(!frozen){
-            freeze_posmsr = GetPositionInMeasureInternal();
-            frozen = true;
-        }else{
-            SetOriginForMsrPos(freeze_posmsr);
-            frozen = false;
-        }
+    float GetRandomFrom(int64_t seed){
+        Random r(seed);
+        r.nextInt64();
+        r.combineSeed(seed);
+        r.nextInt64();
+        return r.nextFloat();
     }
-    bool IsFrozen() { return frozen; }
+    float GetRandomAtMeasure(int64_t objectid, float period){
+        double tpos = GetTimePosition();
+        tpos /= period;
+        objectid ^= (int64_t)(std::floor(tpos));
+        return GetRandomFrom(objectid);
+    }
+    float GetRandomAtBeat(int64_t objectid, float period){
+        return GetRandomAtMeasure(objectid ^ 0x12345678ll, period * (float)measurelen);
+    }
+    float GetRandomAtSecond(int64_t objectid, float period){
+        double t = GetTimeMS();
+        t /= 1000.0 * period;
+        objectid ^= (int64_t)(std::floor(t));
+        return GetRandomFrom(objectid);
+    }
     
     void Init(ValueTree ts_node){
         origin = GetTimeMS();

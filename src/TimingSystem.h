@@ -47,5 +47,8 @@ namespace TimingSystem {
     void ToggleFreeze();
     bool IsFrozen();
     
+    float GetRandomAtMeasure(int64_t objectid, float period);
+    float GetRandomAtBeat(int64_t objectid, float period);
+    float GetRandomAtSecond(int64_t objectid, float period);
     
 }
