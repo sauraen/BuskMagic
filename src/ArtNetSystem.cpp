@@ -24,14 +24,14 @@
 
 namespace ArtNetSystem {
     
-    ReadWriteLock mutex;
+    static ReadWriteLock devices_mutex;
     //These are intentionally named the same so you cannot start with a read
     //lock and escalate to a write lock
-    #define AS_LOCK_READ() const ScopedReadLock aslock(ArtNetSystem::mutex)
-    #define AS_LOCK_WRITE() const ScopedWriteLock aslock(ArtNetSystem::mutex)
+    #define DEVICES_LOCK_READ() const ScopedReadLock devlock(ArtNetSystem::devices_mutex)
+    #define DEVICES_LOCK_WRITE() const ScopedWriteLock devlock(ArtNetSystem::devices_mutex)
 
     String ArtNetDevice::GetTableRow(){
-        AS_LOCK_READ();
+        DEVICES_LOCK_READ();
         String ret;
              if(mode == Mode::manual)       ret += "M";
         else if(mode == Mode::discovered)   ret += "D";
@@ -69,7 +69,7 @@ namespace ArtNetSystem {
     }
     
     String ArtNetDevice::GetDescription(){
-        AS_LOCK_READ();
+        DEVICES_LOCK_READ();
         String ret;
              if(mode == Mode::manual)       ret += "Manual";
         else if(mode == Mode::discovered)   ret += "Discovered";
@@ -158,7 +158,7 @@ namespace ArtNetSystem {
     
     int NumDevices() { return devices.size(); }
     ArtNetDevice *GetDevice(int d) {
-        AS_LOCK_READ();
+        DEVICES_LOCK_READ();
         if(d < 0 || d >= devices.size()){
             std::cout << "ArtNetSystem asked for device " << d << " out of " << devices.size() << "!\n";
             jassertfalse;
@@ -168,16 +168,16 @@ namespace ArtNetSystem {
     }
     
     void AddBlankDevice(){
-        AS_LOCK_WRITE();
+        DEVICES_LOCK_WRITE();
         devices.add(new ArtNetDevice());
     }
     void RemoveDevice(int d){
-        AS_LOCK_WRITE();
+        DEVICES_LOCK_WRITE();
         devices.remove(d);
     }
     
     Array<uint16_t> GetSortedListNeededUniverses(){
-        AS_LOCK_READ();
+        DEVICES_LOCK_READ();
         Array<uint16_t> ret;
         DefaultElementComparator<uint16_t> sorter;
         for(int d=0; d<devices.size(); ++d){
@@ -247,10 +247,12 @@ namespace ArtNetSystem {
     }
     
     static DatagramSocket *sendsock = nullptr;
+    static CriticalSection sendsock_mutex;
     
     static void SendArtNet(IPAddress dest, uint16_t opcode, const uint8_t *data, 
             int dlen, bool packetHasProtVer = true, 
             ArtNetDevice *optionalDevForStatus = nullptr){
+        const ScopedLock sendsocklock(sendsock_mutex);
         int hlen = packetHasProtVer ? 12 : 10;
         uint8_t *buf = new uint8_t[hlen+dlen];
         sprintf((char*)buf, "Art-Net");
@@ -294,7 +296,7 @@ namespace ArtNetSystem {
     
     void ChangeDeviceUniverses(int d, uint8_t net, uint8_t subnet, 
         const uint8_t *inuni, const uint8_t *outuni){
-        AS_LOCK_READ();
+        DEVICES_LOCK_READ();
         ArtNetDevice *dev = devices[d];
         if(dev == nullptr) return;
         //Change local knowledge of universes, in case device doesn't respond
@@ -319,7 +321,7 @@ namespace ArtNetSystem {
     }
     
     void SendDMX512(uint16_t universe, const uint8_t *buf512){
-        AS_LOCK_READ();
+        DEVICES_LOCK_READ();
         uint8_t *data = new uint8_t[518];
         for(int d=0; d<devices.size(); ++d){
             ArtNetDevice *dev = devices[d];
@@ -392,7 +394,7 @@ namespace ArtNetSystem {
             uint16_t data = 0;
             IPAddress bcast = pollmode == 2 ? dhcpBroadcast : staticBroadcast;
             SendArtNet(bcast, 0x2000, (uint8_t*)&data, 2);
-            AS_LOCK_READ();
+            DEVICES_LOCK_READ();
             for(int d=0; d<devices.size(); ++d){
                 const IPAddress &ip = devices[d]->ip;
                 if(!ip.isNull() && !isIPInSubnet(ip, bcast)){
@@ -468,7 +470,7 @@ namespace ArtNetSystem {
             std::cout << "ReceivedArtPollReply: packet too short!\n";
             return;
         }
-        AS_LOCK_READ();
+        DEVICES_LOCK_READ();
         ArtNetDevice *dev = nullptr;
         for(int i=0; i<devices.size(); ++i){
             if(devices[i]->ip == senderIP){
@@ -562,7 +564,7 @@ namespace ArtNetSystem {
     static ArtNetReceiver *receiver = nullptr;
     
     void Init(ValueTree as_node){
-        AS_LOCK_WRITE();
+        DEVICES_LOCK_WRITE();
         if(sendsock != nullptr){
             std::cout << "ArtNetSystem nultiply initted!\n";
             jassertfalse;
@@ -588,7 +590,7 @@ namespace ArtNetSystem {
         SendArtPollReply(IPAddress());
     }
     void Finalize(){
-        AS_LOCK_WRITE();
+        DEVICES_LOCK_WRITE();
         delete poller; poller = nullptr;
         receiver->stopThread(10);
         delete receiver; receiver = nullptr;
@@ -598,7 +600,7 @@ namespace ArtNetSystem {
     }
     
     ValueTree Save(){
-        AS_LOCK_READ();
+        DEVICES_LOCK_READ();
         ValueTree ret(idArtNetSystem);
         ret.setProperty(idPollMode, pollmode, nullptr);
         for(int i=0; i<devices.size(); ++i){

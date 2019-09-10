@@ -21,7 +21,7 @@
 #include "JuceHeader.h"
 #include "Common.h"
 
-class PopupWindow : public Component
+class PopupWindow : public Component, private Timer
 {
 public:
     PopupWindow() {
@@ -47,19 +47,15 @@ public:
         setVisible(true);
         setTopLeftPosition(x, y);
         contents->grabKeyboardFocus();
+        startTimer(33);
     }
     
     void reset(){
+        stopTimer();
         if(contents == nullptr) return;
         contents = nullptr;
         setVisible(false);
         removeFromDesktop();
-    }
-    
-    void focusOfChildComponentChanged(FocusChangeType cause) override {
-        ignoreUnused(cause);
-        if(hasKeyboardFocus(true)) return;
-        reset();
     }
     
     bool keyPressed(const KeyPress &key) override {
@@ -72,6 +68,11 @@ public:
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PopupWindow)
+    
+    void timerCallback() override {
+        if(hasKeyboardFocus(true)) return;
+        reset();
+    }
     
     std::unique_ptr<Component> contents;
 };

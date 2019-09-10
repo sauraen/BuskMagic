@@ -187,6 +187,9 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow() {
     Finalize();
+    #ifdef JUCE_MAC
+        MenuBarModel::setMacMainMenu(nullptr);
+    #endif
     setMenuBar(nullptr);
     delete app_icon; app_icon = nullptr;
 }
