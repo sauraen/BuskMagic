@@ -27,6 +27,8 @@ Identifier idChannelSystem("channelsystem");
 Identifier idFixtureSystem("fixturesystem");
 Identifier idControllerSystem("controllersystem");
 Identifier idLightingSystem("lightingsystem");
+Identifier idStatesWindow("stateswindow");
+Identifier idTimingWindow("timingwindow");
 //Common attributes
 Identifier idUUID("uuid");
 Identifier idName("name");

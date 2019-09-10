@@ -22,7 +22,8 @@
 #include "LightingSystem.h"
 
 TriggerButton::TriggerButton(Button::Listener *l, HiSpeedListener *h_or_nullptr, 
-        bool manuallight) : parent(l), hsl(h_or_nullptr), manual(manuallight) {
+        bool manuallight, ValueTree mu_node) 
+        : MIDIUser(mu_node), parent(l), hsl(h_or_nullptr), manual(manuallight) {
     addListener(l);
     SetColor(Colours::red);
     setTriggeredOnMouseDown(true);

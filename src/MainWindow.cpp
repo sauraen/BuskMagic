@@ -79,7 +79,6 @@ public:
                 Point<int>(tlw->getWidth()/2, tlw->getHeight()/2));
         }
     }
-private:
     std::unique_ptr<Component> contents;
 };
 
@@ -89,20 +88,24 @@ namespace {
 }
 
 void MainWindow::Init(ValueTree showfile_node){
-    ArtNetSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("artnetsystem") : ValueTree());
-    MIDISystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("midisystem") : ValueTree());
-    TimingSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("timingsystem") : ValueTree());
-    ChannelSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("channelsystem") : ValueTree());
-    FixtureSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("fixturesystem") : ValueTree());
-    ControllerSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("controllersystem") : ValueTree());
+    ArtNetSystem::Init(VT_GetChildWithName(showfile_node, idArtNetSystem));
+    MIDISystem::Init(VT_GetChildWithName(showfile_node, idMIDISystem));
+    TimingSystem::Init(VT_GetChildWithName(showfile_node, idTimingSystem));
+    ChannelSystem::Init(VT_GetChildWithName(showfile_node, idChannelSystem));
+    FixtureSystem::Init(VT_GetChildWithName(showfile_node, idFixtureSystem));
+    ControllerSystem::Init(VT_GetChildWithName(showfile_node, idControllerSystem));
     if(showfile_node.isValid()) ChannelSystem::ConvertAllPhasorsUUIDToPointer();
-    LightingSystem::Init(showfile_node.isValid() ? showfile_node.getChildWithName("lightingsystem") : ValueTree());
+    LightingSystem::Init(VT_GetChildWithName(showfile_node, idLightingSystem));
     artnetWindow.reset(new SubWindow("BuskMagic - Art-Net Setup", false, new ArtNetSetup()));
     midiWindow.reset(new SubWindow("BuskMagic - MIDI Setup", false, new MIDISetup()));
     patcherWindow.reset(new SubWindow("BuskMagic - Patcher", false, new Patcher()));
     controllersWindow.reset(new SubWindow("BuskMagic - Controllers", true, new ControllerWindow()));
-    statesWindow.reset(new SubWindow("BuskMagic - States", false, new StatesWindow()));
-    timingWindow.reset(new SubWindow("BuskMagic - Timing (Tempo)", false, new TimingWindow()));
+    statesWindow.reset(new SubWindow("BuskMagic - States", false, new StatesWindow(
+        VT_GetChildWithName(showfile_node, idStatesWindow)
+    )));
+    timingWindow.reset(new SubWindow("BuskMagic - Timing (Tempo)", false, new TimingWindow(
+        VT_GetChildWithName(showfile_node, idTimingWindow)
+    )));
     setContentOwned(new MainWindowComponent(), false);
     setVisible(true);
 }
@@ -158,6 +161,10 @@ void MainWindow::Save(bool saveas){
     showfile_node.addChild(FixtureSystem::Save(), -1, nullptr);
     showfile_node.addChild(ControllerSystem::Save(), -1, nullptr);
     showfile_node.addChild(LightingSystem::Save(), -1, nullptr);
+    StatesWindow *sw = dynamic_cast<StatesWindow*>(statesWindow->contents.get());
+    showfile_node.addChild(sw->Save(), -1, nullptr);
+    TimingWindow *tw = dynamic_cast<TimingWindow*>(timingWindow->contents.get());
+    showfile_node.addChild(tw->Save(), -1, nullptr);
     if(!VT_Save(showfile_node, showfile, "bmshow", "BuskMagic Showfile")){
         WarningBox("Could not save showfile " + showfile.getFullPathName());
         return;

@@ -21,7 +21,8 @@
 #include "gui/Popup/MIDIEditor.h"
 #include "LightingSystem.h"
 
-HoldButton::HoldButton(HoldButton::Listener *l) : parent(l) {
+HoldButton::HoldButton(HoldButton::Listener *l, ValueTree mu_node) 
+    : MIDIUser(mu_node), parent(l) {
     SetColor(Colours::red);
     AddMIDIAction(MIDIUser::in_on);
     AddMIDIAction(MIDIUser::in_off);

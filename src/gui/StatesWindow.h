@@ -31,8 +31,9 @@ class StatesWindow
 public:
     static StatesWindow *sw_static;
     
-    StatesWindow();
+    StatesWindow(ValueTree sw_node);
     ~StatesWindow();
+    ValueTree Save();
     
     void paint(Graphics &g) override;
     void resized() override;
@@ -55,7 +56,7 @@ private:
     bool blinker;
     void timerCallback() override;
     
-    void MakeButton(int i);
+    void MakeButton(int i, ValueTree buttons_node);
     void ChangeSize();
     void SetOnlyLight(int i);
 };

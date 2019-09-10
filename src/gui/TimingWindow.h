@@ -65,12 +65,14 @@ class TimingWindow  : public Component,
 {
 public:
     //==============================================================================
-    TimingWindow ();
+    TimingWindow (ValueTree tw_node);
     ~TimingWindow();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     static TimingWindow *tw_static;
+
+    ValueTree Save();
 
     void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
     void triggeredHiSpeed(TriggerButton *btn) override;
@@ -94,7 +96,7 @@ private:
     std::unique_ptr<TriggerButton> trgTapBeat;
     std::unique_ptr<TriggerButton> trgTapMeasure;
     std::unique_ptr<TriggerButton> trgFreeze;
-    
+
     std::atomic_flag notNeedsMeasureLenRefresh;
     void timerCallback() override;
     //[/UserVariables]
@@ -113,4 +115,3 @@ private:
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

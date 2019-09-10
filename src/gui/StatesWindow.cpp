@@ -22,8 +22,9 @@ static const int colwidth = 64;
 
 StatesWindow *StatesWindow::sw_static = nullptr;
 
-void StatesWindow::MakeButton(int i){
-    TriggerButton *trg = new TriggerButton(this, nullptr, true);
+void StatesWindow::MakeButton(int i, ValueTree buttons_node){
+    ValueTree btn = VT_GetChildWithProperty(buttons_node, idState, i);
+    TriggerButton *trg = new TriggerButton(this, nullptr, true, btn);
     addAndMakeVisible(trg);
     trg->setTopLeftPosition((colwidth*i) + 8, 80);
     trgsState.add(trg);
@@ -42,12 +43,12 @@ void StatesWindow::SetOnlyLight(int i){
     }
 }
 
-StatesWindow::StatesWindow(){
+StatesWindow::StatesWindow(ValueTree sw_node){
     jassert(sw_static == nullptr);
     sw_static = this;
     //
-    btnCopy.reset(new HoldButton(this));
-    btnBlind.reset(new HoldButton(this));
+    btnCopy.reset(new HoldButton(this, VT_GetChildWithProperty(sw_node, idType, "btnCopy")));
+    btnBlind.reset(new HoldButton(this, VT_GetChildWithProperty(sw_node, idType, "btnBlind")));
     addAndMakeVisible(btnCopy.get());
     addAndMakeVisible(btnBlind.get());
     btnCopy->setTopLeftPosition(64, 8);
@@ -72,7 +73,8 @@ StatesWindow::StatesWindow(){
     chkProtected->setToggleState(ControllerSystem::IsStateProtected(
             ControllerSystem::GetDisplayState()), dontSendNotification);
     //
-    for(int i=0; i<ControllerSystem::NumStates(); ++i) MakeButton(i);
+    ValueTree buttons_node = VT_GetChildWithName(sw_node, idStates);
+    for(int i=0; i<ControllerSystem::NumStates(); ++i) MakeButton(i, buttons_node);
     SetOnlyLight(ControllerSystem::GetDisplayState()-1);
     //
     guistate = 0;
@@ -83,6 +85,17 @@ StatesWindow::StatesWindow(){
 }
 StatesWindow::~StatesWindow(){
     sw_static = nullptr;
+}
+ValueTree StatesWindow::Save(){
+    ValueTree ret(idStatesWindow);
+    VT_AddChildSetProperty(ret, idType, "btnCopy", btnCopy->Save());
+    VT_AddChildSetProperty(ret, idType, "btnBlind", btnBlind->Save());
+    ValueTree buttons_node(idStates);
+    for(int i=0; i<ControllerSystem::NumStates(); ++i){
+        VT_AddChildSetProperty(buttons_node, idState, i, trgsState[i]->Save());
+    }
+    ret.addChild(buttons_node, -1, nullptr);
+    return ret;
 }
 
 void StatesWindow::paint(Graphics &g){
@@ -132,7 +145,7 @@ void StatesWindow::buttonClicked(Button *buttonThatWasClicked){
     int ns = ControllerSystem::NumStates();
     if(buttonThatWasClicked == btnAdd.get()){
         ControllerSystem::AddState();
-        MakeButton(ns);
+        MakeButton(ns, ValueTree());
         ChangeSize();
         repaint();
     }else if(buttonThatWasClicked == btnRemove.get()){

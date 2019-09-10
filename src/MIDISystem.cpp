@@ -281,6 +281,7 @@ MIDIUser::MIDIUser(const MIDIUser &other){
 }
 
 MIDIUser::MIDIUser(ValueTree mu_node) : MIDIUser() {
+    if(!mu_node.isValid()) return;
     for(int i=0; i<mu_node.getNumChildren(); ++i){
         ValueTree v = mu_node.getChild(i);
         jassert(v.hasType(idAction));

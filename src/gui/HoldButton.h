@@ -38,7 +38,7 @@ public:
         virtual void holdButtonStateChanged(HoldButton *buttonWhoseStateChanged) = 0;
     };
     
-    HoldButton(Listener *l);
+    HoldButton(Listener *l, ValueTree mu_node);
     ~HoldButton() {}
     
     void mouseDown(const MouseEvent &event) override;

@@ -48,7 +48,7 @@ TimingWindow *TimingWindow::tw_static = nullptr;
 //[/MiscUserDefs]
 
 //==============================================================================
-TimingWindow::TimingWindow ()
+TimingWindow::TimingWindow (ValueTree tw_node)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     jassert(tw_static == nullptr);
@@ -108,31 +108,38 @@ TimingWindow::TimingWindow ()
 
     //[UserPreSize]
 
-    trgUp.reset(new TriggerButton(this, this, false));
+    trgUp.reset(new TriggerButton(this, this, false, 
+        VT_GetChildWithProperty(tw_node, idType, "trgUp")));
     addAndMakeVisible(trgUp.get());
     trgUp->setTopLeftPosition(120, 8);
 
-    trgDown.reset(new TriggerButton(this, this, false));
+    trgDown.reset(new TriggerButton(this, this, false, 
+        VT_GetChildWithProperty(tw_node, idType, "trgDown")));
     addAndMakeVisible(trgDown.get());
     trgDown->setTopLeftPosition(120, 64);
 
-    trgDouble.reset(new TriggerButton(this, this, false));
+    trgDouble.reset(new TriggerButton(this, this, false, 
+        VT_GetChildWithProperty(tw_node, idType, "trgDouble")));
     addAndMakeVisible(trgDouble.get());
     trgDouble->setTopLeftPosition(184, 8);
 
-    trgHalf.reset(new TriggerButton(this, this, false));
+    trgHalf.reset(new TriggerButton(this, this, false, 
+        VT_GetChildWithProperty(tw_node, idType, "trgHalf")));
     addAndMakeVisible(trgHalf.get());
     trgHalf->setTopLeftPosition(184, 64);
 
-    trgTapBeat.reset(new TriggerButton(this, this, false));
+    trgTapBeat.reset(new TriggerButton(this, this, false, 
+        VT_GetChildWithProperty(tw_node, idType, "trgTapBeat")));
     addAndMakeVisible(trgTapBeat.get());
     trgTapBeat->setTopLeftPosition(8, 120);
 
-    trgTapMeasure.reset(new TriggerButton(this, this, false));
+    trgTapMeasure.reset(new TriggerButton(this, this, false, 
+        VT_GetChildWithProperty(tw_node, idType, "trgTapMeasure")));
     addAndMakeVisible(trgTapMeasure.get());
     trgTapMeasure->setTopLeftPosition(104, 120);
 
-    trgFreeze.reset(new TriggerButton(this, this, false));
+    trgFreeze.reset(new TriggerButton(this, this, false, 
+        VT_GetChildWithProperty(tw_node, idType, "trgFreeze")));
     addAndMakeVisible(trgFreeze.get());
     trgFreeze->setTopLeftPosition(184, 120);
 
@@ -308,6 +315,18 @@ void TimingWindow::buttonClicked (Button* buttonThatWasClicked)
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
+ValueTree TimingWindow::Save(){
+    ValueTree ret(idTimingWindow);
+    VT_AddChildSetProperty(ret, idType, "trgUp", trgUp->Save());
+    VT_AddChildSetProperty(ret, idType, "trgDown", trgDown->Save());
+    VT_AddChildSetProperty(ret, idType, "trgDouble", trgDouble->Save());
+    VT_AddChildSetProperty(ret, idType, "trgHalf", trgHalf->Save());
+    VT_AddChildSetProperty(ret, idType, "trgTapBeat", trgTapBeat->Save());
+    VT_AddChildSetProperty(ret, idType, "trgTapMeasure", trgTapMeasure->Save());
+    VT_AddChildSetProperty(ret, idType, "trgFreeze", trgFreeze->Save());
+    return ret;
+}
+
 void TimingWindow::timerCallback(){
     if(!notNeedsMeasureLenRefresh.test_and_set()){
         txtMeasureLen->setText(String(TimingSystem::GetBeatsPerMeasure()), dontSendNotification);
@@ -372,10 +391,10 @@ void TimingWindow::HandleMIDI(int port, MidiMessage msg){
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="TimingWindow" componentName=""
-                 parentClasses="public Component, public TextEditor::Listener, public TriggerButton::Listener, private Timer"
-                 constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
-                 snapShown="1" overlayOpacity="0.660" fixedSize="1" initialWidth="240"
-                 initialHeight="176">
+                 parentClasses="public Component, public TextEditor::Listener, public TriggerButton::HiSpeedListener, private Timer"
+                 constructorParams="ValueTree tw_node" variableInitialisers=""
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.660"
+                 fixedSize="1" initialWidth="240" initialHeight="176">
   <BACKGROUND backgroundColour="ff323e44">
     <TEXT pos="64 128 32 16" fill="solid: ffffffff" hasStroke="0" text="Tap"
           fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"

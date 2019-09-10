@@ -217,6 +217,14 @@ inline int64_t GenerateUUID(){
     return Random::getSystemRandom().nextInt64();
 }
 
+inline ValueTree VT_GetChildWithName(ValueTree v, Identifier cname){
+    if(!v.isValid()) return ValueTree();
+    return v.getChildWithName(cname);
+}
+inline ValueTree VT_GetChildWithProperty(ValueTree v, Identifier pname, const var &value){
+    if(!v.isValid()) return ValueTree();
+    return v.getChildWithProperty(pname, value);
+}
 inline var VT_GetChildProperty(ValueTree v, Identifier cname, Identifier pname, const var &defval = ""){
     return v.getOrCreateChildWithName(cname, nullptr).getProperty(pname, defval);
 }
@@ -229,6 +237,10 @@ inline void VT_RemoveChildWithName(ValueTree v, Identifier name){
     if(c.isValid()){
         v.removeChild(c, nullptr);
     }
+}
+inline void VT_AddChildSetProperty(ValueTree parent, Identifier pname, const var &value, ValueTree child){
+    child.setProperty(pname, value, nullptr);
+    parent.addChild(child, -1, nullptr);
 }
 
 inline ValueTree VT_Load(File f, Identifier topleveltype){
@@ -259,6 +271,7 @@ inline bool VT_Save(ValueTree vt, File f, String extension, String commentinside
         "<!-- " + commentinsides + " -->", "UTF-8", 60);
 }
 
+
 //Identifiers
 extern Identifier idBuskMagicShow;
 extern Identifier idArtNetSystem;
@@ -268,6 +281,8 @@ extern Identifier idChannelSystem;
 extern Identifier idFixtureSystem;
 extern Identifier idControllerSystem;
 extern Identifier idLightingSystem;
+extern Identifier idStatesWindow;
+extern Identifier idTimingWindow;
 //Common attributes
 extern Identifier idUUID;
 extern Identifier idName;

@@ -36,7 +36,8 @@ public:
         virtual void triggeredHiSpeed(TriggerButton *btn) = 0;
     };
     
-    TriggerButton(Button::Listener *l, HiSpeedListener *h_or_nullptr, bool manuallight);
+    TriggerButton(Button::Listener *l, HiSpeedListener *h_or_nullptr, 
+        bool manuallight, ValueTree mu_node);
     ~TriggerButton() {}
     
     void mouseDown(const MouseEvent &event) override;
