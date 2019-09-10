@@ -32,7 +32,7 @@ class TriggerButton : public SynthButton, public MIDIUser, private Timer
 public:
     class HiSpeedListener {
     public:
-        ~HiSpeedListener() {}
+        virtual ~HiSpeedListener() {}
         virtual void triggeredHiSpeed(TriggerButton *btn) = 0;
     };
     
