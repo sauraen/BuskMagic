@@ -64,7 +64,7 @@ public:
     Controller(const Controller &other);
     virtual Controller *clone() const = 0;
     virtual String GetClassType() = 0;
-    inline int64_t UUID() { return uuid; }
+    inline int64_t UUID() const { return uuid; }
     
     Controller(ValueTree ct_node);
     virtual ValueTree Save();

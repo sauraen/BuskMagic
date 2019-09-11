@@ -180,7 +180,7 @@ namespace TimingSystem {
     float GetRandomFrom(int64_t seed){
         Random r(seed);
         r.nextInt64();
-        r.combineSeed(seed);
+        r.combineSeed(seed ^ 0x420691337ll);
         r.nextInt64();
         return r.nextFloat();
     }
@@ -191,7 +191,7 @@ namespace TimingSystem {
         return GetRandomFrom(objectid);
     }
     float GetRandomAtBeat(int64_t objectid, float period){
-        return GetRandomAtMeasure(objectid ^ 0x12345678ll, period * (float)measurelen);
+        return GetRandomAtMeasure(objectid ^ 0x12345678ll, period / (float)measurelen);
     }
     float GetRandomAtSecond(int64_t objectid, float period){
         double t = GetTimeMS();

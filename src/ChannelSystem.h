@@ -49,7 +49,7 @@ class Channel {
 public:
     Channel(Fixture *parentornullptr);
     ~Channel();
-    inline int64_t UUID() { return uuid; }
+    inline int64_t UUID() const { return uuid; }
     
     Channel(ValueTree ch_node, Fixture *parentornullptr);
     ValueTree Save();

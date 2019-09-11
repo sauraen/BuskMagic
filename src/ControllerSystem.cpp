@@ -502,25 +502,51 @@ float ModulatorController::Evaluate(float angle) const {
     }
     t_frac += angle;
     t_frac = t_frac - std::floor(t_frac);
-    float fallshape = (h-l)*(pw-t_frac)/pw + l;
-    float riseshape = (h-l)*(t_frac-pw)/(1.0f-pw) + l;
+    if(shape == ModulatorShape::sawr){
+        pw = 1.0f - pw; //SawR has pulse width measured from the end
+    }
+    float fallshape = (pw-t_frac)/pw;
+    float riseshape = (t_frac-pw)/(1.0f-pw);
+    float ret;
     switch(shape){
     case ModulatorShape::cosine:
-        return (h-l)*((1.0f+std::cos(MathConstants<float>::twoPi * t_frac))*0.5f) + l;
+        ret = (1.0f+std::cos(MathConstants<float>::twoPi * t_frac)) * 0.5f;
+        break;
     case ModulatorShape::triangle:
-        return t_frac < pw ? fallshape : riseshape;
+        ret = t_frac < pw ? fallshape : riseshape;
+        break;
     case ModulatorShape::noise:
-        return 0.0f; //TODO
+        if(period <= 0.001f){
+            ret = l;
+        }else{
+            int64_t objectid = UUID() ^ (int64_t)this;
+            if(timebase == TimeBase::measure){
+                ret = TimingSystem::GetRandomAtMeasure(objectid, period);
+            }else if(timebase == TimeBase::beat){
+                ret = TimingSystem::GetRandomAtBeat(objectid, period);
+            }else if(timebase == TimeBase::second){
+                ret = TimingSystem::GetRandomAtSecond(objectid, period);
+            }else{
+                jassertfalse;
+                ret = 0.0f;
+            }
+        }
+        break;
     case ModulatorShape::pulse:
-        return t_frac < pw ? h : l;
+        ret = t_frac < pw ? 1.0f : 0.0f;
+        break;
     case ModulatorShape::sawf:
-        return t_frac < pw ? fallshape : l;
+        ret = t_frac < pw ? fallshape : 0.0f;
+        break;
     case ModulatorShape::sawr:
-        return t_frac < pw ? l : riseshape;
+        ret = t_frac < pw ? 0.0f : riseshape;
+        break;
     default:
         jassertfalse;
-        return 0.0f;
+        ret = 0.0f;
     }
+    ret = (h-l)*ret + l;
+    return ret;
 }
 
 void ModulatorController::RemoveAllMagicValuesForChannel(const Channel *chn){

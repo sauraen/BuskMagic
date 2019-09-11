@@ -2,8 +2,6 @@
 
 ## High priority
 
-  * Random ModulatorShape not implemented in ModulatorController due to needed
-    more support in TimingSystem
   * Smoothly changing seconds-based modulator period does not work
   
 ## Medium priority
