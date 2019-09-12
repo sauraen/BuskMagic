@@ -21,18 +21,19 @@
 
 #include "ControllerSystem.h"
 #include "ChannelSystem.h"
+#include "LightingSystem.h"
 
 #include "gui/TextListBox.h"
 
-class MagicValueEditor : public Component, public TextEditor::Listener, 
+class MagicValueEditor : public Component, public TextEditor::Listener,
         public TextListBox::Listener
 {
 public:
     MagicValueEditor(void *data) : magic((MagicValue*)data) {
         txtLiteral.reset(new TextEditor ("txtLiteral"));
         addAndMakeVisible(txtLiteral.get());
-        ConfigureTextEditor(txtLiteral, this, String(magic->GetLiteral(), 2));
-    
+        ConfigureTextEditor(txtLiteral, this, LightingSystem::ValueToString(magic->GetLiteral()));
+
         lstChannel.reset(new TextListBox(this));
         addAndMakeVisible(lstChannel.get());
         lstChannel->setSelectAddedItems(false);
@@ -47,11 +48,11 @@ public:
         }else{
             txtLiteral->setEnabled(false);
         }
-        
+
         setOpaque(true);
         setSize(120, 200);
     }
-    
+
     ~MagicValueEditor(){
         txtLiteral = nullptr;
         lstChannel = nullptr;
@@ -60,12 +61,12 @@ public:
     void paint(Graphics& g) override{
         g.fillAll(LFWindowColor());
     }
-    
+
     void resized() override{
         txtLiteral->setBounds (0, 0, 48, 24);
         lstChannel->setBounds (0, 24, 120, 176);
     }
-    
+
     void rowSelected(TextListBox *parent, int row) override {
         if (parent == lstChannel.get()) {
             if(row == 0){
@@ -84,15 +85,15 @@ public:
     void textEditorTextChanged(TextEditor &editorThatWasChanged) override{
         TEXTCHANGEDHANDLER_PRE;
         if(&editorThatWasChanged == txtLiteral.get()){
-            if(!isdec) turnRed = true;
-            else magic->SetLiteral(decval);
+            if(!isviewvalue) turnRed = true;
+            else magic->SetLiteral(viewvalue);
         }
         TEXTCHANGEDHANDLER_POST;
     }
 
 private:
     MagicValue *magic;
-    
+
     std::unique_ptr<TextEditor> txtLiteral;
     std::unique_ptr<TextListBox> lstChannel;
 

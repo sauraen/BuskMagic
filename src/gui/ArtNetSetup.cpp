@@ -38,6 +38,7 @@
 */
 
 #include "ArtNetSystem.h"
+#include "LightingSystem.h"
 //[/Headers]
 
 #include "ArtNetSetup.h"

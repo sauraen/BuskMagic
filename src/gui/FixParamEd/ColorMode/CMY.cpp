@@ -38,6 +38,7 @@
 */
 
 #include "FixtureSystem.h"
+#include "LightingSystem.h"
 //[/Headers]
 
 #include "CMY.h"
@@ -252,7 +253,7 @@ CMY::CMY (ValueTree prm)
     txtHueMY->addListener(this);
     txtHueY->addListener(this);
     txtHueYC->addListener(this);
-    
+
     setOpaque(true);
 
     //[/UserPreSize]
@@ -265,12 +266,12 @@ CMY::CMY (ValueTree prm)
     txtDMXC->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idCyan, nullptr)));
     txtDMXM->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idMagenta, nullptr)));
     txtDMXY->setText(FixtureSystem::GetDMXText(param.getOrCreateChildWithName(idYellow, nullptr)));
-    txtHueC->setText(String((float)VT_GetChildProperty(param, idCyan, idHue, 0.625f), 3));
-    txtHueCM->setText(String((float)VT_GetChildProperty(param, idCyan, idHueMix, 0.75f), 3));
-    txtHueM->setText(String((float)VT_GetChildProperty(param, idMagenta, idHue, 0.875f), 3));
-    txtHueMY->setText(String((float)VT_GetChildProperty(param, idMagenta, idHueMix, 0.0f), 3));
-    txtHueY->setText(String((float)VT_GetChildProperty(param, idYellow, idHue, 0.25f), 3));
-    txtHueYC->setText(String((float)VT_GetChildProperty(param, idYellow, idHueMix, 0.5f), 3));
+    txtHueC->setText(LightingSystem::ValueToString((float)VT_GetChildProperty(param, idCyan, idHue, 0.625f)));
+    txtHueCM->setText(LightingSystem::ValueToString((float)VT_GetChildProperty(param, idCyan, idHueMix, 0.75f)));
+    txtHueM->setText(LightingSystem::ValueToString((float)VT_GetChildProperty(param, idMagenta, idHue, 0.875f)));
+    txtHueMY->setText(LightingSystem::ValueToString((float)VT_GetChildProperty(param, idMagenta, idHueMix, 0.0f)));
+    txtHueY->setText(LightingSystem::ValueToString((float)VT_GetChildProperty(param, idYellow, idHue, 0.25f)));
+    txtHueYC->setText(LightingSystem::ValueToString((float)VT_GetChildProperty(param, idYellow, idHueMix, 0.5f)));
 
     //[/Constructor]
 }
@@ -344,23 +345,23 @@ void CMY::textEditorTextChanged(TextEditor &editorThatWasChanged)
             param.getOrCreateChildWithName(idYellow, nullptr),
             dmx_normal, dmx_fine, dmx_ultra);
     }else if(&editorThatWasChanged == txtHueC.get()){
-        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idCyan, idHue, decval);
+        if(!isviewvalue || viewvalue < 0.0f || viewvalue >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, idCyan, idHue, viewvalue);
     }else if(&editorThatWasChanged == txtHueCM.get()){
-        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idCyan, idHueMix, decval);
+        if(!isviewvalue || viewvalue < 0.0f || viewvalue >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, idCyan, idHueMix, viewvalue);
     }else if(&editorThatWasChanged == txtHueM.get()){
-        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idMagenta, idHue, decval);
+        if(!isviewvalue || viewvalue < 0.0f || viewvalue >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, idMagenta, idHue, viewvalue);
     }else if(&editorThatWasChanged == txtHueMY.get()){
-        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idMagenta, idHueMix, decval);
+        if(!isviewvalue || viewvalue < 0.0f || viewvalue >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, idMagenta, idHueMix, viewvalue);
     }else if(&editorThatWasChanged == txtHueY.get()){
-        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idYellow, idHue, decval);
+        if(!isviewvalue || viewvalue < 0.0f || viewvalue >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, idYellow, idHue, viewvalue);
     }else if(&editorThatWasChanged == txtHueYC.get()){
-        if(!isdec || decval < 0.0f || decval >= 1.0f) turnRed = true;
-        else VT_SetChildProperty(param, idYellow, idHueMix, decval);
+        if(!isviewvalue || viewvalue < 0.0f || viewvalue >= 1.0f) turnRed = true;
+        else VT_SetChildProperty(param, idYellow, idHueMix, viewvalue);
     }
     TEXTCHANGEDHANDLER_POST;
 }

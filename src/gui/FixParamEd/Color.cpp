@@ -38,6 +38,7 @@
 */
 
 #include "FixtureSystem.h"
+#include "LightingSystem.h"
 #include "gui/FixParamEd/ColorMode/CMY.h"
 #include "gui/FixParamEd/ColorMode/RGB.h"
 #include "gui/FixParamEd/ColorMode/RGBA.h"
@@ -110,9 +111,9 @@ Color::Color (ValueTree prm)
 
     //[UserPreSize]
     txtDMXW->addListener(this);
-    
+
     setOpaque(true);
-    
+
     //[/UserPreSize]
 
     setSize (160, 264);

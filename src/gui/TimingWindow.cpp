@@ -37,6 +37,7 @@
 */
 
 #include "TimingSystem.h"
+#include "LightingSystem.h"
 
 //[/Headers]
 
@@ -108,37 +109,37 @@ TimingWindow::TimingWindow (ValueTree tw_node)
 
     //[UserPreSize]
 
-    trgUp.reset(new TriggerButton(this, this, false, 
+    trgUp.reset(new TriggerButton(this, this, false,
         VT_GetChildWithProperty(tw_node, idType, "trgUp")));
     addAndMakeVisible(trgUp.get());
     trgUp->setTopLeftPosition(120, 8);
 
-    trgDown.reset(new TriggerButton(this, this, false, 
+    trgDown.reset(new TriggerButton(this, this, false,
         VT_GetChildWithProperty(tw_node, idType, "trgDown")));
     addAndMakeVisible(trgDown.get());
     trgDown->setTopLeftPosition(120, 64);
 
-    trgDouble.reset(new TriggerButton(this, this, false, 
+    trgDouble.reset(new TriggerButton(this, this, false,
         VT_GetChildWithProperty(tw_node, idType, "trgDouble")));
     addAndMakeVisible(trgDouble.get());
     trgDouble->setTopLeftPosition(184, 8);
 
-    trgHalf.reset(new TriggerButton(this, this, false, 
+    trgHalf.reset(new TriggerButton(this, this, false,
         VT_GetChildWithProperty(tw_node, idType, "trgHalf")));
     addAndMakeVisible(trgHalf.get());
     trgHalf->setTopLeftPosition(184, 64);
 
-    trgTapBeat.reset(new TriggerButton(this, this, false, 
+    trgTapBeat.reset(new TriggerButton(this, this, false,
         VT_GetChildWithProperty(tw_node, idType, "trgTapBeat")));
     addAndMakeVisible(trgTapBeat.get());
     trgTapBeat->setTopLeftPosition(8, 120);
 
-    trgTapMeasure.reset(new TriggerButton(this, this, false, 
+    trgTapMeasure.reset(new TriggerButton(this, this, false,
         VT_GetChildWithProperty(tw_node, idType, "trgTapMeasure")));
     addAndMakeVisible(trgTapMeasure.get());
     trgTapMeasure->setTopLeftPosition(104, 120);
 
-    trgFreeze.reset(new TriggerButton(this, this, false, 
+    trgFreeze.reset(new TriggerButton(this, this, false,
         VT_GetChildWithProperty(tw_node, idType, "trgFreeze")));
     addAndMakeVisible(trgFreeze.get());
     trgFreeze->setTopLeftPosition(184, 120);
@@ -153,7 +154,7 @@ TimingWindow::TimingWindow (ValueTree tw_node)
 
     //[Constructor] You can add your own custom stuff here..
 
-    txtBPM->setText(String(TimingSystem::GetTempo(), 3), dontSendNotification);
+    txtBPM->setText(FloatToString(TimingSystem::GetTempo(), 0, 3), dontSendNotification);
     txtMeasureLen->setText(String(TimingSystem::GetBeatsPerMeasure()), dontSendNotification);
     chkInt->setToggleState(TimingSystem::IsTempoOnlyInt(), dontSendNotification);
 
@@ -340,10 +341,12 @@ void TimingWindow::timerCallback(){
 void TimingWindow::textEditorTextChanged(TextEditor &editorThatWasChanged){
     TEXTCHANGEDHANDLER_PRE;
     if(&editorThatWasChanged == txtBPM.get()){
+        bool isdec = isDec(text);
+        float decval = text.getFloatValue();
         if(!isdec || decval < 0.1f || decval > 500.0f) turnRed = true;
     }else if(&editorThatWasChanged == txtMeasureLen.get()){
-        if(!isint || val <= 0) turnRed = true;
-        else TimingSystem::SetBeatsPerMeasure(val);
+        if(!isint || intval <= 0) turnRed = true;
+        else TimingSystem::SetBeatsPerMeasure(intval);
     }
     TEXTCHANGEDHANDLER_POST;
 }

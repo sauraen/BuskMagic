@@ -32,7 +32,7 @@ public:
     MagicValue(Controller *parent, float litvalue = 0.0f);
     ~MagicValue() {}
     MagicValue(const MagicValue &other, Controller *newparent);
-    
+
     MagicValue(ValueTree mv_node, Controller *parent);
     ValueTree Save();
 
@@ -65,7 +65,7 @@ public:
     virtual Controller *clone() const = 0;
     virtual String GetClassType() = 0;
     inline int64_t UUID() const { return uuid; }
-    
+
     Controller(ValueTree ct_node);
     virtual ValueTree Save();
 
@@ -84,24 +84,24 @@ public:
     bool IsEnabledStage() const;
     bool IsEnabledDisplay() const;
     void SetEnabledDisplay(bool en);
-    
+
     virtual void DisplayStateChanged();
     virtual void NumStatesChanged();
     virtual void CopyState(int dst, int src);
-    
+
     virtual void ReceivedMIDIAction(ActionType t, int val) override;
 
     virtual float Evaluate(float angle) const = 0;
 
     void RegisterComponent(ControllerCmp *cmp);
+    void RefreshComponent();
     ControllerCanvas *GetCanvas();
 
     virtual void RemoveAllMagicValuesForChannel(const Channel *chn) = 0;
-    
+
 protected:
     String name;
 
-    void RefreshComponent();
     int GetEffectiveStageState() const;
     int GetEffectiveDisplayState() const;
 
@@ -124,7 +124,7 @@ public:
     SimpleController(const SimpleController &other);
     virtual Controller *clone() const override;
     String GetClassType() override { return "Simple"; }
-    
+
     SimpleController(ValueTree ct_node);
     virtual ValueTree Save() override;
 
@@ -145,13 +145,13 @@ public:
     ContinuousController(const ContinuousController &other);
     virtual Controller *clone() const override;
     String GetClassType() override { return "Continuous"; }
-    
+
     ContinuousController(ValueTree ct_node);
     virtual ValueTree Save() override;
-    
+
     float GetKnobDisplay();
     void SetKnobDisplay(float k);
-    
+
     virtual void DisplayStateChanged() override;
     virtual void NumStatesChanged() override;
     virtual void CopyState(int dst, int src) override;
@@ -176,10 +176,10 @@ public:
     ModulatorController(const ModulatorController &other);
     virtual Controller *clone() const override;
     String GetClassType() override { return "Modulator"; }
-    
+
     ModulatorController(ValueTree ct_node);
     virtual ValueTree Save() override;
-    
+
     enum ModulatorShape { cosine, triangle, noise, pulse, sawf, sawr };
     enum TimeBase { measure, beat, second };
 
@@ -208,7 +208,7 @@ namespace ControllerSystem {
     void Init(ValueTree cs_node = ValueTree());
     void Finalize();
     ValueTree Save();
-    
+
     int NumControllers();
     Controller *GetController(int i);
     template<class CTRLR> CTRLR *AddController();
@@ -217,9 +217,10 @@ namespace ControllerSystem {
     void ChangeControllerOrder(int orig, int newpos);
 
     void RemoveAllMagicValuesForChannel(const Channel *chn);
+    void RefreshAllComponents();
 
     void HandleMIDI(int port, MidiMessage msg);
-    
+
     /**
      * States are 1-indexed, because state 0 is special. (E.g. if NumStates()
      * == 1, there are states 0 and 1, where state 1 is the only normal state.)
@@ -233,7 +234,7 @@ namespace ControllerSystem {
     void AddState();
     void RemoveState();
     void CopyState(int dst, int src); //1-indexed, but 0 allowed here only
-    
+
     int GetStageState();
     int GetDisplayState();
     void ActivateState(int s); //1-indexed, see above

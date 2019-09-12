@@ -30,7 +30,7 @@ public:
     DefaultValueEditor(void *data) : channel((Channel*)data) {
         txtValue.reset(new TextEditor("txtValue"));
         addAndMakeVisible(txtValue.get());
-        ConfigureTextEditor(txtValue, this, String(channel->GetDefaultValue(), 2));
+        ConfigureTextEditor(txtValue, this, LightingSystem::ValueToString(channel->GetDefaultValue()));
         setOpaque(true);
         setSize(100, 48);
     }
@@ -49,20 +49,20 @@ public:
     void resized() override {
         txtValue->setBounds(0, 24, 64, 24);
     }
-    
+
     void textEditorTextChanged(TextEditor &editorThatWasChanged) override {
         TEXTCHANGEDHANDLER_PRE;
         if(&editorThatWasChanged == txtValue.get()){
-            if(!isdec){
+            if(!isviewvalue){
                 turnRed = true;
             }else{
-                channel->SetDefaultValue(decval);
+                channel->SetDefaultValue(viewvalue);
                 if(MatrixEditor::mtxed_static != nullptr) MatrixEditor::mtxed_static->repaint();
             }
         }
         TEXTCHANGEDHANDLER_POST;
     }
-    
+
     bool keyPressed(const KeyPress &key) override {
         if(key.getKeyCode() == KeyPress::returnKey){
             if(MatrixEditor::mtxed_static != nullptr) MatrixEditor::mtxed_static->grabKeyboardFocus();
@@ -73,8 +73,8 @@ public:
 
 private:
     Channel *channel;
-    
+
     std::unique_ptr<TextEditor> txtValue;
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DefaultValueEditor)
 };

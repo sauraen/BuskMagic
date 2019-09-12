@@ -17,6 +17,7 @@
 */
 
 #include "MIDIEditor.h"
+#include "LightingSystem.h"
 
 static const int namewidth = 64;
 static const int txtwidth = 144;
@@ -29,7 +30,7 @@ MIDIEditor::MIDIEditor(void *data){
     int h = 0;
     for(int i=0; i<MIDIUser::ActionType_SIZE; ++i){
         MIDIUser::ActionType action = static_cast<MIDIUser::ActionType>(i);
-        if(!user->HasMIDIAction(action) 
+        if(!user->HasMIDIAction(action)
                 || (startup->mode == (MIDIUser::IsKnobRelated(action) ? 1 : 2))){
             txtsSetting.add(nullptr);
             btnsLearn.add(nullptr);
@@ -80,7 +81,7 @@ void MIDIEditor::paint(Graphics &g){
     for(int i=0; i<MIDIUser::ActionType_SIZE; ++i){
         MIDIUser::ActionType action = static_cast<MIDIUser::ActionType>(i);
         if(txtsSetting[i] == nullptr) continue;
-        g.drawText(MIDIUser::GetActionName(action), 2, h, namewidth, 24, 
+        g.drawText(MIDIUser::GetActionName(action), 2, h, namewidth, 24,
             Justification::centredLeft, false);
         h += 24;
     }

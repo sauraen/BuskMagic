@@ -63,21 +63,21 @@ namespace LightingSystem {
         valueviewmode = vvm;
     }
     String ValueToString(float val){
-        int32_t ival = (int32_t)std::floor(255.0f*val);
+        int32_t ival = (int32_t)std::floor(256.0f*val);
         switch(valueviewmode){
         case ValueViewMode::Ratio:
-            return String(val, 3);
+            return FloatToString(val, 1, 3);
         case ValueViewMode::Percent:
-            return String(100.0f*val, 1);
+            return FloatToString(100.0f*val, 0, 1);
         case ValueViewMode::Byte:
             return String(ival);
-        case ValueViewMode::Hex:
+        case ValueViewMode::Hex: {
             bool neg = ival < 0;
             if(neg) ival = -ival;
             String ret = (ival > 0xFF) ? hex((uint16_t)ival) : hex((uint8_t)ival);
             if(neg) ret = '-' + ret;
             return ret;
-        default:
+        } default:
             jassertfalse;
             return "ERR";
         }
@@ -95,11 +95,11 @@ namespace LightingSystem {
             return true;
         case ValueViewMode::Byte:
             if(!isInt(text)) return false;
-            out = (float)text.getIntValue() / 255.0f;
+            out = (float)text.getIntValue() / 256.0f;
             return true;
         case ValueViewMode::Hex:
             if(!isHex(text, false)) return false;
-            out = (float)text.getHexValue32() / 255.0f;
+            out = (float)text.getHexValue32() / 256.0f;
             return true;
         default:
             jassertfalse;

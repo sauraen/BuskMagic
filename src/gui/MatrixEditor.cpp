@@ -1,17 +1,17 @@
 /*
 * BuskMagic - Live lighting control system
 * Copyright (C) 2019 Sauraen
-* 
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-* 
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-* 
+*
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
@@ -67,6 +67,19 @@ MatrixEditor::MatrixEditor() : view(0, 0) {
     btnAddFree.reset(new TextButton("Add Free Chn."));
     addAndMakeVisible(btnAddFree.get());
     btnAddFree->addListener(this);
+    //
+    optVVMRatio.reset(new ToggleButton("optVVMRatio"));
+    optVVMPercent.reset(new ToggleButton("optVVMPercent"));
+    optVVMByte.reset(new ToggleButton("optVVMByte"));
+    optVVMHex.reset(new ToggleButton("optVVMHex"));
+    addAndMakeVisible(optVVMRatio.get());
+    addAndMakeVisible(optVVMPercent.get());
+    addAndMakeVisible(optVVMByte.get());
+    addAndMakeVisible(optVVMHex.get());
+    ConfigureOptionButton(optVVMRatio, this, 1, Colours::white, "Ratio", LightingSystem::GetValueViewMode() == LightingSystem::Ratio);
+    ConfigureOptionButton(optVVMPercent, this, 1, Colours::white, "Percent", LightingSystem::GetValueViewMode() == LightingSystem::Percent);
+    ConfigureOptionButton(optVVMByte, this, 1, Colours::white, "Byte", LightingSystem::GetValueViewMode() == LightingSystem::Byte);
+    ConfigureOptionButton(optVVMHex, this, 1, Colours::white, "Hex", LightingSystem::GetValueViewMode() == LightingSystem::Hex);
     //
     lstCtType->add("Simple");
     lstCtType->add("Continuous");
@@ -147,29 +160,29 @@ void MatrixEditor::paint (Graphics& g) {
         }
         int x = GetColX(c);
         g.setColour(textcolor);
-        g.drawText(String(chSet[c]->GetDefaultValue(), 2), x, 0,
+        g.drawText(LightingSystem::ValueToString(chSet[c]->GetDefaultValue()), x, 0,
             col_width, row_height, Justification::centred, false);
-        g.drawText(Channel::OpGetLetters(chSet[c]->GetOp()), x, main_bottom_y, 
+        g.drawText(Channel::OpGetLetters(chSet[c]->GetOp()), x, main_bottom_y,
             col_width, row_height, Justification::centred, false);
-        g.drawText("X", x, main_bottom_y + row_height, 
+        g.drawText("X", x, main_bottom_y + row_height,
             col_width, row_height, Justification::centred, false);
-        g.drawText(chSet[c]->GetLetters(), x, main_bottom_y + 2*row_height, 
+        g.drawText(chSet[c]->GetLetters(), x, main_bottom_y + 2*row_height,
             col_width, row_height, Justification::centred, false);
         if(colsmergefixid == 0 || firstcolmergefixid){
-            g.drawText(fixid < 0 ? "-" : String(fixid), x, main_bottom_y + 3*row_height, 
+            g.drawText(fixid < 0 ? "-" : String(fixid), x, main_bottom_y + 3*row_height,
                 col_width * (colsmergefixid + 1), row_height, Justification::centred, false);
         }else{
             --colsmergefixid;
         }
         if(colsmergefixname == 0 || firstcolmergefixname){
-            g.drawText(fixname, x, ch_bottom_y - row_height, 
+            g.drawText(fixname, x, ch_bottom_y - row_height,
                 col_width * (colsmergefixname + 1), row_height, Justification::centred, false);
         }else{
             --colsmergefixname;
         }
         g.setColour(linecolor);
         int lineend = colsmergefixname == 0 ? ch_bottom_y
-                      : colsmergefixid == 0 ? ch_bottom_y - row_height 
+                      : colsmergefixid == 0 ? ch_bottom_y - row_height
                       : ch_bottom_y - 2*row_height;
         g.drawVerticalLine(x + col_width, 0, lineend);
     }
@@ -220,7 +233,13 @@ void MatrixEditor::resized() {
     lstFixID->setBounds(ct_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
     lstFixName->setBounds(ct_width + ch_listbox_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
     lstChName->setBounds(ct_width + 2*ch_listbox_width, getHeight() - ch_dbottom, ch_listbox_width, ch_dbottom);
-    btnAddFree->setBounds(ct_width + 3*ch_listbox_width + 8, getHeight() - ch_dbottom, 100, 24);
+    int x = ct_width + 3*ch_listbox_width + 8;
+    int y = getHeight() - ch_dbottom;
+    btnAddFree->setBounds(x, y, 100, 24);
+    optVVMRatio->setBounds(x, y + 32, 100, 24);
+    optVVMPercent->setBounds(x, y + 56, 100, 24);
+    optVVMByte->setBounds(x, y + 80, 100, 24);
+    optVVMHex->setBounds(x, y + 104, 100, 24);
 }
 
 void MatrixEditor::rowSelected(TextListBox* parent, int row) {
@@ -246,6 +265,22 @@ void MatrixEditor::buttonClicked(Button *buttonThatWasClicked) {
         if(!lstFixID->isRowSelected(0)){
             lstFixID->selectRow(0, false, false);
         }
+    }else if(buttonThatWasClicked == optVVMRatio.get()){
+        LightingSystem::SetValueViewMode(LightingSystem::Ratio);
+        repaint();
+        ControllerSystem::RefreshAllComponents();
+    }else if(buttonThatWasClicked == optVVMPercent.get()){
+        LightingSystem::SetValueViewMode(LightingSystem::Percent);
+        repaint();
+        ControllerSystem::RefreshAllComponents();
+    }else if(buttonThatWasClicked == optVVMByte.get()){
+        LightingSystem::SetValueViewMode(LightingSystem::Byte);
+        repaint();
+        ControllerSystem::RefreshAllComponents();
+    }else if(buttonThatWasClicked == optVVMHex.get()){
+        LightingSystem::SetValueViewMode(LightingSystem::Hex);
+        repaint();
+        ControllerSystem::RefreshAllComponents();
     }
 }
 

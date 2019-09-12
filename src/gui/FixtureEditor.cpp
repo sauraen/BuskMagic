@@ -41,6 +41,7 @@
 #include "gui/FixParamEd/Color.h"
 
 #include "FixtureSystem.h"
+#include "LightingSystem.h"
 //[/Headers]
 
 #include "FixtureEditor.h"
@@ -273,9 +274,9 @@ FixtureEditor::FixtureEditor (ValueTree fxt)
     txtDMX->addListener(this);
     txtPName->addListener(this);
     txtPLetters->addListener(this);
-    
+
     setOpaque(true);
-    
+
     //[/UserPreSize]
 
     setSize (344, 408);
@@ -466,10 +467,10 @@ void FixtureEditor::textEditorTextChanged(TextEditor &editorThatWasChanged)
     }else if(&editorThatWasChanged == txtProfileName.get()){
         fixture.setProperty(idProfile, text, nullptr);
     }else if(&editorThatWasChanged == txtDMX.get()){
-        if(!isint || val < 0){
+        if(!isint || intval < 0){
             turnRed = true;
         }else{
-            fixture.setProperty(idFootprint, val, nullptr);
+            fixture.setProperty(idFootprint, intval, nullptr);
         }
     }else if(&editorThatWasChanged == txtPName.get()){
         if(!param.isValid()) return;

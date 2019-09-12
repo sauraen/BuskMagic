@@ -1,17 +1,17 @@
 /*
 * BuskMagic - Live lighting control system
 * Copyright (C) 2019 Sauraen
-* 
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-* 
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-* 
+*
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
@@ -58,7 +58,7 @@ Fixture::Fixture(ValueTree def_, String name_, int fixid_, uint16_t uni_, uint16
     }
 }
 Fixture::~Fixture() {
-    
+
 }
 
 Fixture::Fixture(ValueTree fx_node){
@@ -98,9 +98,9 @@ ValueTree Fixture::Save(){
 }
 
 String Fixture::GetDescription() const {
-    return String(fixid) + ": " 
-        + hex(uni) + "." + String(chn) + "-" 
-        + String(chn + (int)def.getProperty(idFootprint, 1) - 1) + ": " 
+    return String(fixid) + ": "
+        + hex(uni) + "." + String(chn) + "-"
+        + String(chn + (int)def.getProperty(idFootprint, 1) - 1) + ": "
         + name + " (" + def.getProperty(idManufacturer, "(Manu)").toString() + " "
         + def.getProperty(idName, "(Name)").toString() + ")";
 }
@@ -135,8 +135,9 @@ Channel *Fixture::GetChannel(int i) const {
 
 inline void WriteValueDMXChannel(float &value, ValueTree param, uint16_t dmxchannel,
     uint16_t footprint, uint8_t *out, Identifier precision){
-    value *= 255.0f;
+    value *= 256.0f;
     float fv = std::floor(value);
+    if(fv > 255.0f) fv = 255.0f;
     uint8_t d = (uint8_t)fv;
     value -= fv;
     ValueTree subnode = param.getChildWithName(precision);
@@ -318,7 +319,7 @@ void Fixture::Evaluate(uint8_t *uniarray){
 
 
 namespace FixtureSystem {
-    
+
     bool ParseDMXText(String text, int footprint, int &normal, int &fine, int &ultra){
         normal = 1; fine = -1; ultra = -1;
         StringArray dmx = StringArray::fromTokens(text, ",", "");
@@ -338,7 +339,7 @@ namespace FixtureSystem {
         }
         return true;
     }
-    
+
     String GetDMXText(ValueTree parent){
         String dmxstr = VT_GetChildProperty(parent, "normal", "channel", 1).toString();
         if(parent.getChildWithName(idFine).isValid()){
@@ -349,7 +350,7 @@ namespace FixtureSystem {
         }
         return dmxstr;
     }
-    
+
     void SetDMXChannels(ValueTree parent, int dmx_normal, int dmx_fine, int dmx_ultra){
         VT_SetChildProperty(parent, "normal", "channel", dmx_normal);
         if(dmx_fine > 0){
@@ -364,11 +365,11 @@ namespace FixtureSystem {
             VT_RemoveChildWithName(parent, "ultra");
         }
     }
-    
+
     File fixdir;
     File GetFixtureDirectory() { return fixdir; }
     void SetFixtureDirectory(File d) { fixdir = d; }
-    
+
     ValueTree fixdefs(idFixDefs);
     ValueTree GetFixtureDefs() { return fixdefs; }
     String GetFixDefName(ValueTree def){
@@ -382,7 +383,7 @@ namespace FixtureSystem {
         ret += def.getProperty(idProfile, "(Profile)").toString();
         return ret;
     }
-    
+
     static OwnedArray<Fixture> fixtures;
     void AddFixture(ValueTree def, String name, int fixid, uint16_t uni, uint16_t chn){
         LS_LOCK_WRITE();
@@ -415,7 +416,7 @@ namespace FixtureSystem {
         }
         return fixtures[i];
     }
-    
+
     class FixtureComparator {
     public:
         static int compareElements(Fixture *first, Fixture *second);
@@ -433,7 +434,7 @@ namespace FixtureSystem {
         FixtureComparator fc;
         fixtures.sort(fc, false);
     }
-    
+
     void Init(ValueTree fs_node){
         if(fs_node.isValid()){
             fixdir = fs_node.getProperty(idFixDir, "").toString();
@@ -467,5 +468,5 @@ namespace FixtureSystem {
         ret.addChild(fixnode, -1, nullptr);
         return ret;
     }
-    
+
 }

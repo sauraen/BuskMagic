@@ -38,6 +38,7 @@
 */
 
 #include "FixtureSystem.h"
+#include "LightingSystem.h"
 //[/Headers]
 
 #include "Generic.h"
@@ -95,7 +96,7 @@ Generic::Generic (ValueTree prm)
     //[UserPreSize]
 
     txtDMX->addListener(this);
-    
+
     setOpaque(true);
 
     //[/UserPreSize]

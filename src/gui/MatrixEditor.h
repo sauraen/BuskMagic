@@ -1,17 +1,17 @@
 /*
 * BuskMagic - Live lighting control system
 * Copyright (C) 2019 Sauraen
-* 
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-* 
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-* 
+*
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
@@ -36,19 +36,19 @@ public:
 
     void paint (Graphics&) override;
     void resized() override;
-    
+
     void mouseDown(const MouseEvent &event) override;
     void mouseDrag(const MouseEvent &event) override;
     void mouseUp(const MouseEvent &event) override;
-    
+
     void rowSelected(TextListBox* parent, int row) override;
     void buttonClicked(Button *buttonThatWasClicked) override;
-    
+
     void RefreshControllerFilters();
     void RefreshChannelFilters();
     void RefreshVisibleControllerSet();
     void RefreshVisibleChannelSet();
-    
+
 private:
     std::unique_ptr<TextListBox> lstCtType;
     std::unique_ptr<TextListBox> lstCtGroup;
@@ -57,18 +57,22 @@ private:
     std::unique_ptr<TextListBox> lstFixName;
     std::unique_ptr<TextListBox> lstChName;
     std::unique_ptr<TextButton> btnAddFree;
-    
+    std::unique_ptr<ToggleButton> optVVMRatio;
+    std::unique_ptr<ToggleButton> optVVMPercent;
+    std::unique_ptr<ToggleButton> optVVMByte;
+    std::unique_ptr<ToggleButton> optVVMHex;
+
     PopupWindow popup;
-    
+
     Array<Controller*> ctSet;
     Array<Channel*> chSet;
-    
+
     Point<int> view;
     Point<int> viewdragstart;
     int GetColX(int c);
     int GetRowY(int r);
-    
+
     int drag_ct, drag_dest;
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MatrixEditor)
 };

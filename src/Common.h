@@ -75,6 +75,21 @@ inline bool isDec(String str, bool allowNegative = true){
     return true;
 }
 
+inline String FloatToString(float f, int minDecPlaces, int maxDecPlaces){
+    jassert(minDecPlaces <= maxDecPlaces);
+    jassert(minDecPlaces >= 0);
+    float mult = 1.0f;
+    for(int i=0; i<minDecPlaces; ++i) mult *= 10.0f;
+    for(int d=minDecPlaces; d<=maxDecPlaces; ++d){
+        float displayedf = std::floor(f * mult) / mult;
+        if(f - displayedf < 0.0001f){
+            return String(f, d);
+        }
+        mult *= 10.0f;
+    }
+    return String(f, maxDecPlaces);
+}
+
 template<typename INT_TYPE> inline String hex(INT_TYPE i, int bits){
     String ret;
     while(bits > 0){
@@ -135,21 +150,21 @@ inline Colour LFWidgetColor(){
     bool turnRed = false; \
     String text = editorThatWasChanged.getText(); \
     bool isint = isInt(text); \
-    int val = text.getIntValue(); \
+    int intval = text.getIntValue(); \
     bool ishex = isHex(text); \
     int hexval = text.getHexValue32(); \
-    bool isdec = isDec(text); \
-    float decval = text.getFloatValue(); \
+    float viewvalue; \
+    bool isviewvalue = LightingSystem::ParseValue(text, viewvalue); \
     REQUIRESEMICOLON
 
 #define TEXTCHANGEDHANDLER_POST \
     TurnRed(&editorThatWasChanged, turnRed); \
     ignoreUnused(isint); \
-    ignoreUnused(val); \
+    ignoreUnused(intval); \
     ignoreUnused(ishex); \
     ignoreUnused(hexval); \
-    ignoreUnused(isdec); \
-    ignoreUnused(decval); \
+    ignoreUnused(isviewvalue); \
+    ignoreUnused(viewvalue); \
     REQUIRESEMICOLON
 
 inline void TurnRed(TextEditor *ed, bool turnRed = true){

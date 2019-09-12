@@ -6,7 +6,6 @@
   
 ## Medium priority
 
-  * Multiple display modes for values across the program (e.g. percent, hex byte)
   * Reorder display of channels to be grouped by channel name first, then
     fixture ID
   * PhasorEditor gives negative values from start

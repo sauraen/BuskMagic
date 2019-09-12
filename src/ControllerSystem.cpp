@@ -35,7 +35,7 @@ MagicValue::MagicValue(Controller *parent, float litvalue)
     : controller(parent), mugglevalue(litvalue), chan(nullptr) {}
 MagicValue::MagicValue(const MagicValue &other, Controller *newparent)
     : controller(newparent), mugglevalue(other.mugglevalue), chan(other.chan) {}
-    
+
 MagicValue::MagicValue(ValueTree mv_node, Controller *parent) : controller(parent) {
     int64_t uuid = (int64)mv_node.getProperty(idChannel, 0);
     if(uuid == 0){
@@ -65,7 +65,7 @@ void MagicValue::SetChannel(Channel *ch) {
     RefreshComponent();
 }
 String MagicValue::GetText(){
-    return chan != nullptr ? chan->GetLetters() : String(mugglevalue, 2);
+    return chan != nullptr ? chan->GetLetters() : LightingSystem::ValueToString(mugglevalue);
 }
 float MagicValue::Evaluate(float angle) const {
     return chan != nullptr ? chan->Evaluate(angle) : mugglevalue;
@@ -93,11 +93,11 @@ Controller::Controller()
 }
 
 Controller::~Controller() {}
-Controller::Controller(const Controller &other) : MIDIUser(other), 
+Controller::Controller(const Controller &other) : MIDIUser(other),
       pos(other.pos + Point<int>(100,100)), nostate(other.nostate),
       name(other.name + " 2"), uuid(GenerateUUID()), group(other.group),
       color(other.color), groupColor(other.groupColor),
-      states_enabled(other.states_enabled), component(nullptr) 
+      states_enabled(other.states_enabled), component(nullptr)
 {
     if(group > 0){
         for(int i=0; i<=ControllerSystem::NumStates(); ++i){
@@ -235,7 +235,7 @@ void Controller::SetEnabledDisplay(bool en){
 void Controller::DisplayStateChanged(){
     //LS_LOCK_READ(); Should already be locked
     if(nostate) return; //don't care
-    SendMIDIAction(states_enabled[GetEffectiveDisplayState()] ? 
+    SendMIDIAction(states_enabled[GetEffectiveDisplayState()] ?
         MIDIUser::out_on : MIDIUser::out_off);
     RefreshComponent();
 }
@@ -288,7 +288,7 @@ ControllerCanvas *Controller::GetCanvas(){
 
 ////////////////////////////////////////////////////////////////////////////////
 
-SimpleController::SimpleController() 
+SimpleController::SimpleController()
     : Controller(), value(this) {
     name = "Simple Controller";
 }
@@ -311,7 +311,7 @@ Controller *SimpleController::clone() const{
     ret.addChild(v, -1, nullptr); \
 } REQUIRESEMICOLON
 
-SimpleController::SimpleController(ValueTree ct_node) 
+SimpleController::SimpleController(ValueTree ct_node)
     : Controller(ct_node), value(this) {
     LOAD_CHILD_MAGICVALUE(value);
 }
@@ -353,7 +353,7 @@ Controller *ContinuousController::clone() const{
     return new ContinuousController(*this);
 }
 
-ContinuousController::ContinuousController(ValueTree ct_node) 
+ContinuousController::ContinuousController(ValueTree ct_node)
     : Controller(ct_node), lovalue(this), hivalue(this) {
     LOAD_CHILD_MAGICVALUE(lovalue);
     LOAD_CHILD_MAGICVALUE(hivalue);
@@ -440,7 +440,7 @@ void ContinuousController::RemoveAllMagicValuesForChannel(const Channel *chn){
 ModulatorController::ModulatorController()
     : Controller(),
     lovalue(this), hivalue(this, 1.0f), pwvalue(this, 0.2f), tvalue(this, 1.0f),
-    shape(ModulatorShape::pulse), timebase(TimeBase::beat), 
+    shape(ModulatorShape::pulse), timebase(TimeBase::beat),
     freet_origin(TimingSystem::GetTimeMS()) {
     name = "Modulator Controller";
 }
@@ -450,13 +450,13 @@ ModulatorController::ModulatorController(const ModulatorController &other)
     : Controller(other),
     lovalue(other.lovalue, this), hivalue(other.hivalue, this),
     pwvalue(other.pwvalue, this), tvalue(other.tvalue, this),
-    shape(other.shape), timebase(other.timebase), 
+    shape(other.shape), timebase(other.timebase),
     freet_origin(TimingSystem::GetTimeMS()) {}
 Controller *ModulatorController::clone() const {
     return new ModulatorController(*this);
 }
 
-ModulatorController::ModulatorController(ValueTree ct_node) 
+ModulatorController::ModulatorController(ValueTree ct_node)
     : Controller(ct_node), lovalue(this), hivalue(this), pwvalue(this), tvalue(this),
     freet_origin(TimingSystem::GetTimeMS()) {
     LOAD_CHILD_MAGICVALUE(lovalue);
@@ -494,7 +494,7 @@ float ModulatorController::Evaluate(float angle) const {
             t_frac /= period;
         }else if(timebase == TimeBase::second){
             float periodms = period * 1000.0f;
-            t_frac = (float)((TimingSystem::GetTimeMS() - freet_origin) 
+            t_frac = (float)((TimingSystem::GetTimeMS() - freet_origin)
                     % (uint64_t)periodms) / periodms;
         }else{
             jassertfalse;
@@ -615,17 +615,24 @@ namespace ControllerSystem {
         }
     }
 
+    void RefreshAllComponents(){
+        LS_LOCK_READ();
+        for(int i=0; i<ctrlrs.size(); ++i){
+            ctrlrs[i]->RefreshComponent();
+        }
+    }
+
     void HandleMIDI(int port, MidiMessage msg){
         LS_LOCK_READ();
         for(int i=0; i<ctrlrs.size(); ++i){
             ctrlrs[i]->HandleMIDI(port, msg);
         }
     }
-    
+
     int nstates;
     int dstate, sstate;
     Array<bool> states_protected;
-    
+
     void Init(ValueTree as_node){
         if(as_node.isValid()){
             nstates = as_node.getProperty(idNStates, 10);
@@ -681,7 +688,7 @@ namespace ControllerSystem {
         }
         return ret;
     }
-    
+
     int NumStates(){
         return nstates;
     }

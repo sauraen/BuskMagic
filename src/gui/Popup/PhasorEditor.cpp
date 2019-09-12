@@ -19,6 +19,7 @@
 #include "PhasorEditor.h"
 
 #include "ChannelSystem.h"
+#include "LightingSystem.h"
 #include "gui/MatrixEditor.h"
 
 int PhasorEditor::snapangles = 7;
@@ -36,12 +37,12 @@ PhasorEditor::PhasorEditor(void *data) : gml(*this) {
     //
     txtMag.reset(new TextEditor("txtMag"));
     addAndMakeVisible(txtMag.get());
-    ConfigureTextEditor(txtMag, this, String(phasor->mag, 2));
+    ConfigureTextEditor(txtMag, this, LightingSystem::ValueToString(phasor->mag));
     txtMag->setBounds(44, 148, 64, 24);
-    
+
     txtAngle.reset(new TextEditor("txtAngle"));
     addAndMakeVisible(txtAngle.get());
-    ConfigureTextEditor(txtAngle, this, String(phasor->angle, 2));
+    ConfigureTextEditor(txtAngle, this, LightingSystem::ValueToString(phasor->angle));
     txtAngle->setBounds(44, 172, 64, 24);
     //
     setWantsKeyboardFocus(true);
@@ -93,24 +94,24 @@ void PhasorEditor::paint (Graphics& g) {
 }
 
 void PhasorEditor::resized() {
-    
+
 }
 
 void PhasorEditor::textEditorTextChanged(TextEditor &editorThatWasChanged){
     if(invalidated) return;
     TEXTCHANGEDHANDLER_PRE;
     if(&editorThatWasChanged == txtMag.get()){
-        if(!isdec){
+        if(!isviewvalue){
             turnRed = true;
         }else{
-            phasor->mag = decval;
+            phasor->mag = viewvalue;
             repaint();
         }
     }else if(&editorThatWasChanged == txtAngle.get()){
-        if(!isdec){
+        if(!isviewvalue){
             turnRed = true;
         }else{
-            phasor->angle = decval;
+            phasor->angle = viewvalue;
             repaint();
         }
     }
@@ -162,7 +163,7 @@ bool PhasorEditor::keyPressed(const KeyPress &key){
         phasor->angle = 0.0f;
         closeEditor();
         return true;
-    }else if((keycode >= '3' && keycode <= '9') 
+    }else if((keycode >= '3' && keycode <= '9')
             || (keycode >= KeyPress::numberPad3 && keycode <= KeyPress::numberPad9)){
         snapangles = (keycode >= '3' && keycode <= '9') ? (keycode - '0')
                    : (keycode - KeyPress::numberPad0);
@@ -175,7 +176,7 @@ bool PhasorEditor::keyPressed(const KeyPress &key){
     }
     return false;
 }
-    
+
 void PhasorEditor::mouseDrag(const MouseEvent &event){
     if(invalidated) return;
     if(!isRightClick(event)) return;
@@ -231,7 +232,7 @@ void PhasorEditor::mouseDrag(const MouseEvent &event){
     }
     phasor->mag = mag;
     phasor->angle = angle;
-    txtMag->setText(String(phasor->mag, 2));
-    txtAngle->setText(String(phasor->angle, 2));
+    txtMag->setText(LightingSystem::ValueToString(phasor->mag));
+    txtAngle->setText(LightingSystem::ValueToString(phasor->angle));
     repaint();
 }

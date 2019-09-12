@@ -135,7 +135,7 @@ CtrlrEditor::CtrlrEditor (void *data)
 
     ConfigureTextEditor(txtName, this, controller->GetName());
     ConfigureTextEditor(txtGroup, this, controller->GetGroup() <= 0 ? "" : String(controller->GetGroup()));
-    
+
     chkNoState->setToggleState(controller->nostate, dontSendNotification);
     btnMainColor->setColour(TextButton::buttonColourId, controller->GetColor());
     btnGroupColor->setColour(TextButton::buttonColourId, controller->GetGroupColor());
@@ -249,8 +249,8 @@ void CtrlrEditor::textEditorTextChanged(TextEditor &editorThatWasChanged)
     }else if(&editorThatWasChanged == txtGroup.get()){
         if(text == ""){
             controller->SetGroup(0);
-        }else if(isint && val >= 1){
-            controller->SetGroup(val);
+        }else if(isint && intval >= 1){
+            controller->SetGroup(intval);
         }else{
             turnRed = true;
         }
