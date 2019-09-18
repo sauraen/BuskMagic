@@ -16,6 +16,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 Art-Net™ Designed by and Copyright Artistic Licence Holdings Ltd.
 
+# Project Status
+
+BuskMagic is in early alpha! It has been successfully used by the author at one
+nontrivial public show (MAGWest 2019), with no showstopping issues arising
+over 15+ hours of live use. However, there are still important features missing,
+and much more testing is needed to find additional bugs. (This is where you come
+in!) I recommend you evaluate the program's capabilities and stability for your
+own needs before using it in a live setting--remember, there is no warranty,
+meaning I do not guarantee that it will not crash during your show!
+
 # Overview
 
 BuskMagic is an open-source program for Windows, Mac OSX, and Linux that lets
@@ -24,7 +34,7 @@ primarily for fully live performance--where you do not have the opportunity to
 build specific looks or cue stacks ahead of time, but have to improvise the
 lighting along with music or other performance. This is known as "busking".
 
-# Input/Output
+## Input/Output
 
 BuskMagic outputs lighting data over Art-Net, which is a UDP-based protocol
 for carrying lighting data over networks (typically ethernet). The destinations
@@ -47,7 +57,7 @@ BuskMagic, and BuskMagic sends the state of the controls back to the hardware
 controller to set LEDs or move motorfaders. Unidirectional control is also
 supported but you may run into issues using certain features.
 
-# Design Philosophy
+## Design Philosophy
 
 Typical lighting control systems are based on "cues", which contain states of
 parameters for a subset of the fixtures. These cues are combined into cue
@@ -67,7 +77,7 @@ begin editing the state further from there. You can also use "blind" to cause
 your control surface to switch to a different state for editing, while the stage
 remains on the original state.
 
-# A Dash of Magic
+## A Dash of Magic
 
 A show in any lighting software is full of "values"--e.g., press a button and
 a certain set of dimmers get set to 0.5. In BuskMagic, a value like "0.5" here
