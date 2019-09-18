@@ -32,22 +32,45 @@ namespace LightingSystem {
 
     class LightingThread : public HighResolutionTimer {
     public:
-        LightingThread() { startTimer(33); }
+        LightingThread() { last_eval_ms = Time::getMillisecondCounterHiRes(); startTimer(33); }
         virtual ~LightingThread() {}
+        double last_eval_ms;
+        bool priorityset = false;
         virtual void hiResTimerCallback() override {
-            Array<uint16_t> eval_universes = ArtNetSystem::GetSortedListNeededUniverses();
-            for(int u=0; u<eval_universes.size(); ++u){
-                uint16_t universe = eval_universes[u];
-                memset(unidata, 0, 512);
-                {
-                    LS_LOCK_READ();
-                    for(int f=0; f<FixtureSystem::NumFixtures(); ++f){
-                        Fixture *fix = FixtureSystem::Fix(f);
-                        if(fix->GetUniverse() != universe) continue;
-                        fix->Evaluate(unidata);
-                    }
+            if(!priorityset){
+                bool ret = Thread::setCurrentThreadPriority(9);
+                if(ret){
+                    Logger::writeToLog("Successfully set lighting thread priority");
+                }else{
+                    Logger::writeToLog("Could not set lighting thread priority");
                 }
-                ArtNetSystem::SendDMX512(universe, unidata);
+                priorityset = true;
+            }
+            double ms = Time::getMillisecondCounterHiRes();
+            if(ms - last_eval_ms > 100.0){
+                Logger::writeToLog("Time between evaluations was " + String(ms - last_eval_ms) + " ms!");
+            }
+            last_eval_ms = ms;
+            double callbackDuration;
+            {
+                ScopedTimeMeasurement m(callbackDuration);
+                Array<uint16_t> eval_universes = ArtNetSystem::GetSortedListNeededUniverses();
+                for(int u=0; u<eval_universes.size(); ++u){
+                    uint16_t universe = eval_universes[u];
+                    memset(unidata, 0, 512);
+                    {
+                        LS_LOCK_READ();
+                        for(int f=0; f<FixtureSystem::NumFixtures(); ++f){
+                            Fixture *fix = FixtureSystem::Fix(f);
+                            if(fix->GetUniverse() != universe) continue;
+                            fix->Evaluate(unidata);
+                        }
+                    }
+                    ArtNetSystem::SendDMX512(universe, unidata);
+                }
+            }
+            if(callbackDuration > 0.1){
+                Logger::writeToLog("Lighting callback took " + String(callbackDuration * 1000.0) + " ms!");
             }
         }
     private:
@@ -107,11 +130,16 @@ namespace LightingSystem {
         }
     }
 
+    Logger *log;
+
     void Init(ValueTree ls_node){
         if(lth != nullptr){
             std::cout << "LightingSystem multiply initted!\n";
             return;
         }
+        log = new FileLogger(File::getSpecialLocation(File::userHomeDirectory).getChildFile("buskmagic.log"), "BuskMagic log");
+        Logger::setCurrentLogger(log);
+        Logger::writeToLog("Starting up");
         lth = new LightingThread();
         if(ls_node.isValid()){
             valueviewmode = (ValueViewMode)(int)ls_node.getProperty(idValueViewMode, 0);
@@ -124,6 +152,8 @@ namespace LightingSystem {
         lth->stopTimer();
         delete lth;
         lth = nullptr;
+        Logger::setCurrentLogger(nullptr);
+        delete log; log = nullptr;
     }
 
     ValueTree Save(){

@@ -175,13 +175,27 @@ inline float WrapHueToRange(float hue, float lovalue){
     return ret + lovalue;
 }
 
-inline void WhiteFade(float lightness, float &colorchan){
+inline void WhiteFadeRGBW(float lightness, float &colorchan){
     if(lightness < 0.5f){
         return;
     }else if(lightness < 1.0f){
         colorchan += ((lightness - 0.5f) * 2.0f) * (1.0f - colorchan);
     }else if(lightness < 1.5f){
         colorchan = (1.5f - lightness) * 2.0f;
+    }else{
+        colorchan = 0.0f;
+    }
+}
+inline void WhiteFadeRGBNoW(float lightness, float &colorchan){
+    if(lightness < 1.0f){
+        colorchan += lightness * (1.0f - colorchan);
+    }else{
+        colorchan = 1.0f;
+    }
+}
+inline void WhiteFadeCMY(float lightness, float &colorchan){
+    if(lightness < 1.0f){
+        colorchan -= lightness * colorchan;
     }else{
         colorchan = 0.0f;
     }
@@ -263,11 +277,16 @@ void Fixture::Evaluate(uint8_t *uniarray){
                 }
                 if(haswhite){
                     float w = lightness < 0.5f ? lightness * 2.0f : 1.0f;
-                    WhiteFade(lightness, r);
-                    if(hasamber) WhiteFade(lightness, a);
-                    WhiteFade(lightness, g);
-                    WhiteFade(lightness, b);
                     WriteAllValueDMXChannels(w, param.getChildWithName(idWhite), chn, footprint, uniarray);
+                    WhiteFadeRGBW(lightness, r);
+                    if(hasamber) WhiteFadeRGBW(lightness, a);
+                    WhiteFadeRGBW(lightness, g);
+                    WhiteFadeRGBW(lightness, b);
+                }else{
+                    WhiteFadeRGBNoW(lightness, r);
+                    if(hasamber) WhiteFadeRGBNoW(lightness, a);
+                    WhiteFadeRGBNoW(lightness, g);
+                    WhiteFadeRGBNoW(lightness, b);
                 }
                 WriteAllValueDMXChannels(r, param.getChildWithName(idRed), chn, footprint, uniarray);
                 if(hasamber) WriteAllValueDMXChannels(a, param.getChildWithName(idAmber), chn, footprint, uniarray);
@@ -309,6 +328,9 @@ void Fixture::Evaluate(uint8_t *uniarray){
                 }else{
                     jassertfalse; //Should not be possible even for invalid values
                 }
+                WhiteFadeCMY(lightness, c);
+                WhiteFadeCMY(lightness, m);
+                WhiteFadeCMY(lightness, y);
                 WriteAllValueDMXChannels(c, param.getChildWithName(idCyan), chn, footprint, uniarray);
                 WriteAllValueDMXChannels(m, param.getChildWithName(idMagenta), chn, footprint, uniarray);
                 WriteAllValueDMXChannels(y, param.getChildWithName(idYellow), chn, footprint, uniarray);
