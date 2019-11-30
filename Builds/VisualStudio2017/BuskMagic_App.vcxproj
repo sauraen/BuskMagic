@@ -160,6 +160,7 @@
     <ClCompile Include="..\..\src\gui\TextListBox.cpp"/>
     <ClCompile Include="..\..\src\gui\TimingWindow.cpp"/>
     <ClCompile Include="..\..\src\gui\TriggerButton.cpp"/>
+    <ClCompile Include="..\..\src\gui\USBDMXSetup.cpp"/>
     <ClCompile Include="..\..\src\ArtNetSystem.cpp"/>
     <ClCompile Include="..\..\src\ChannelSystem.cpp"/>
     <ClCompile Include="..\..\src\Common.cpp"/>
@@ -170,6 +171,7 @@
     <ClCompile Include="..\..\src\MainWindow.cpp"/>
     <ClCompile Include="..\..\src\MIDISystem.cpp"/>
     <ClCompile Include="..\..\src\TimingSystem.cpp"/>
+    <ClCompile Include="..\..\src\USBDMXSystem.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_devices.cpp"/>
@@ -213,6 +215,7 @@
     <ClInclude Include="..\..\src\gui\TextListBox.h"/>
     <ClInclude Include="..\..\src\gui\TimingWindow.h"/>
     <ClInclude Include="..\..\src\gui\TriggerButton.h"/>
+    <ClInclude Include="..\..\src\gui\USBDMXSetup.h"/>
     <ClInclude Include="..\..\src\ArtNetSystem.h"/>
     <ClInclude Include="..\..\src\ChannelSystem.h"/>
     <ClInclude Include="..\..\src\Common.h"/>
@@ -222,6 +225,7 @@
     <ClInclude Include="..\..\src\MainWindow.h"/>
     <ClInclude Include="..\..\src\MIDISystem.h"/>
     <ClInclude Include="..\..\src\TimingSystem.h"/>
+    <ClInclude Include="..\..\src\USBDMXSystem.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>

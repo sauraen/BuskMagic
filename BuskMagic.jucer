@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="C2wpTw" name="BuskMagic" projectType="guiapp" jucerVersion="5.4.3"
+<JUCERPROJECT id="C2wpTw" name="BuskMagic" projectType="guiapp" jucerVersion="5.4.5"
               reportAppUsage="0" displaySplashScreen="0" splashScreenColour="Light"
               companyWebsite="sauraen.com" companyEmail="sauraen@gmail.com"
               companyName="Sauraen" companyCopyright="Copyright (C) 2019 Sauraen / Licensed under the GPL3"
@@ -86,6 +86,8 @@
         <FILE id="yrXQdz" name="TriggerButton.cpp" compile="1" resource="0"
               file="src/gui/TriggerButton.cpp"/>
         <FILE id="f8vON5" name="TriggerButton.h" compile="0" resource="0" file="src/gui/TriggerButton.h"/>
+        <FILE id="p7eMwe" name="USBDMXSetup.cpp" compile="1" resource="0" file="src/gui/USBDMXSetup.cpp"/>
+        <FILE id="zCZIcs" name="USBDMXSetup.h" compile="0" resource="0" file="src/gui/USBDMXSetup.h"/>
       </GROUP>
       <FILE id="XoowRq" name="ArtNetSystem.cpp" compile="1" resource="0"
             file="src/ArtNetSystem.cpp"/>
@@ -114,6 +116,9 @@
       <FILE id="US9QEx" name="TimingSystem.cpp" compile="1" resource="0"
             file="src/TimingSystem.cpp"/>
       <FILE id="fnoHgp" name="TimingSystem.h" compile="0" resource="0" file="src/TimingSystem.h"/>
+      <FILE id="eD1xoE" name="USBDMXSystem.cpp" compile="1" resource="0"
+            file="src/USBDMXSystem.cpp"/>
+      <FILE id="ukSCsK" name="USBDMXSystem.h" compile="0" resource="0" file="src/USBDMXSystem.h"/>
     </GROUP>
     <FILE id="AaEccO" name="logo_24.png" compile="0" resource="1" file="data/logo_24.png"/>
     <FILE id="bWpivK" name="logo_128.png" compile="0" resource="1" file="data/logo_128.png"/>

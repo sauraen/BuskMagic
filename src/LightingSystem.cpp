@@ -54,7 +54,8 @@ namespace LightingSystem {
             double callbackDuration;
             {
                 ScopedTimeMeasurement m(callbackDuration);
-                Array<uint16_t> eval_universes = ArtNetSystem::GetSortedListNeededUniverses();
+                Array<uint16_t> eval_universes;
+                ArtNetSystem::GetNeededUniversesSorted(eval_universes);
                 for(int u=0; u<eval_universes.size(); ++u){
                     uint16_t universe = eval_universes[u];
                     memset(unidata, 0, 512);

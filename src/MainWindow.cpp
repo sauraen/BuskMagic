@@ -19,6 +19,7 @@
 #include "MainWindow.h"
 
 #include "gui/ArtNetSetup.h"
+#include "gui/USBDMXSetup.h"
 #include "gui/MIDISetup.h"
 #include "gui/Patcher.h"
 #include "gui/ControllerWindow.h"
@@ -32,6 +33,7 @@
 #include "LightingSystem.h"
 #include "MIDISystem.h"
 #include "TimingSystem.h"
+#include "USBDMXSystem.h"
 
 static Image *app_icon = nullptr;
 
@@ -83,12 +85,13 @@ public:
 };
 
 namespace {
-    std::unique_ptr<SubWindow> artnetWindow, midiWindow, patcherWindow, 
+    std::unique_ptr<SubWindow> artnetWindow, usbdmxWindow, midiWindow, patcherWindow, 
         controllersWindow, statesWindow, timingWindow;
 }
 
 void MainWindow::Init(ValueTree showfile_node){
     ArtNetSystem::Init(VT_GetChildWithName(showfile_node, idArtNetSystem));
+    USBDMXSystem::Init(VT_GetChildWithName(showfile_node, idUSBDMXSystem));
     MIDISystem::Init(VT_GetChildWithName(showfile_node, idMIDISystem));
     TimingSystem::Init(VT_GetChildWithName(showfile_node, idTimingSystem));
     ChannelSystem::Init(VT_GetChildWithName(showfile_node, idChannelSystem));
@@ -97,6 +100,7 @@ void MainWindow::Init(ValueTree showfile_node){
     if(showfile_node.isValid()) ChannelSystem::ConvertAllPhasorsUUIDToPointer();
     LightingSystem::Init(VT_GetChildWithName(showfile_node, idLightingSystem));
     artnetWindow.reset(new SubWindow("BuskMagic - Art-Net Setup", false, new ArtNetSetup()));
+    usbdmxWindow.reset(new SubWindow("BuskMagic - USB-DMX Setup", false, new USBDMXSetup()));
     midiWindow.reset(new SubWindow("BuskMagic - MIDI Setup", false, new MIDISetup()));
     patcherWindow.reset(new SubWindow("BuskMagic - Patcher", false, new Patcher()));
     controllersWindow.reset(new SubWindow("BuskMagic - Controllers", true, new ControllerWindow()));
@@ -117,6 +121,7 @@ void MainWindow::Finalize(){
     controllersWindow = nullptr;
     patcherWindow = nullptr;
     midiWindow = nullptr;
+    usbdmxWindow = nullptr;
     artnetWindow = nullptr;
     LightingSystem::Finalize();
     ControllerSystem::Finalize();
@@ -124,6 +129,7 @@ void MainWindow::Finalize(){
     ChannelSystem::Finalize();
     TimingSystem::Finalize();
     MIDISystem::Finalize();
+    USBDMXSystem::Finalize();
     ArtNetSystem::Finalize();
 }
 
@@ -166,6 +172,7 @@ bool MainWindow::SaveInternal(File showfile){
     LS_LOCK_READ();
     ValueTree showfile_node(idBuskMagicShow);
     showfile_node.addChild(ArtNetSystem::Save(), -1, nullptr);
+    showfile_node.addChild(USBDMXSystem::Save(), -1, nullptr);
     showfile_node.addChild(MIDISystem::Save(), -1, nullptr);
     showfile_node.addChild(TimingSystem::Save(), -1, nullptr);
     showfile_node.addChild(ChannelSystem::Save(), -1, nullptr);
@@ -275,7 +282,8 @@ PopupMenu MainMenus::getMenuForIndex(int topLevelMenuIndex, const String &menuNa
     }else if(topLevelMenuIndex == 1){
         PopupMenu menu;
         menu.addItem(0x2000, "Art-Net...");
-        menu.addItem(0x2001, "MIDI...");
+        menu.addItem(0x2001, "USB-DMX...");
+        menu.addItem(0x2002, "MIDI...");
         menu.addSeparator();
         menu.addItem(0x2010, "Patcher...");
         return menu;
@@ -313,6 +321,9 @@ void MainMenus::menuItemSelected(int menuItemID, int topLevelMenuIndex){
         artnetWindow->show();
         break;
     case 0x2001:
+        usbdmxWindow->show();
+        break;
+    case 0x2002:
         midiWindow->show();
         break;
     case 0x2010:

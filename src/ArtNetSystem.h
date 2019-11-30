@@ -74,7 +74,7 @@ namespace ArtNetSystem {
     void AddBlankDevice();
     void RemoveDevice(int d);
     
-    Array<uint16_t> GetSortedListNeededUniverses();
+    void GetNeededUniversesSorted(Array<uint16_t> &list);
     
     uint32_t ParseUniverseText(String unitxt);
     String GetUniverseText(const uint8_t *uni);

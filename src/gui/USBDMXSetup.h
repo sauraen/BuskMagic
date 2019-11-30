@@ -54,20 +54,22 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class MIDISetup  : public Component,
-                   public TextListBox::Listener,
-                   public Button::Listener
+class USBDMXSetup  : public Component,
+                     public TextListBox::Listener,
+                     public TextEditor::Listener,
+                     public Timer,
+                     public Button::Listener
 {
 public:
     //==============================================================================
-    MIDISetup ();
-    ~MIDISetup();
+    USBDMXSetup ();
+    ~USBDMXSetup();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void rowSelected(TextListBox* parent, int row) override;
-
-    void refreshLists();
+    void timerCallback() override;
+    void rowSelected(TextListBox *parent, int row) override;
+    void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -78,30 +80,28 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    std::unique_ptr<TextListBox> lstInDevices;
-    std::unique_ptr<TextListBox> lstInPorts;
-    std::unique_ptr<TextListBox> lstOutDevices;
-    std::unique_ptr<TextListBox> lstOutPorts;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<Label> lblInputDevices;
-    std::unique_ptr<Label> lblInputPorts;
-    std::unique_ptr<TextButton> btnAddInPort;
-    std::unique_ptr<TextButton> btnRemoveInPort;
-    std::unique_ptr<TextButton> btnAssignInPort;
-    std::unique_ptr<TextButton> btnUnassignInPort;
-    std::unique_ptr<Label> lblOutputDevices;
-    std::unique_ptr<Label> lblOutputPorts;
-    std::unique_ptr<TextButton> btnAddOutPort;
-    std::unique_ptr<TextButton> btnRemoveOutPort;
-    std::unique_ptr<TextButton> btnAssignOutPort;
-    std::unique_ptr<TextButton> btnUnassignOutPort;
-    std::unique_ptr<TextButton> btnRefresh;
+    std::unique_ptr<Label> lblDevices;
+    std::unique_ptr<TextButton> btnMap;
+    std::unique_ptr<Label> lblDeviceInfo;
+    std::unique_ptr<Label> lblName;
+    std::unique_ptr<TextEditor> txtName;
+    std::unique_ptr<Label> lblUniverse;
+    std::unique_ptr<TextEditor> txtUniverse;
+    std::unique_ptr<TextButton> btnUnmap;
+    std::unique_ptr<TextButton> btnAddSlot;
+    std::unique_ptr<TextButton> btnRemoveSlot;
+    std::unique_ptr<Label> lblMapBy;
+    std::unique_ptr<ToggleButton> optMapPort;
+    std::unique_ptr<ToggleButton> optMapType;
+    std::unique_ptr<TextButton> btnMapHelp;
+    std::unique_ptr<Label> lblType;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MIDISetup)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (USBDMXSetup)
 };
 
 //[EndFile] You can add extra defines here...

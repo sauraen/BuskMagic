@@ -176,9 +176,8 @@ namespace ArtNetSystem {
         devices.remove(d);
     }
     
-    Array<uint16_t> GetSortedListNeededUniverses(){
+    void GetNeededUniversesSorted(Array<uint16_t> &list){
         DEVICES_LOCK_READ();
-        Array<uint16_t> ret;
         DefaultElementComparator<uint16_t> sorter;
         for(int d=0; d<devices.size(); ++d){
             ArtNetDevice *dev = devices[d];
@@ -192,12 +191,11 @@ namespace ArtNetSystem {
                 uint8_t outuni = dev->map ? dev->map_outuni[i] : dev->outuni[i];
                 if(outuni > 0x0F) continue;
                 universe = netsubnet | outuni;
-                if(ret.indexOfSorted(sorter, universe) < 0){
-                    ret.addSorted(sorter, universe);
+                if(list.indexOfSorted(sorter, universe) < 0){
+                    list.addSorted(sorter, universe);
                 }
             }
         }
-        return ret;
     }
     
     uint32_t ParseUniverseText(String unitxt){

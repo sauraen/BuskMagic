@@ -320,6 +320,7 @@ inline bool VT_Save(ValueTree vt, File f, String extension, String commentinside
 //Identifiers
 extern Identifier idBuskMagicShow;
 extern Identifier idArtNetSystem;
+extern Identifier idUSBDMXSystem;
 extern Identifier idMIDISystem;
 extern Identifier idTimingSystem;
 extern Identifier idChannelSystem;
@@ -369,6 +370,8 @@ extern Identifier idBindIndex;
 extern Identifier idIP;
 extern Identifier idShortName;
 extern Identifier idLongName;
+//USBDMXSystem
+extern Identifier idLoadMapMode;
 //MIDISystem
 extern Identifier idInPorts;
 extern Identifier idInPort;

@@ -141,6 +141,10 @@
 			isa = PBXBuildFile;
 			fileRef = C28FADBD06A8B4DC7B4A91B9;
 		};
+		C661BF7706C99F642818BEA9 = {
+			isa = PBXBuildFile;
+			fileRef = DF6BD2ECC7661D68AF38AF20;
+		};
 		1B790381B4E8DD68C64B60C6 = {
 			isa = PBXBuildFile;
 			fileRef = 363442D52A030D802F0667D7;
@@ -180,6 +184,10 @@
 		36B86E606A13426FEA9821F7 = {
 			isa = PBXBuildFile;
 			fileRef = C295FFBA813CD35D3D9745AF;
+		};
+		785AA4C7512D13A77BD8AA32 = {
+			isa = PBXBuildFile;
+			fileRef = 5C9C5E8DFD3B2F6A0E8DE2F2;
 		};
 		D3504958F2B68CBF580F43B2 = {
 			isa = PBXBuildFile;
@@ -469,6 +477,13 @@
 			path = ../../src/gui/TimingWindow.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		5C9C5E8DFD3B2F6A0E8DE2F2 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = USBDMXSystem.cpp;
+			path = ../../src/USBDMXSystem.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		5F02C3FA7C49888865893EBA = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -530,6 +545,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = ControllerWindow.h;
 			path = ../../src/gui/ControllerWindow.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		7869606D49B05B17894948A8 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = USBDMXSystem.h;
+			path = ../../src/USBDMXSystem.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		792AA9F4AA6CF4B64BE8D02D = {
@@ -728,6 +750,20 @@
 			path = ../../src/gui/FixParamEd/Generic.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		B9DD2CD65F897982C286B21F = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.xml;
+			name = BuskMagic.entitlements;
+			path = BuskMagic.entitlements;
+			sourceTree = "SOURCE_ROOT";
+		};
+		BB2909E70680042E67EEC5A4 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = USBDMXSetup.h;
+			path = ../../src/gui/USBDMXSetup.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		BB829DB2A94FBA2620D41463 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -845,6 +881,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = TextListBox.cpp;
 			path = ../../src/gui/TextListBox.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		DF6BD2ECC7661D68AF38AF20 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = USBDMXSetup.cpp;
+			path = ../../src/gui/USBDMXSetup.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		E4A89D5178CC4394A61ECF58 = {
@@ -1013,6 +1056,8 @@
 				D647578D9CAB9452CAAF9D95,
 				C28FADBD06A8B4DC7B4A91B9,
 				42ACA00F634DD07394F11BB0,
+				DF6BD2ECC7661D68AF38AF20,
+				BB2909E70680042E67EEC5A4,
 			);
 			name = gui;
 			sourceTree = "<group>";
@@ -1040,6 +1085,8 @@
 				B788B4A4E695A23D87F4790D,
 				C295FFBA813CD35D3D9745AF,
 				9D6098D148BB0FDB256649E2,
+				5C9C5E8DFD3B2F6A0E8DE2F2,
+				7869606D49B05B17894948A8,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -1127,6 +1174,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
@@ -1171,6 +1219,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				DEAD_CODE_STRIPPING = YES;
@@ -1232,6 +1281,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1277,6 +1327,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -1356,6 +1407,7 @@
 				D3546F2CB119364535E95500,
 				DA0EDF645241327129E2CC38,
 				9383249E2F7E91C42D90BEEC,
+				C661BF7706C99F642818BEA9,
 				1B790381B4E8DD68C64B60C6,
 				31F7E985A2A10E08753B340E,
 				E94D9AEF779847727F4C71DD,
@@ -1366,6 +1418,7 @@
 				B3CC698D9729C935327F6561,
 				7B1D415BADF2C14F9097CA68,
 				36B86E606A13426FEA9821F7,
+				785AA4C7512D13A77BD8AA32,
 				D3504958F2B68CBF580F43B2,
 				46383F447C575EB6A5F75FF5,
 				2182685E7A92EF7A0146F1FB,
@@ -1412,7 +1465,7 @@
 		68683717081A25857F83E74E = {
 			isa = PBXProject;
 			buildConfigurationList = 7E5D1CF5EF6789B0133FC2BA;
-			attributes = { LastUpgradeCheck = 1010; ORGANIZATIONNAME = "Sauraen"; TargetAttributes = { 2B00527A183875C04564C218 = { SystemCapabilities = {com.apple.ApplicationGroups.iOS = { enabled = 0; }; com.apple.InAppPurchase = { enabled = 0; }; com.apple.InterAppAudio = { enabled = 0; }; com.apple.Push = { enabled = 0; }; com.apple.Sandbox = { enabled = 0; }; com.apple.HardenedRuntime = { enabled = 0; }; }; }; }; };
+			attributes = { LastUpgradeCheck = 1100; ORGANIZATIONNAME = "Sauraen"; TargetAttributes = { 2B00527A183875C04564C218 = { SystemCapabilities = {com.apple.ApplicationGroups.iOS = { enabled = 0; }; com.apple.InAppPurchase = { enabled = 0; }; com.apple.InterAppAudio = { enabled = 0; }; com.apple.Push = { enabled = 0; }; com.apple.Sandbox = { enabled = 0; }; com.apple.HardenedRuntime = { enabled = 0; }; }; }; }; };
 			compatibilityVersion = "Xcode 3.2";
 			hasScannedForEncodings = 0;
 			mainGroup = 47101D7B9881C02F1B948A9E;

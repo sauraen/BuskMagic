@@ -21,6 +21,7 @@
 //BuskMagic components
 Identifier idBuskMagicShow("buskmagicshow");
 Identifier idArtNetSystem("artnetsystem");
+Identifier idUSBDMXSystem("usbdmxsystem");
 Identifier idMIDISystem("midisystem");
 Identifier idTimingSystem("timingsystem");
 Identifier idChannelSystem("channelsystem");
@@ -70,6 +71,8 @@ Identifier idBindIndex("bindindex");
 Identifier idIP("ip");
 Identifier idShortName("shortname");
 Identifier idLongName("longname");
+//USBDMXSystem
+Identifier idLoadMapMode("loadmapmode");
 //MIDISystem
 Identifier idInPorts("inports");
 Identifier idInPort("inport");
