@@ -699,22 +699,8 @@ void ArtNetSetup::textEditorTextChanged(TextEditor &editorThatWasChanged){
 }
 
 void ArtNetSetup::timerCallback(){
-    int d = lstDevices->getLastRowSelected();
-    String oldselection = lstDevices->get(d);
-    int i;
-    for(i=0; i<ArtNetSystem::NumDevices(); ++i){
-        String str = ArtNetSystem::GetDevice(i)->GetTableRow();
-        if(lstDevices->getNumRows() <= i) lstDevices->add(str);
-        else lstDevices->set(i, str);
-    }
-    for(; i<lstDevices->getNumRows();){
-        lstDevices->remove(i);
-    }
-    int newrow = lstDevices->indexOf(oldselection);
-    if(newrow >= 0 && newrow != d){
-        lstDevices->selectRow(newrow);
-        d = newrow;
-    }
+    int d;
+    TEXTLIST_SYNC_1SELECT(lstDevices, ArtNetSystem::NumDevices(), ArtNetSystem::GetDevice(i)->GetTableRow(), d);
     if(d < 0 || d >= ArtNetSystem::NumDevices()) return;
     ArtNetSystem::ArtNetDevice *dev = ArtNetSystem::GetDevice(d);
     lblDeviceType->setText(dev->GetDescription() + ":", dontSendNotification);
@@ -954,4 +940,3 @@ const int ArtNetSetup::artnet_logo_pngSize = 1613;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-

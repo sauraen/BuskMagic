@@ -203,15 +203,32 @@ USBDMXSetup::USBDMXSetup ()
 
 
     //[UserPreSize]
-    bool t = USBDMXSystem::IsLoadMapModeType();
-    optMapPort->setToggleState(!t, dontSendNotification);
-    optMapType->setToggleState(t, dontSendNotification);
+    
+    lstDevices.reset(new TextListBox(this));
+    addAndMakeVisible(lstDevices.get());
+    lstDevices->setBounds(0, 24, 496, 128);
+    
+    lstSlots.reset(new TextListBox(this));
+    addAndMakeVisible(lstSlots.get());
+    lstSlots->setBounds(0, 224, 200, 72);
+    
+    txtName->addListener(this);
+    txtUniverse->addListener(this);
+    
     //[/UserPreSize]
 
     setSize (496, 296);
 
 
     //[Constructor] You can add your own custom stuff here..
+    
+    bool t = USBDMXSystem::IsLoadMapModeType();
+    optMapPort->setToggleState(!t, dontSendNotification);
+    optMapType->setToggleState(t, dontSendNotification);
+    
+    fillSlotsBox();
+    
+    startTimer(100);
     //[/Constructor]
 }
 
@@ -298,11 +315,17 @@ void USBDMXSetup::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == btnAddSlot.get())
     {
         //[UserButtonCode_btnAddSlot] -- add your button handler code here..
+        USBDMXSystem::AddSlot();
+        fillSlotsBox();
         //[/UserButtonCode_btnAddSlot]
     }
     else if (buttonThatWasClicked == btnRemoveSlot.get())
     {
         //[UserButtonCode_btnRemoveSlot] -- add your button handler code here..
+        int row = lstSlots->getLastRowSelected();
+        if(row < 0) return;
+        USBDMXSystem::RemoveSlot(row);
+        fillSlotsBox();
         //[/UserButtonCode_btnRemoveSlot]
     }
     else if (buttonThatWasClicked == optMapPort.get())
@@ -333,28 +356,45 @@ void USBDMXSetup::buttonClicked (Button* buttonThatWasClicked)
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
 void USBDMXSetup::rowSelected(TextListBox *parent, int row){
-    ignoreUnused(row);
-    /*
+    row = parent->getLastRowSelected();
+    if(row < 0) return;
     if(parent == lstDevices.get()){
-        int r = lstDevices->getLastRowSelected();
-        if(r < 0) return;
-
+        
+    }else if(parent == lstSlots.get()){
+        lblType->setText(USBDMXSystem::SlotType(row), dontSendNotification);
+        txtName->setText(USBDMXSystem::SlotName(row), dontSendNotification);
+        txtUniverse->setText(hex(USBDMXSystem::SlotUni(row)), dontSendNotification);
     }
-    */
 }
 
 void USBDMXSetup::textEditorTextChanged(TextEditor &editorThatWasChanged){
     TEXTCHANGEDHANDLER_PRE;
+    int row = lstSlots->getLastRowSelected();
+    if(row < 0) return;
     if(&editorThatWasChanged == txtName.get()){
-
+        if(text.isEmpty()){
+            turnRed = true;
+        }else{
+            USBDMXSystem::SetSlotName(row, text);
+        }
     }else if(&editorThatWasChanged == txtUniverse.get()){
-
+        if(!ishex){
+            turnRed = true;
+        }else{
+            USBDMXSystem::SetSlotUni(row, hexval);
+        }
     }
+    lstSlots->set(row, USBDMXSystem::SlotDescription(row));
     TEXTCHANGEDHANDLER_POST;
 }
 
 void USBDMXSetup::timerCallback(){
 
+}
+
+void USBDMXSetup::fillSlotsBox(){
+    int s;
+    TEXTLIST_SYNC_1SELECT(lstSlots, USBDMXSystem::NumSlots(), USBDMXSystem::SlotDescription(i), s);
 }
 
 

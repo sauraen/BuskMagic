@@ -70,6 +70,8 @@ public:
     void timerCallback() override;
     void rowSelected(TextListBox *parent, int row) override;
     void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
+
+    void fillSlotsBox();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -80,6 +82,8 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+    std::unique_ptr<TextListBox> lstDevices;
+    std::unique_ptr<TextListBox> lstSlots;
     //[/UserVariables]
 
     //==============================================================================

@@ -23,8 +23,8 @@ namespace USBDMXSystem {
     static ReadWriteLock devices_mutex;
     //These are intentionally named the same so you cannot start with a read
     //lock and escalate to a write lock
-    #define DEVICES_LOCK_READ() const ScopedReadLock devlock(ArtNetSystem::devices_mutex)
-    #define DEVICES_LOCK_WRITE() const ScopedWriteLock devlock(ArtNetSystem::devices_mutex)
+    #define DEVICES_LOCK_READ() const ScopedReadLock devlock(USBDMXSystem::devices_mutex)
+    #define DEVICES_LOCK_WRITE() const ScopedWriteLock devlock(USBDMXSystem::devices_mutex)
     
     enum class UDType : uint32_t {
         None,

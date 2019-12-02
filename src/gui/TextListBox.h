@@ -85,3 +85,31 @@ private:
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TextListBox)
 };
+
+/**
+ * Makes the list box match the data represented by GetNumItems and GetItemiString,
+ * where the previous single selection is kept if it's still present in the
+ * resulting list.
+ * GetItemiString should be a full function call for item i returning String, e.g.
+ * Database::GetItem(i)->GetSomeText(). Similarly GetNumItems should be e.g.
+ * Database::GetNumItems(). selidx (int) returns the selected item afterwards,
+ * which should be checked for being in range before use.
+*/
+#define TEXTLIST_SYNC_1SELECT(lst, GetNumItems, GetItemiString, selidx) \
+    selidx = lst->getLastRowSelected(); \
+    String oldstr = (selidx < 0 || selidx >= lst->getNumRows()) ? "" : lst->get(selidx); \
+    int i; \
+    for(i=0; i<GetNumItems; ++i){ \
+        String str = GetItemiString; \
+        if(lst->getNumRows() <= i) lst->add(str); \
+        else lst->set(i, str); \
+    } \
+    for(; i<lst->getNumRows(); ) lst->remove(i); \
+    int newr = lst->indexOf(oldstr); \
+    if(newr >= 0 && newr != selidx){ \
+        lst->selectRow(newr); \
+        selidx = newr; \
+    } \
+    REQUIRESEMICOLON
+    
+    
