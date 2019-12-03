@@ -23,15 +23,24 @@
 
 namespace USBDMXSystem {
     
-    int NumSlots();
+    uint32_t NumDevices();
+    String DeviceDescription(uint32_t d);
+    String DeviceFullInfo(uint32_t d);
+    bool DeviceIsSupported(uint32_t d);
+    void RefreshDeviceList();
+    void MapDevice(uint32_t d, uint32_t s);
+    void UnmapDevice(uint32_t s);
+    
+    uint32_t NumSlots();
     void AddSlot();
-    void RemoveSlot(int s);
-    String SlotType(int s);
-    String SlotName(int s);
-    void SetSlotName(int s, String n);
-    uint16_t SlotUni(int s);
-    void SetSlotUni(int s, uint16_t uni);
-    String SlotDescription(int s);
+    void RemoveSlot(uint32_t s);
+    String SlotType(uint32_t s);
+    String SlotStatus(uint32_t s);
+    String SlotName(uint32_t s);
+    void SetSlotName(uint32_t s, String n);
+    uint16_t SlotUni(uint32_t s);
+    void SetSlotUni(uint32_t s, uint16_t uni);
+    String SlotDescription(uint32_t s);
     
     bool IsLoadMapModeType();
     void SetLoadMapMode(bool mapType);

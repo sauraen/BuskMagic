@@ -190,45 +190,47 @@ USBDMXSetup::USBDMXSetup ()
 
     btnMapHelp->setBounds (472, 224, 24, 24);
 
-    lblType.reset (new Label ("lblType",
-                              TRANS("Type:")));
-    addAndMakeVisible (lblType.get());
-    lblType->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
-    lblType->setJustificationType (Justification::centredLeft);
-    lblType->setEditable (false, false, false);
-    lblType->setColour (TextEditor::textColourId, Colours::black);
-    lblType->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    lblStatus.reset (new Label ("lblStatus",
+                                TRANS("Status:")));
+    addAndMakeVisible (lblStatus.get());
+    lblStatus->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lblStatus->setJustificationType (Justification::centredLeft);
+    lblStatus->setEditable (false, false, false);
+    lblStatus->setColour (TextEditor::textColourId, Colours::black);
+    lblStatus->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblType->setBounds (200, 224, 192, 24);
+    lblStatus->setBounds (200, 224, 192, 24);
 
 
     //[UserPreSize]
-    
+
     lstDevices.reset(new TextListBox(this));
     addAndMakeVisible(lstDevices.get());
     lstDevices->setBounds(0, 24, 496, 128);
-    
+
     lstSlots.reset(new TextListBox(this));
     addAndMakeVisible(lstSlots.get());
     lstSlots->setBounds(0, 224, 200, 72);
-    
+
     txtName->addListener(this);
     txtUniverse->addListener(this);
     
+    btnMap->setEnabled(false);
+
     //[/UserPreSize]
 
     setSize (496, 296);
 
 
     //[Constructor] You can add your own custom stuff here..
-    
+
     bool t = USBDMXSystem::IsLoadMapModeType();
     optMapPort->setToggleState(!t, dontSendNotification);
     optMapType->setToggleState(t, dontSendNotification);
-    
+
     fillSlotsBox();
-    
-    startTimer(100);
+
+    startTimer(1000);
     //[/Constructor]
 }
 
@@ -251,7 +253,7 @@ USBDMXSetup::~USBDMXSetup()
     optMapPort = nullptr;
     optMapType = nullptr;
     btnMapHelp = nullptr;
-    lblType = nullptr;
+    lblStatus = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -305,11 +307,27 @@ void USBDMXSetup::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == btnMap.get())
     {
         //[UserButtonCode_btnMap] -- add your button handler code here..
+        int d = lstDevices->getLastRowSelected();
+        if(d < 0){
+            WarningBox("Select a device first!");
+            return;
+        }
+        int s = lstSlots->getLastRowSelected();
+        if(s < 0){
+            WarningBox("Select a slot first!");
+            return;
+        }
+        USBDMXSystem::MapDevice(d, s);
+        fillSlotsBox();
         //[/UserButtonCode_btnMap]
     }
     else if (buttonThatWasClicked == btnUnmap.get())
     {
         //[UserButtonCode_btnUnmap] -- add your button handler code here..
+        int row = lstSlots->getLastRowSelected();
+        if(row < 0) return;
+        USBDMXSystem::UnmapDevice(row);
+        fillSlotsBox();
         //[/UserButtonCode_btnUnmap]
     }
     else if (buttonThatWasClicked == btnAddSlot.get())
@@ -359,9 +377,10 @@ void USBDMXSetup::rowSelected(TextListBox *parent, int row){
     row = parent->getLastRowSelected();
     if(row < 0) return;
     if(parent == lstDevices.get()){
-        
+        lblDeviceInfo->setText(USBDMXSystem::DeviceFullInfo(row), dontSendNotification);
+        btnMap->setEnabled(USBDMXSystem::DeviceIsSupported(row));
     }else if(parent == lstSlots.get()){
-        lblType->setText(USBDMXSystem::SlotType(row), dontSendNotification);
+        lblStatus->setText("Status: " + USBDMXSystem::SlotStatus(row), dontSendNotification);
         txtName->setText(USBDMXSystem::SlotName(row), dontSendNotification);
         txtUniverse->setText(hex(USBDMXSystem::SlotUni(row)), dontSendNotification);
     }
@@ -389,7 +408,16 @@ void USBDMXSetup::textEditorTextChanged(TextEditor &editorThatWasChanged){
 }
 
 void USBDMXSetup::timerCallback(){
-
+    USBDMXSystem::RefreshDeviceList();
+    int d;
+    TEXTLIST_SYNC_1SELECT(lstDevices, USBDMXSystem::NumDevices(), USBDMXSystem::DeviceDescription(i), d);
+    if(d >= 0 && d < USBDMXSystem::NumDevices()){
+        lblDeviceInfo->setText(USBDMXSystem::DeviceFullInfo(d), dontSendNotification);
+    }
+    int row = lstSlots->getLastRowSelected();
+    if(row >= 0){
+        lblStatus->setText("Status: " + USBDMXSystem::SlotStatus(row), dontSendNotification);
+    }
 }
 
 void USBDMXSetup::fillSlotsBox(){
@@ -474,9 +502,9 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="btnMapHelp" id="f6af057f433dc4a7" memberName="btnMapHelp"
               virtualName="" explicitFocusOrder="0" pos="472 224 24 24" buttonText="?"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="lblType" id="cd4cb2768b6e4377" memberName="lblType" virtualName=""
-         explicitFocusOrder="0" pos="200 224 192 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Type:" editableSingleClick="0" editableDoubleClick="0"
+  <LABEL name="lblStatus" id="cd4cb2768b6e4377" memberName="lblStatus"
+         virtualName="" explicitFocusOrder="0" pos="200 224 192 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="Status:" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>

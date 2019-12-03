@@ -101,7 +101,7 @@ private:
     std::unique_ptr<ToggleButton> optMapPort;
     std::unique_ptr<ToggleButton> optMapType;
     std::unique_ptr<TextButton> btnMapHelp;
-    std::unique_ptr<Label> lblType;
+    std::unique_ptr<Label> lblStatus;
 
 
     //==============================================================================
