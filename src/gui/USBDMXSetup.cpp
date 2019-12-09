@@ -62,7 +62,7 @@ USBDMXSetup::USBDMXSetup ()
     lblDevices->setColour (TextEditor::textColourId, Colours::black);
     lblDevices->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblDevices->setBounds (0, 0, 496, 24);
+    lblDevices->setBounds (72, 0, 424, 24);
 
     btnMap.reset (new TextButton ("btnMap"));
     addAndMakeVisible (btnMap.get());
@@ -84,7 +84,7 @@ USBDMXSetup::USBDMXSetup ()
     lblDeviceInfo->setColour (TextEditor::textColourId, Colours::black);
     lblDeviceInfo->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblDeviceInfo->setBounds (72, 152, 424, 64);
+    lblDeviceInfo->setBounds (72, 152, 336, 64);
 
     lblName.reset (new Label ("lblName",
                               TRANS("Name:")));
@@ -95,7 +95,7 @@ USBDMXSetup::USBDMXSetup ()
     lblName->setColour (TextEditor::textColourId, Colours::black);
     lblName->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblName->setBounds (232, 248, 56, 24);
+    lblName->setBounds (280, 248, 56, 24);
 
     txtName.reset (new TextEditor ("txtName"));
     addAndMakeVisible (txtName.get());
@@ -107,7 +107,7 @@ USBDMXSetup::USBDMXSetup ()
     txtName->setPopupMenuEnabled (true);
     txtName->setText (String());
 
-    txtName->setBounds (288, 248, 104, 24);
+    txtName->setBounds (336, 248, 136, 24);
 
     lblUniverse.reset (new Label ("lblUniverse",
                                   TRANS("Uni:")));
@@ -118,7 +118,7 @@ USBDMXSetup::USBDMXSetup ()
     lblUniverse->setColour (TextEditor::textColourId, Colours::black);
     lblUniverse->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblUniverse->setBounds (232, 272, 40, 24);
+    lblUniverse->setBounds (280, 272, 40, 24);
 
     txtUniverse.reset (new TextEditor ("txtUniverse"));
     addAndMakeVisible (txtUniverse.get());
@@ -130,7 +130,7 @@ USBDMXSetup::USBDMXSetup ()
     txtUniverse->setPopupMenuEnabled (true);
     txtUniverse->setText (TRANS("0000"));
 
-    txtUniverse->setBounds (272, 272, 40, 24);
+    txtUniverse->setBounds (320, 272, 40, 24);
 
     btnUnmap.reset (new TextButton ("btnUnmap"));
     addAndMakeVisible (btnUnmap.get());
@@ -145,7 +145,7 @@ USBDMXSetup::USBDMXSetup ()
     btnAddSlot->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnBottom);
     btnAddSlot->addListener (this);
 
-    btnAddSlot->setBounds (200, 248, 24, 24);
+    btnAddSlot->setBounds (248, 248, 24, 24);
 
     btnRemoveSlot.reset (new TextButton ("btnRemoveSlot"));
     addAndMakeVisible (btnRemoveSlot.get());
@@ -153,7 +153,7 @@ USBDMXSetup::USBDMXSetup ()
     btnRemoveSlot->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnTop);
     btnRemoveSlot->addListener (this);
 
-    btnRemoveSlot->setBounds (200, 272, 24, 24);
+    btnRemoveSlot->setBounds (248, 272, 24, 24);
 
     lblMapBy.reset (new Label ("lblMapBy",
                                TRANS("Map by:")));
@@ -164,7 +164,7 @@ USBDMXSetup::USBDMXSetup ()
     lblMapBy->setColour (TextEditor::textColourId, Colours::black);
     lblMapBy->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblMapBy->setBounds (408, 224, 72, 24);
+    lblMapBy->setBounds (408, 152, 72, 24);
 
     optMapPort.reset (new ToggleButton ("optMapPort"));
     addAndMakeVisible (optMapPort.get());
@@ -173,7 +173,7 @@ USBDMXSetup::USBDMXSetup ()
     optMapPort->addListener (this);
     optMapPort->setToggleState (true, dontSendNotification);
 
-    optMapPort->setBounds (408, 248, 72, 24);
+    optMapPort->setBounds (408, 176, 72, 24);
 
     optMapType.reset (new ToggleButton ("optMapType"));
     addAndMakeVisible (optMapType.get());
@@ -181,14 +181,14 @@ USBDMXSetup::USBDMXSetup ()
     optMapType->setRadioGroupId (1);
     optMapType->addListener (this);
 
-    optMapType->setBounds (408, 272, 72, 24);
+    optMapType->setBounds (408, 200, 72, 24);
 
     btnMapHelp.reset (new TextButton ("btnMapHelp"));
     addAndMakeVisible (btnMapHelp.get());
     btnMapHelp->setButtonText (TRANS("?"));
     btnMapHelp->addListener (this);
 
-    btnMapHelp->setBounds (472, 224, 24, 24);
+    btnMapHelp->setBounds (472, 152, 24, 24);
 
     lblStatus.reset (new Label ("lblStatus",
                                 TRANS("Status:")));
@@ -199,7 +199,46 @@ USBDMXSetup::USBDMXSetup ()
     lblStatus->setColour (TextEditor::textColourId, Colours::black);
     lblStatus->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    lblStatus->setBounds (200, 224, 192, 24);
+    lblStatus->setBounds (248, 224, 192, 24);
+
+    btnRefresh.reset (new TextButton ("btnRefresh"));
+    addAndMakeVisible (btnRefresh.get());
+    btnRefresh->setButtonText (TRANS("Refresh"));
+    btnRefresh->setConnectedEdges (Button::ConnectedOnBottom);
+    btnRefresh->addListener (this);
+
+    btnRefresh->setBounds (0, 0, 72, 24);
+
+    lblChans.reset (new Label ("lblChans",
+                               TRANS("Chans:")));
+    addAndMakeVisible (lblChans.get());
+    lblChans->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    lblChans->setJustificationType (Justification::centredLeft);
+    lblChans->setEditable (false, false, false);
+    lblChans->setColour (TextEditor::textColourId, Colours::black);
+    lblChans->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    lblChans->setBounds (360, 272, 56, 24);
+
+    txtChans.reset (new TextEditor ("txtChans"));
+    addAndMakeVisible (txtChans.get());
+    txtChans->setMultiLine (false);
+    txtChans->setReturnKeyStartsNewLine (false);
+    txtChans->setReadOnly (false);
+    txtChans->setScrollbarsShown (true);
+    txtChans->setCaretVisible (true);
+    txtChans->setPopupMenuEnabled (true);
+    txtChans->setText (TRANS("512"));
+
+    txtChans->setBounds (416, 272, 32, 24);
+
+    btnChansHelp.reset (new TextButton ("btnChansHelp"));
+    addAndMakeVisible (btnChansHelp.get());
+    btnChansHelp->setButtonText (TRANS("?"));
+    btnChansHelp->setConnectedEdges (Button::ConnectedOnLeft);
+    btnChansHelp->addListener (this);
+
+    btnChansHelp->setBounds (448, 272, 24, 24);
 
 
     //[UserPreSize]
@@ -210,11 +249,12 @@ USBDMXSetup::USBDMXSetup ()
 
     lstSlots.reset(new TextListBox(this));
     addAndMakeVisible(lstSlots.get());
-    lstSlots->setBounds(0, 224, 200, 72);
+    lstSlots->setBounds(0, 224, 248, 72);
 
     txtName->addListener(this);
     txtUniverse->addListener(this);
-    
+    txtChans->addListener(this);
+
     btnMap->setEnabled(false);
 
     //[/UserPreSize]
@@ -230,7 +270,7 @@ USBDMXSetup::USBDMXSetup ()
 
     fillSlotsBox();
 
-    startTimer(1000);
+    startTimer(200);
     //[/Constructor]
 }
 
@@ -254,6 +294,10 @@ USBDMXSetup::~USBDMXSetup()
     optMapType = nullptr;
     btnMapHelp = nullptr;
     lblStatus = nullptr;
+    btnRefresh = nullptr;
+    lblChans = nullptr;
+    txtChans = nullptr;
+    btnChansHelp = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -267,24 +311,6 @@ void USBDMXSetup::paint (Graphics& g)
     //[/UserPrePaint]
 
     g.fillAll (Colour (0xff323e44));
-
-    {
-        int x = 0, y = 24, width = 496, height = 128;
-        Colour fillColour = Colour (0xff2a71a5);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
-
-    {
-        int x = 0, y = 224, width = 200, height = 72;
-        Colour fillColour = Colour (0xffa52a50);
-        //[UserPaintCustomArguments] Customize the painting arguments here..
-        //[/UserPaintCustomArguments]
-        g.setColour (fillColour);
-        g.fillRect (x, y, width, height);
-    }
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -364,6 +390,18 @@ void USBDMXSetup::buttonClicked (Button* buttonThatWasClicked)
         InfoBox(USBDMXSystem::GetLoadMapModeHelpText());
         //[/UserButtonCode_btnMapHelp]
     }
+    else if (buttonThatWasClicked == btnRefresh.get())
+    {
+        //[UserButtonCode_btnRefresh] -- add your button handler code here..
+        USBDMXSystem::RefreshDeviceList();
+        //[/UserButtonCode_btnRefresh]
+    }
+    else if (buttonThatWasClicked == btnChansHelp.get())
+    {
+        //[UserButtonCode_btnChansHelp] -- add your button handler code here..
+        InfoBox(USBDMXSystem::GetChansHelpText());
+        //[/UserButtonCode_btnChansHelp]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -383,6 +421,7 @@ void USBDMXSetup::rowSelected(TextListBox *parent, int row){
         lblStatus->setText("Status: " + USBDMXSystem::SlotStatus(row), dontSendNotification);
         txtName->setText(USBDMXSystem::SlotName(row), dontSendNotification);
         txtUniverse->setText(hex(USBDMXSystem::SlotUni(row)), dontSendNotification);
+        txtChans->setText(String(USBDMXSystem::SlotChans(row)), dontSendNotification);
     }
 }
 
@@ -397,10 +436,16 @@ void USBDMXSetup::textEditorTextChanged(TextEditor &editorThatWasChanged){
             USBDMXSystem::SetSlotName(row, text);
         }
     }else if(&editorThatWasChanged == txtUniverse.get()){
-        if(!ishex){
+        if(!ishex || hexval >= 0x8000){
             turnRed = true;
         }else{
             USBDMXSystem::SetSlotUni(row, hexval);
+        }
+    }else if(&editorThatWasChanged == txtChans.get()){
+        if(!isint || intval > 512){
+            turnRed = true;
+        }else{
+            USBDMXSystem::SetSlotChans(row, intval);
         }
     }
     lstSlots->set(row, USBDMXSystem::SlotDescription(row));
@@ -408,7 +453,6 @@ void USBDMXSetup::textEditorTextChanged(TextEditor &editorThatWasChanged){
 }
 
 void USBDMXSetup::timerCallback(){
-    USBDMXSystem::RefreshDeviceList();
     int d;
     TEXTLIST_SYNC_1SELECT(lstDevices, USBDMXSystem::NumDevices(), USBDMXSystem::DeviceDescription(i), d);
     if(d >= 0 && d < USBDMXSystem::NumDevices()){
@@ -443,12 +487,9 @@ BEGIN_JUCER_METADATA
                  constructorParams="" variableInitialisers="" snapPixels="8" snapActive="1"
                  snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="496"
                  initialHeight="296">
-  <BACKGROUND backgroundColour="ff323e44">
-    <RECT pos="0 24 496 128" fill="solid: ff2a71a5" hasStroke="0"/>
-    <RECT pos="0 224 200 72" fill="solid: ffa52a50" hasStroke="0"/>
-  </BACKGROUND>
+  <BACKGROUND backgroundColour="ff323e44"/>
   <LABEL name="lblDevices" id="af3c963fa34df561" memberName="lblDevices"
-         virtualName="" explicitFocusOrder="0" pos="0 0 496 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="72 0 424 24" edTextCol="ff000000"
          edBkgCol="0" labelText="USB devices (readable by BuskMagic):"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
@@ -457,56 +498,71 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="0 152 72 24" buttonText="Map &#8595;"
               connectedEdges="4" needsCallback="1" radioGroupId="0"/>
   <LABEL name="lblDeviceInfo" id="4ef899223be9062a" memberName="lblDeviceInfo"
-         virtualName="" explicitFocusOrder="0" pos="72 152 424 64" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="72 152 336 64" edTextCol="ff000000"
          edBkgCol="0" labelText="Manufacturer: &#10;Product: &#10;Serial Number: &#10;BuskMagic recognizes this as: "
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
          italic="0" justification="33"/>
   <LABEL name="lblName" id="7d3f78265abfa0ef" memberName="lblName" virtualName=""
-         explicitFocusOrder="0" pos="232 248 56 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="280 248 56 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Name:" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtName" id="bc35ea61aa9e8dbd" memberName="txtName" virtualName=""
-              explicitFocusOrder="0" pos="288 248 104 24" initialText="" multiline="0"
+              explicitFocusOrder="0" pos="336 248 136 24" initialText="" multiline="0"
               retKeyStartsLine="0" readonly="0" scrollbars="1" caret="1" popupmenu="1"/>
   <LABEL name="lblUniverse" id="6a983e1b03e7558f" memberName="lblUniverse"
-         virtualName="" explicitFocusOrder="0" pos="232 272 40 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="280 272 40 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Uni:" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="txtUniverse" id="80625db9f19e7069" memberName="txtUniverse"
-              virtualName="" explicitFocusOrder="0" pos="272 272 40 24" initialText="0000"
+              virtualName="" explicitFocusOrder="0" pos="320 272 40 24" initialText="0000"
               multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
               caret="1" popupmenu="1"/>
   <TEXTBUTTON name="btnUnmap" id="8c5906a80e1c57db" memberName="btnUnmap" virtualName=""
               explicitFocusOrder="0" pos="0 192 72 24" buttonText="Unmap &#8593;"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnAddSlot" id="aaf813906edeb025" memberName="btnAddSlot"
-              virtualName="" explicitFocusOrder="0" pos="200 248 24 24" buttonText="+"
+              virtualName="" explicitFocusOrder="0" pos="248 248 24 24" buttonText="+"
               connectedEdges="9" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="btnRemoveSlot" id="8eea23f9295ba0b" memberName="btnRemoveSlot"
-              virtualName="" explicitFocusOrder="0" pos="200 272 24 24" buttonText="&#8722;"
+              virtualName="" explicitFocusOrder="0" pos="248 272 24 24" buttonText="&#8722;"
               connectedEdges="5" needsCallback="1" radioGroupId="0"/>
   <LABEL name="lblMapBy" id="28fff9208714bd4f" memberName="lblMapBy" virtualName=""
-         explicitFocusOrder="0" pos="408 224 72 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="408 152 72 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Map by:" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="optMapPort" id="53d628975640d16f" memberName="optMapPort"
-                virtualName="" explicitFocusOrder="0" pos="408 248 72 24" buttonText="Port"
+                virtualName="" explicitFocusOrder="0" pos="408 176 72 24" buttonText="Port"
                 connectedEdges="0" needsCallback="1" radioGroupId="1" state="1"/>
   <TOGGLEBUTTON name="optMapType" id="4c2c1da230eb3fa7" memberName="optMapType"
-                virtualName="" explicitFocusOrder="0" pos="408 272 72 24" buttonText="Type"
+                virtualName="" explicitFocusOrder="0" pos="408 200 72 24" buttonText="Type"
                 connectedEdges="0" needsCallback="1" radioGroupId="1" state="0"/>
   <TEXTBUTTON name="btnMapHelp" id="f6af057f433dc4a7" memberName="btnMapHelp"
-              virtualName="" explicitFocusOrder="0" pos="472 224 24 24" buttonText="?"
+              virtualName="" explicitFocusOrder="0" pos="472 152 24 24" buttonText="?"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="lblStatus" id="cd4cb2768b6e4377" memberName="lblStatus"
-         virtualName="" explicitFocusOrder="0" pos="200 224 192 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="248 224 192 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Status:" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
+  <TEXTBUTTON name="btnRefresh" id="ecbae560e71793af" memberName="btnRefresh"
+              virtualName="" explicitFocusOrder="0" pos="0 0 72 24" buttonText="Refresh"
+              connectedEdges="8" needsCallback="1" radioGroupId="0"/>
+  <LABEL name="lblChans" id="83784da525645170" memberName="lblChans" virtualName=""
+         explicitFocusOrder="0" pos="360 272 56 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="Chans:" editableSingleClick="0" editableDoubleClick="0"
+         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
+         kerning="0.0" bold="0" italic="0" justification="33"/>
+  <TEXTEDITOR name="txtChans" id="68dbcec1d14783a7" memberName="txtChans" virtualName=""
+              explicitFocusOrder="0" pos="416 272 32 24" initialText="512"
+              multiline="0" retKeyStartsLine="0" readonly="0" scrollbars="1"
+              caret="1" popupmenu="1"/>
+  <TEXTBUTTON name="btnChansHelp" id="e90ae583fc87d4d8" memberName="btnChansHelp"
+              virtualName="" explicitFocusOrder="0" pos="448 272 24 24" buttonText="?"
+              connectedEdges="1" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

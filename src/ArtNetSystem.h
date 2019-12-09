@@ -75,6 +75,7 @@ namespace ArtNetSystem {
     void RemoveDevice(int d);
     
     void GetNeededUniversesSorted(Array<uint16_t> &list);
+    void SendDMX512(uint16_t universe, const uint8_t *buf512);
     
     uint32_t ParseUniverseText(String unitxt);
     String GetUniverseText(const uint8_t *uni);
@@ -83,5 +84,4 @@ namespace ArtNetSystem {
     void ChangeDeviceUniverses(int d, uint8_t net, uint8_t subnet, 
         const uint8_t *inuni, const uint8_t *outuni);
     
-    void SendDMX512(uint16_t universe, const uint8_t *buf512);
 }

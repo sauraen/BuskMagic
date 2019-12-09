@@ -19,6 +19,7 @@
 #include "LightingSystem.h"
 
 #include "ArtNetSystem.h"
+#include "USBDMXSystem.h"
 #include "FixtureSystem.h"
 
 #include <cstring>
@@ -35,6 +36,7 @@ namespace LightingSystem {
         LightingThread() { last_eval_ms = Time::getMillisecondCounterHiRes(); startTimer(33); }
         virtual ~LightingThread() {}
         double last_eval_ms;
+        const double maxCallbackTime = 10.0; //ms
         bool priorityset = false;
         virtual void hiResTimerCallback() override {
             if(!priorityset){
@@ -47,7 +49,7 @@ namespace LightingSystem {
                 priorityset = true;
             }
             double ms = Time::getMillisecondCounterHiRes();
-            if(ms - last_eval_ms > 100.0){
+            if(ms - last_eval_ms > maxCallbackTime){
                 Logger::writeToLog("Time between evaluations was " + String(ms - last_eval_ms) + " ms!");
             }
             last_eval_ms = ms;
@@ -56,6 +58,7 @@ namespace LightingSystem {
                 ScopedTimeMeasurement m(callbackDuration);
                 Array<uint16_t> eval_universes;
                 ArtNetSystem::GetNeededUniversesSorted(eval_universes);
+                USBDMXSystem::GetNeededUniversesSorted(eval_universes);
                 for(int u=0; u<eval_universes.size(); ++u){
                     uint16_t universe = eval_universes[u];
                     memset(unidata, 0, 512);
@@ -68,9 +71,10 @@ namespace LightingSystem {
                         }
                     }
                     ArtNetSystem::SendDMX512(universe, unidata);
+                    USBDMXSystem::SendDMX512(universe, unidata);
                 }
             }
-            if(callbackDuration > 0.1){
+            if(callbackDuration > maxCallbackTime * 0.001){
                 Logger::writeToLog("Lighting callback took " + String(callbackDuration * 1000.0) + " ms!");
             }
         }

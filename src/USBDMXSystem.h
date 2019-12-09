@@ -40,7 +40,13 @@ namespace USBDMXSystem {
     void SetSlotName(uint32_t s, String n);
     uint16_t SlotUni(uint32_t s);
     void SetSlotUni(uint32_t s, uint16_t uni);
+    uint16_t SlotChans(uint32_t s);
+    void SetSlotChans(uint32_t s, uint16_t chans);
+    String GetChansHelpText();
     String SlotDescription(uint32_t s);
+    
+    void GetNeededUniversesSorted(Array<uint16_t> &list);
+    void SendDMX512(uint16_t universe, const uint8_t *buf512);
     
     bool IsLoadMapModeType();
     void SetLoadMapMode(bool mapType);

@@ -30,10 +30,25 @@
 #define UDMX_USB_PID_LIBUSB 0x05DC //Vendor Class devices with libusb, free shared PID
 #define USB_LANGUAGE_ENGLISH 0x0409
 
-#define USB_TIMEOUT_DISCOVER 100 //ms
-#define USB_TIMEOUT_RUN 30 //ms
+#define USB_TIMEOUT_DISCOVER 5000 //ms
+#define USB_TIMEOUT_RUN 200 //ms
 
 #define UDMX_CMD_SETCHANNELRANGE 2
+
+static String GetUSBErrorString(int res){
+    if(res >= 0) return "OK (no error)";
+#if defined(JUCE_LINUX) || defined(JUCE_MAC)
+    if(res == -EPERM) return "Permissions Error";
+    if(res == -ETIMEDOUT) return "Timeout Error";
+    if(res == -EOVERFLOW) return "Overflow Error";
+#else
+    //libusb own errors
+    if(res == -1) return "I/O Error";
+    if(res == -3) return "Permissions Error";
+    if(res == -7) return "Timeout Error";
+#endif
+    return "Unknown Error";
+}
 
 static String GetUSBStringEnglish(usb_dev_handle *device, int str_index){
     if(str_index < 0 || str_index > 0xFF) return "Internal Error";
@@ -45,10 +60,7 @@ static String GetUSBStringEnglish(usb_dev_handle *device, int str_index){
     //res = number of bytes read
     if(res <= 1){
         if(res >= 0) return "(Blank)";
-        if(res == -1) return "I/O Error";
-        if(res == -3) return "Permissions Error";
-        if(res == -7) return "Timeout Error";
-        return "Unknown Error";
+        return GetUSBErrorString(res);
     }
     //Byte 1: descriptor type
     if(recvbuf[1] != USB_DT_STRING) return "Data Error";
@@ -110,8 +122,9 @@ namespace USBDMXSystem {
         String name;
         String status;
         uint16_t uni;
-        uint8_t devnum;
+        uint16_t chans;
         uint32_t bus;
+        uint8_t devnum;
         void *devhandle;
         
         UDSlot(){
@@ -119,6 +132,7 @@ namespace USBDMXSystem {
             name = "unnamed";
             status = "Not yet started";
             uni = 0;
+            chans = 512;
             devhandle = nullptr;
         }
     };
@@ -175,7 +189,27 @@ namespace USBDMXSystem {
         DEVICES_LOCK_WRITE();
         if(d >= devices.size() || s >= slots.size()) return;
 #ifdef BUSKMAGIC_LIBUSB
-        
+        if(devices[d].type != UDType::uDMX){
+            std::cout << "Cannot map device of type " << TypeToString(devices[d].type) << "!\n";
+            return;
+        }
+        for(usb_bus *bus = usb_busses; bus != nullptr; bus = bus->next){
+            uint32_t busnum = bus->location;
+            for(struct usb_device *dev = bus->devices; dev != nullptr; dev = dev->next){
+                if(busnum != devices[d].bus || dev->devnum != devices[d].devnum) continue;
+                usb_dev_handle *handle = usb_open(dev);
+                if(handle == nullptr){
+                    std::cout << "Could not reopen bus " << busnum << " device " << (int)dev->devnum << "!\n";
+                    return;
+                }
+                slots[s].type = devices[d].type;
+                slots[s].status = "Device opened";
+                slots[s].bus = busnum;
+                slots[s].devnum = dev->devnum;
+                slots[s].devhandle = handle;
+                return;
+            }
+        }
 #endif
     }
     void UnmapDevice(uint32_t s){
@@ -231,19 +265,85 @@ namespace USBDMXSystem {
     }
     void SetSlotUni(uint32_t s, uint16_t uni){
         DEVICES_LOCK_WRITE();
-        if(s >= slots.size()) return;
+        if(s >= slots.size() || uni >= 0x8000) return;
         slots[s].uni = uni;
+    }
+    uint16_t SlotChans(uint32_t s){
+        DEVICES_LOCK_READ();
+        if(s >= slots.size()) return 0;
+        return slots[s].chans;
+    }
+    void SetSlotChans(uint32_t s, uint16_t chans){
+        DEVICES_LOCK_WRITE();
+        if(s >= slots.size() || chans > 512) return;
+        slots[s].chans = chans;
+    }
+    String GetChansHelpText(){
+        return  "You can improve the low framerates obtained\n"
+                "when using USB-DMX devices by sending\n"
+                "fewer DMX channels\n"
+                "(or by switching to Art-Net).";
     }
     String SlotDescription(uint32_t s){
         DEVICES_LOCK_READ();
         if(s >= slots.size()) return "ERROR";
-        String ret = slots[s].name + " (" + hex(slots[s].uni) + "): ";
+        String ret = slots[s].name + " (" + hex(slots[s].uni) + "/" + String(slots[s].chans) + "): ";
         if(slots[s].devhandle == nullptr){
             ret += " (unmapped)";
         }else{
-            ret += "bus " + String(slots[s].bus) + " device " + String(slots[s].devnum);
+            ret += "Bus " + String(slots[s].bus) + " Dev " + String(slots[s].devnum);
         }
         return ret;
+    }
+    
+    void GetNeededUniversesSorted(Array<uint16_t> &list){
+        DEVICES_LOCK_READ();
+        DefaultElementComparator<uint16_t> sorter;
+        for(int s=0; s<slots.size(); ++s){
+            uint16_t universe = slots[s].uni;
+            if(list.indexOfSorted(sorter, universe) < 0){
+                list.addSorted(sorter, universe);
+            }
+        }
+    }
+    
+    void SendDMX512(uint16_t universe, const uint8_t *buf512){
+        DEVICES_LOCK_READ();
+        for(int s=0; s<slots.size(); ++s){
+            if(slots[s].uni != universe) continue;
+            switch(slots[s].type){
+                case UDType::uDMX: {
+#ifdef BUSKMAGIC_LIBUSB
+                    if(slots[s].devhandle == nullptr){
+                        jassertfalse;
+                        continue;
+                    }
+                    uint16_t chans = slots[s].chans;
+                    uint8_t* tmpbuf = new uint8_t[chans];
+                    memcpy(tmpbuf, buf512, chans);
+                    int res = usb_control_msg((usb_dev_handle*)slots[s].devhandle, 
+                        USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
+                        UDMX_CMD_SETCHANNELRANGE, chans, 0, (char*)tmpbuf, chans, USB_TIMEOUT_RUN);
+                    if(res < 0){
+                        slots[s].status = GetUSBErrorString(res);
+                    }else if(res != chans){
+                        slots[s].status = "Wrong Size Returned";
+                    }else{
+                        if(memcmp(tmpbuf, buf512, chans) != 0){
+                            slots[s].status = "Bad Data Returned";
+                        }else{
+                            slots[s].status = "Communication OK";
+                        }
+                    }
+                    delete[] tmpbuf;
+#else
+                    std::cout << "uDMX slot type not supported!\n";
+#endif
+                    break; }
+                case UDType::None:
+                    continue;
+            }
+        }
     }
     
     bool loadmapmodetype;
@@ -271,9 +371,10 @@ namespace USBDMXSystem {
         loadmapmodetype = us_node.isValid() ? (bool)us_node.getProperty(idLoadMapMode, false) : false;
         //TODO
 #ifdef BUSKMAGIC_LIBUSB
-        //usb_set_debug(1);
+        //usb_set_debug(2);
         usb_init();
 #endif
+        RefreshDeviceList();
     }
     void Finalize(){
         DEVICES_LOCK_WRITE();

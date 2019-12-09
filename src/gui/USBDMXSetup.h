@@ -102,6 +102,10 @@ private:
     std::unique_ptr<ToggleButton> optMapType;
     std::unique_ptr<TextButton> btnMapHelp;
     std::unique_ptr<Label> lblStatus;
+    std::unique_ptr<TextButton> btnRefresh;
+    std::unique_ptr<Label> lblChans;
+    std::unique_ptr<TextEditor> txtChans;
+    std::unique_ptr<TextButton> btnChansHelp;
 
 
     //==============================================================================
