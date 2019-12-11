@@ -1,0 +1,3 @@
+This is the core files of libusb version 0.1.12, providing userspace access to USB devices on Mac OS X and Linux. The library is compiled as part of BuskMagic to avoid requiring a separate install / dependencies on particular versions of system packages. (E.g. on Linux this means BuskMagic will work even if you have libusb1.0 or no libusb at all, and on Mac OS X this avoids users having to brew install libusb.)
+
+libusb is licensed under, and distributed in source and object code form under, the LGPL. See COPYING for the license text.

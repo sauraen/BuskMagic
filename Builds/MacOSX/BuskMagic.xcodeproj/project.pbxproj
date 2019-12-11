@@ -53,6 +53,10 @@
 			isa = PBXBuildFile;
 			fileRef = 3100475F745C1E74C1C8D35E;
 		};
+		17CA2AA161C4E37F5AA3C8FD = {
+			isa = PBXBuildFile;
+			fileRef = 1EB0C5A4879A3BC88B0DDE41;
+		};
 		5D8CD718C1F02EA85BBFACE8 = {
 			isa = PBXBuildFile;
 			fileRef = 2228834872E4324176A77A1D;
@@ -316,6 +320,13 @@
 			path = "../../JuceLibraryCode/include_juce_core.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		1EB0C5A4879A3BC88B0DDE41 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
+			name = "bm_usb.c";
+			path = "../../external/usb/bm_usb.c";
+			sourceTree = "SOURCE_ROOT";
+		};
 		1F4BB212FA55C18F8C5C653A = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -349,6 +360,13 @@
 			lastKnownFileType = sourcecode.cpp.objcpp;
 			name = "include_juce_data_structures.mm";
 			path = "../../JuceLibraryCode/include_juce_data_structures.mm";
+			sourceTree = "SOURCE_ROOT";
+		};
+		26BB8C50DDDED897B936C0FF = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = "bm_usb.hpp";
+			path = "../../external/usb/bm_usb.hpp";
 			sourceTree = "SOURCE_ROOT";
 		};
 		293E53A466FD77267E319103 = {
@@ -967,6 +985,23 @@
 			path = ../../src/gui/HoldButton.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		26BFF679C59CC922384674B4 = {
+			isa = PBXGroup;
+			children = (
+				1EB0C5A4879A3BC88B0DDE41,
+				26BB8C50DDDED897B936C0FF,
+			);
+			name = usb;
+			sourceTree = "<group>";
+		};
+		F693BE14B29BB8859F56017F = {
+			isa = PBXGroup;
+			children = (
+				26BFF679C59CC922384674B4,
+			);
+			name = external;
+			sourceTree = "<group>";
+		};
 		340CC79BF702A45FEA1F3D1B = {
 			isa = PBXGroup;
 			children = (
@@ -1094,6 +1129,7 @@
 		EFAF09A8654275011386EFB5 = {
 			isa = PBXGroup;
 			children = (
+				F693BE14B29BB8859F56017F,
 				2872E8F650557A7CE74A0E2E,
 				E9A7376A5EAFFA7F67CEC243,
 				11F3D0A1E22E5CCAD983A374,
@@ -1183,6 +1219,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"_DEBUG=1",
 					"DEBUG=1",
+					"BUSKMAGIC_LIBUSB=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
 					"JUCE_APP_VERSION=0.01",
 					"JUCE_APP_VERSION_HEX=0x100",
@@ -1228,6 +1265,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"_NDEBUG=1",
 					"NDEBUG=1",
+					"BUSKMAGIC_LIBUSB=1",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
 					"JUCE_APP_VERSION=0.01",
 					"JUCE_APP_VERSION_HEX=0x100",
@@ -1385,6 +1423,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17CA2AA161C4E37F5AA3C8FD,
 				5D8CD718C1F02EA85BBFACE8,
 				A2388BD606A8CE3795A82AB1,
 				2BAFB1621A32991C31661EA7,

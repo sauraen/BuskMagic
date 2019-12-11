@@ -68,6 +68,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS_APP := \
+  $(JUCE_OBJDIR)/bm_usb_8fdef3d4.o \
   $(JUCE_OBJDIR)/ControllerCmps_e940cc52.o \
   $(JUCE_OBJDIR)/ImageImporter_9dee1ece.o \
   $(JUCE_OBJDIR)/CMY_3f3eb7e2.o \
@@ -124,6 +125,11 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(JUCE_LDFLAGS_APP) $(RESOURCES) $(TARGET_ARCH)
+
+$(JUCE_OBJDIR)/bm_usb_8fdef3d4.o: ../../external/usb/bm_usb.c
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling bm_usb.c"
+	$(V_AT)$(CC) $(JUCE_CFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/ControllerCmps_e940cc52.o: ../../src/gui/Controller/ControllerCmps.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)

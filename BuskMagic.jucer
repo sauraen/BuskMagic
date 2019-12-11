@@ -6,6 +6,12 @@
               companyName="Sauraen" companyCopyright="Copyright (C) 2019 Sauraen / Licensed under the GPL3"
               cppLanguageStandard="14" version="0.01" headerPath="../../src/">
   <MAINGROUP id="nK6FP9" name="BuskMagic">
+    <GROUP id="{3D7A48D5-F157-0876-07BA-C3B2C4947ED1}" name="external">
+      <GROUP id="{42B7BC6C-38C5-2DC3-5835-59571080CE8F}" name="usb">
+        <FILE id="t4ISfg" name="bm_usb.c" compile="1" resource="0" file="external/usb/bm_usb.c"/>
+        <FILE id="ETsCxj" name="bm_usb.hpp" compile="0" resource="0" file="external/usb/bm_usb.hpp"/>
+      </GROUP>
+    </GROUP>
     <GROUP id="{10D6CFA7-0177-1248-18A7-BE991C404BD4}" name="src">
       <GROUP id="{E2D2E361-BE7B-6D4F-0D41-F7DB50F45452}" name="gui">
         <GROUP id="{EA8D599D-25E4-CBA5-6611-0959C1C7171B}" name="Controller">
@@ -125,7 +131,8 @@
     <FILE id="JuceDm" name="logo.ico" compile="0" resource="1" file="data/logo.ico"/>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX" bigIcon="bWpivK" smallIcon="AaEccO">
+    <XCODE_MAC targetFolder="Builds/MacOSX" bigIcon="bWpivK" smallIcon="AaEccO"
+               extraDefs="BUSKMAGIC_LIBUSB=1">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" osxArchitecture="64BitIntel"/>
         <CONFIGURATION isDebug="0" name="Release" osxArchitecture="64BitIntel"/>
@@ -190,6 +197,7 @@
   </MODULES>
   <LIVE_SETTINGS>
     <LINUX/>
+    <OSX/>
   </LIVE_SETTINGS>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
 </JUCERPROJECT>

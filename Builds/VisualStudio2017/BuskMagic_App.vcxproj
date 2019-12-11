@@ -138,6 +138,7 @@
     <Lib/>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\external\usb\bm_usb.c"/>
     <ClCompile Include="..\..\src\gui\Controller\ControllerCmps.cpp"/>
     <ClCompile Include="..\..\src\gui\Controller\ImageImporter.cpp"/>
     <ClCompile Include="..\..\src\gui\FixParamEd\ColorMode\CMY.cpp"/>
@@ -183,6 +184,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\external\usb\bm_usb.hpp"/>
     <ClInclude Include="..\..\src\gui\Controller\CCKnob.h"/>
     <ClInclude Include="..\..\src\gui\Controller\ControllerCanvas.h"/>
     <ClInclude Include="..\..\src\gui\Controller\ControllerCmps.h"/>

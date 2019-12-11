@@ -24,7 +24,7 @@
 //which is in turn based on V-USB driver software (also GPL3 licensed)
 //by Objective Development Software GmbH <http://www.obdev.at/vusb/>
 
-#include <usb.h> //libusb0.1, not 1.0
+#include "../external/usb/bm_usb.hpp"
 
 #define UDMX_USB_VID_VOTI 0x16C0 //Vendor ID, Van Ooijen Technische Informatica, www.voti.nl
 #define UDMX_USB_PID_LIBUSB 0x05DC //Vendor Class devices with libusb, free shared PID
@@ -55,7 +55,7 @@ static String GetUSBStringEnglish(usb_dev_handle *device, int str_index){
     //USB strings are UTF-16 encoded; fortunately Juce supports this
     uint8_t *recvbuf = new uint8_t[256];
     int res = usb_control_msg(device, USB_ENDPOINT_IN, USB_REQ_GET_DESCRIPTOR,
-            (USB_DT_STRING << 8) | str_index, USB_LANGUAGE_ENGLISH, 
+            (USB_DT_STRING << 8) | str_index, USB_LANGUAGE_ENGLISH,
             (char*)recvbuf, 256, USB_TIMEOUT_DISCOVER);
     //res = number of bytes read
     if(res <= 1){
@@ -82,13 +82,13 @@ static String GetUSBStringEnglish(usb_dev_handle *device, int str_index){
 #endif
 
 namespace USBDMXSystem {
-    
+
     static ReadWriteLock devices_mutex;
     //These are intentionally named the same so you cannot start with a read
     //lock and escalate to a write lock
     #define DEVICES_LOCK_READ() const ScopedReadLock devlock(USBDMXSystem::devices_mutex)
     #define DEVICES_LOCK_WRITE() const ScopedWriteLock devlock(USBDMXSystem::devices_mutex)
-    
+
     enum class UDType : uint32_t {
         None,
         uDMX,
@@ -100,14 +100,14 @@ namespace USBDMXSystem {
             default: return "ERROR";
         }
     }
-    
+
     struct USBDevice {
         String manu, product, sn;
         uint16_t vid, pid;
         uint32_t bus;
         uint8_t devnum;
         UDType type;
-        
+
         USBDevice(uint16_t v, uint16_t p, uint32_t b, uint8_t d)
                 : vid(v), pid(p), bus(b), devnum(d){
             manu = "Could not read\n";
@@ -116,7 +116,7 @@ namespace USBDMXSystem {
             type = UDType::None;
         }
     };
-    
+
     struct UDSlot {
         UDType type;
         String name;
@@ -126,7 +126,7 @@ namespace USBDMXSystem {
         uint32_t bus;
         uint8_t devnum;
         void *devhandle;
-        
+
         UDSlot(){
             type = UDType::None;
             name = "unnamed";
@@ -136,11 +136,11 @@ namespace USBDMXSystem {
             devhandle = nullptr;
         }
     };
-    
+
     static std::vector<USBDevice> devices;
     static std::vector<UDSlot> slots;
-    
-    uint32_t NumDevices() { return devices.size(); }
+
+    uint32_t NumDevices() { return (uint32_t)devices.size(); }
     String DeviceDescription(uint32_t d){
         DEVICES_LOCK_READ();
         if(d >= devices.size()) return "ERROR";
@@ -158,7 +158,7 @@ namespace USBDMXSystem {
         if(d >= devices.size()) return false;
         return devices[d].type != UDType::None;
     }
-    
+
     void RefreshDeviceList(){
         DEVICES_LOCK_WRITE();
         devices.clear();
@@ -168,7 +168,7 @@ namespace USBDMXSystem {
         for(usb_bus *bus = usb_busses; bus != nullptr; bus = bus->next){
             uint32_t busnum = bus->location;
             for(struct usb_device *dev = bus->devices; dev != nullptr; dev = dev->next){
-                USBDevice d(dev->descriptor.idVendor, dev->descriptor.idProduct, 
+                USBDevice d(dev->descriptor.idVendor, dev->descriptor.idProduct,
                         busnum, dev->devnum);
                 usb_dev_handle *handle = usb_open(dev);
                 if(handle != nullptr){
@@ -224,10 +224,10 @@ namespace USBDMXSystem {
         slots[s].status = "Device closed";
 #endif
     }
-    
-    uint32_t NumSlots() { return slots.size(); }
-    void AddSlot(){ 
-        DEVICES_LOCK_WRITE(); 
+
+    uint32_t NumSlots() { return (uint32_t)slots.size(); }
+    void AddSlot(){
+        DEVICES_LOCK_WRITE();
         slots.push_back(UDSlot());
     }
     void RemoveSlot(uint32_t s){
@@ -238,13 +238,13 @@ namespace USBDMXSystem {
         }
         slots.erase(slots.begin() + s);
     }
-    String SlotType(uint32_t s){ 
-        DEVICES_LOCK_READ(); 
+    String SlotType(uint32_t s){
+        DEVICES_LOCK_READ();
         if(s >= slots.size()) return "ERROR";
         return TypeToString(slots[s].type);
     }
-    String SlotStatus(uint32_t s){ 
-        DEVICES_LOCK_READ(); 
+    String SlotStatus(uint32_t s){
+        DEVICES_LOCK_READ();
         if(s >= slots.size()) return "ERROR";
         return slots[s].status;
     }
@@ -295,7 +295,7 @@ namespace USBDMXSystem {
         }
         return ret;
     }
-    
+
     void GetNeededUniversesSorted(Array<uint16_t> &list){
         DEVICES_LOCK_READ();
         DefaultElementComparator<uint16_t> sorter;
@@ -306,7 +306,7 @@ namespace USBDMXSystem {
             }
         }
     }
-    
+
     void SendDMX512(uint16_t universe, const uint8_t *buf512){
         DEVICES_LOCK_READ();
         for(int s=0; s<slots.size(); ++s){
@@ -321,7 +321,7 @@ namespace USBDMXSystem {
                     uint16_t chans = slots[s].chans;
                     uint8_t* tmpbuf = new uint8_t[chans];
                     memcpy(tmpbuf, buf512, chans);
-                    int res = usb_control_msg((usb_dev_handle*)slots[s].devhandle, 
+                    int res = usb_control_msg((usb_dev_handle*)slots[s].devhandle,
                         USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_ENDPOINT_OUT,
                         UDMX_CMD_SETCHANNELRANGE, chans, 0, (char*)tmpbuf, chans, USB_TIMEOUT_RUN);
                     if(res < 0){
@@ -345,7 +345,7 @@ namespace USBDMXSystem {
             }
         }
     }
-    
+
     bool loadmapmodetype;
     bool IsLoadMapModeType() { return loadmapmodetype; }
     void SetLoadMapMode(bool mapType) { loadmapmodetype = mapType; }
@@ -371,7 +371,7 @@ namespace USBDMXSystem {
         loadmapmodetype = us_node.isValid() ? (bool)us_node.getProperty(idLoadMapMode, false) : false;
         //TODO
 #ifdef BUSKMAGIC_LIBUSB
-        //usb_set_debug(2);
+        usb_set_debug(1);
         usb_init();
 #endif
         RefreshDeviceList();
