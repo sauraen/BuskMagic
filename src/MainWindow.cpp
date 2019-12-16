@@ -1,17 +1,17 @@
 /*
 * BuskMagic - Live lighting control system
 * Copyright (C) 2019 Sauraen
-* 
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-* 
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-* 
+*
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
@@ -47,10 +47,10 @@ public:
         setSize(contents->getWidth(), contents->getHeight());
         //Setup for peer
         setOpaque(true);
-        addToDesktop(ComponentPeer::windowHasTitleBar | 
-            (resizable ? (ComponentPeer::windowIsResizable 
+        addToDesktop(ComponentPeer::windowHasTitleBar |
+            (resizable ? (ComponentPeer::windowIsResizable
                 | ComponentPeer::windowHasMaximiseButton) : 0)
-            | ComponentPeer::windowHasCloseButton 
+            | ComponentPeer::windowHasCloseButton
             | ComponentPeer::windowHasDropShadow);
         //Peer
         ComponentPeer *peer = getPeer();
@@ -77,7 +77,7 @@ public:
         setVisible(true);
         TopLevelWindow *tlw = TopLevelWindow::getActiveTopLevelWindow();
         if(tlw != nullptr){
-            setCentrePosition(tlw->getPosition() + 
+            setCentrePosition(tlw->getPosition() +
                 Point<int>(tlw->getWidth()/2, tlw->getHeight()/2));
         }
     }
@@ -85,7 +85,7 @@ public:
 };
 
 namespace {
-    std::unique_ptr<SubWindow> artnetWindow, usbdmxWindow, midiWindow, patcherWindow, 
+    std::unique_ptr<SubWindow> artnetWindow, usbdmxWindow, midiWindow, patcherWindow,
         controllersWindow, statesWindow, timingWindow;
 }
 
@@ -183,7 +183,7 @@ bool MainWindow::SaveInternal(File showfile){
     showfile_node.addChild(sw->Save(), -1, nullptr);
     TimingWindow *tw = dynamic_cast<TimingWindow*>(timingWindow->contents.get());
     showfile_node.addChild(tw->Save(), -1, nullptr);
-    return VT_Save(showfile_node, showfile, "bmshow", "BuskMagic Showfile"); 
+    return VT_Save(showfile_node, showfile, "bmshow", "BuskMagic Showfile");
 }
 void MainWindow::timerCallback(){
     File backupdir = GetBackupDir();
@@ -201,14 +201,14 @@ void MainWindow::timerCallback(){
     }
 }
 
-MainWindow::MainWindow() 
+MainWindow::MainWindow()
     : DocumentWindow("BuskMagic", LFWindowColor(), DocumentWindow::allButtons, true)
 {
     LS_LOCK_WRITE();
     SeedRNG();
     setUsingNativeTitleBar(true);
     setResizable(true, false);
-    centreWithSize(getWidth(), getHeight());
+    centreWithSize(800, 600);
     app_icon = new Image(ImageCache::getFromMemory(BinaryData::logo_128_png, BinaryData::logo_128_pngSize));
     setIcon(*app_icon);
     getPeer()->setIcon(*app_icon);
@@ -217,7 +217,6 @@ MainWindow::MainWindow()
     #ifdef JUCE_MAC
         MenuBarModel::setMacMainMenu(mainmenus.get());
     #endif
-    setSize(800, 600);
     //Load backed up file
     bool flag = false;
     do{
@@ -226,7 +225,7 @@ MainWindow::MainWindow()
                 File::findFiles | File::ignoreHiddenFiles, false, "*.bmshow");
         if(backupfiles.size() == 0) break;
         File newest = FindOldestNewestFile(backupfiles, true);
-        if(!NativeMessageBox::showYesNoBox(AlertWindow::WarningIcon, "BuskMagic", 
+        if(!NativeMessageBox::showYesNoBox(AlertWindow::WarningIcon, "BuskMagic",
             "It looks like BuskMagic did not shut down correctly, and a backup showfile\n"
             "was saved. Load this showfile?")) break;
         if(!LoadInternal(newest, false)) break;
@@ -299,7 +298,7 @@ PopupMenu MainMenus::getMenuForIndex(int topLevelMenuIndex, const String &menuNa
         menu.addItem(0x9001, "Error!");
         return menu;
     }
-    
+
 }
 
 void MainMenus::menuItemSelected(int menuItemID, int topLevelMenuIndex){

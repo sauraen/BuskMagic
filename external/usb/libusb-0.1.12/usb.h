@@ -238,6 +238,7 @@ struct usb_bus;
  * To maintain compatibility with applications already built with libusb,
  * we must only add entries to the end of this structure. NEVER delete or
  * move members and only change types if you really know what you're doing.
+ * lol nope - Sauraen
  */
 struct usb_device {
   struct usb_device *next, *prev;
@@ -251,7 +252,7 @@ struct usb_device {
 
   void *dev;		/* Darwin support */
 
-  u_int8_t devnum;
+  u_int32_t devnum; /* Modified by Sauraen */
 
   unsigned char num_children;
   struct usb_device **children;

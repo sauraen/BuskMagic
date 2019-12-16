@@ -1007,7 +1007,7 @@ int usb_os_find_busses(struct usb_bus **busses)
       USB_ERROR(-ENOMEM);
 
     sprintf(buf, "%03i", i++);
-    bus->location = location;
+      bus->location = location >> 24; /* Changed by Sauraen */
 
     strncpy(bus->dirname, buf, sizeof(bus->dirname) - 1);
     bus->dirname[sizeof(bus->dirname) - 1] = 0;
@@ -1067,7 +1067,7 @@ int usb_os_find_devices(struct usb_bus *bus, struct usb_device **devices)
       fprintf(stderr, "usb_os_find_devices: Found USB device at location 0x%08lx\n", location);
 
     /* first byte of location appears to be associated with the device's bus */
-    if (location >> 24 == bus_loc >> 24) {
+    if (location >> 24 == bus_loc) { /* Modified by Sauraen */
       struct usb_device *dev;
 
       dev = calloc(1, sizeof(struct usb_device));
@@ -1087,6 +1087,7 @@ int usb_os_find_devices(struct usb_bus *bus, struct usb_device **devices)
 
       dev->dev = (USBDeviceAddress *)malloc(4);
       memcpy(dev->dev, &location, 4);
+        dev->devnum = location & 0x00FFFFFF; /* Added by Sauraen */
 
       LIST_ADD(fdev, dev);
 

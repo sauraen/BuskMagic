@@ -50,8 +50,11 @@ static String GetUSBErrorString(int res){
     return "Unknown Error";
 }
 
-static String GetUSBStringEnglish(usb_dev_handle *device, int str_index){
-    if(str_index < 0 || str_index > 0xFF) return "Internal Error";
+static bool GetUSBStringEnglish(usb_dev_handle *device, int str_index, String &str_out){
+    if(str_index < 0 || str_index > 0xFF){
+        str_out = "Internal Error";
+        return false;
+    }
     //USB strings are UTF-16 encoded; fortunately Juce supports this
     uint8_t *recvbuf = new uint8_t[256];
     int res = usb_control_msg(device, USB_ENDPOINT_IN, USB_REQ_GET_DESCRIPTOR,
@@ -59,11 +62,14 @@ static String GetUSBStringEnglish(usb_dev_handle *device, int str_index){
             (char*)recvbuf, 256, USB_TIMEOUT_DISCOVER);
     //res = number of bytes read
     if(res <= 1){
-        if(res >= 0) return "(Blank)";
-        return GetUSBErrorString(res);
+        str_out = (res >= 0) ? "(Blank)" : GetUSBErrorString(res);
+        return false;
     }
     //Byte 1: descriptor type
-    if(recvbuf[1] != USB_DT_STRING) return "Data Error";
+    if(recvbuf[1] != USB_DT_STRING){
+        str_out = "Data Error";
+        return false;
+    }
     //Byte 0: data length
     if(res != recvbuf[0]){
         std::cout << "Warning, USB string query received wrong length!\n";
@@ -76,7 +82,8 @@ static String GetUSBStringEnglish(usb_dev_handle *device, int str_index){
     res = (res-2) >> 1; //Now number of chars
     //Remaining bytes are the string
     CharPointer_UTF16 strptr16 = CharPointer_UTF16((int16*)(&recvbuf[2]));
-    return String(strptr16, res);
+    str_out = String(strptr16, res);
+    return true;
 }
 
 #endif
@@ -104,11 +111,11 @@ namespace USBDMXSystem {
     struct USBDevice {
         String manu, product, sn;
         uint16_t vid, pid;
-        uint32_t bus;
-        uint8_t devnum;
+        int32_t bus;
+        uint32_t devnum;
         UDType type;
 
-        USBDevice(uint16_t v, uint16_t p, uint32_t b, uint8_t d)
+        USBDevice(uint16_t v, uint16_t p, int32_t b, uint32_t d)
                 : vid(v), pid(p), bus(b), devnum(d){
             manu = "Could not read\n";
             product = "Could not read\n";
@@ -123,8 +130,8 @@ namespace USBDMXSystem {
         String status;
         uint16_t uni;
         uint16_t chans;
-        uint32_t bus;
-        uint8_t devnum;
+        int32_t bus;
+        uint32_t devnum;
         void *devhandle;
 
         UDSlot(){
@@ -144,7 +151,7 @@ namespace USBDMXSystem {
     String DeviceDescription(uint32_t d){
         DEVICES_LOCK_READ();
         if(d >= devices.size()) return "ERROR";
-        return "Bus " + String(devices[d].bus) + " device " + String(devices[d].devnum)
+        return "Bus " + String(devices[d].bus) + " device " + hex(devices[d].devnum, 24)
             + ": " + hex(devices[d].vid) + ":" + hex(devices[d].pid) + " " + devices[d].product;
     }
     String DeviceFullInfo(uint32_t d){
@@ -166,15 +173,19 @@ namespace USBDMXSystem {
         usb_find_busses();
         usb_find_devices();
         for(usb_bus *bus = usb_busses; bus != nullptr; bus = bus->next){
-            uint32_t busnum = bus->location;
+            int32_t busnum = bus->location;
             for(struct usb_device *dev = bus->devices; dev != nullptr; dev = dev->next){
                 USBDevice d(dev->descriptor.idVendor, dev->descriptor.idProduct,
                         busnum, dev->devnum);
                 usb_dev_handle *handle = usb_open(dev);
                 if(handle != nullptr){
-                    d.manu = GetUSBStringEnglish(handle, dev->descriptor.iManufacturer);
-                    d.product = GetUSBStringEnglish(handle, dev->descriptor.iProduct);
-                    d.sn = GetUSBStringEnglish(handle, dev->descriptor.iSerialNumber);
+                    String str;
+                    GetUSBStringEnglish(handle, dev->descriptor.iManufacturer, str);
+                    d.manu = str;
+                    GetUSBStringEnglish(handle, dev->descriptor.iProduct, str);
+                    d.product = str;
+                    GetUSBStringEnglish(handle, dev->descriptor.iSerialNumber, str);
+                    d.sn = str;
                     if(d.manu == "www.anyma.ch" && d.product == "uDMX"){
                         d.type = UDType::uDMX;
                     }
@@ -194,12 +205,18 @@ namespace USBDMXSystem {
             return;
         }
         for(usb_bus *bus = usb_busses; bus != nullptr; bus = bus->next){
-            uint32_t busnum = bus->location;
+            int32_t busnum = bus->location;
             for(struct usb_device *dev = bus->devices; dev != nullptr; dev = dev->next){
                 if(busnum != devices[d].bus || dev->devnum != devices[d].devnum) continue;
                 usb_dev_handle *handle = usb_open(dev);
                 if(handle == nullptr){
-                    std::cout << "Could not reopen bus " << busnum << " device " << (int)dev->devnum << "!\n";
+                    std::cout << "Could not reopen bus " << busnum << " device " << hex(dev->devnum, 24) << "!\n";
+                    return;
+                }
+                String str;
+                if(!GetUSBStringEnglish(handle, dev->descriptor.iManufacturer, str)){
+                    WarningBox("Error mapping device!");
+                    usb_close(handle);
                     return;
                 }
                 slots[s].type = devices[d].type;
@@ -291,7 +308,7 @@ namespace USBDMXSystem {
         if(slots[s].devhandle == nullptr){
             ret += " (unmapped)";
         }else{
-            ret += "Bus " + String(slots[s].bus) + " Dev " + String(slots[s].devnum);
+            ret += "Bus " + String(slots[s].bus) + " dev " + hex(slots[s].devnum, 24);
         }
         return ret;
     }
@@ -371,7 +388,7 @@ namespace USBDMXSystem {
         loadmapmodetype = us_node.isValid() ? (bool)us_node.getProperty(idLoadMapMode, false) : false;
         //TODO
 #ifdef BUSKMAGIC_LIBUSB
-        usb_set_debug(1);
+        //usb_set_debug(2);
         usb_init();
 #endif
         RefreshDeviceList();
