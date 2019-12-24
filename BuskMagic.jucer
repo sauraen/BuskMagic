@@ -132,7 +132,7 @@
   </MAINGROUP>
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX" bigIcon="bWpivK" smallIcon="AaEccO"
-               extraDefs="BUSKMAGIC_LIBUSB=1">
+               extraDefs="BUSKMAGIC_LIBUSB=1&#10;BUSKMAGIC_SERIAL=1">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" osxArchitecture="64BitIntel"/>
         <CONFIGURATION isDebug="0" name="Release" osxArchitecture="64BitIntel"/>
@@ -168,7 +168,7 @@
     </VS2017>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" smallIcon="AaEccO" bigIcon="bWpivK"
                 extraCompilerFlags="-Wall -Wextra -Wno-sign-compare" externalLibraries="usb"
-                extraDefs="BUSKMAGIC_LIBUSB=1">
+                extraDefs="BUSKMAGIC_LIBUSB=1&#10;BUSKMAGIC_SERIAL=1">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug"/>
         <CONFIGURATION isDebug="0" name="Release"/>

@@ -54,7 +54,7 @@ USBDMXSetup::USBDMXSetup ()
     //[/Constructor_pre]
 
     lblDevices.reset (new Label ("lblDevices",
-                                 TRANS("USB devices (readable by BuskMagic):")));
+                                 TRANS("Devices (readable by BuskMagic):")));
     addAndMakeVisible (lblDevices.get());
     lblDevices->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
     lblDevices->setJustificationType (Justification::centredLeft);
@@ -490,10 +490,9 @@ BEGIN_JUCER_METADATA
   <BACKGROUND backgroundColour="ff323e44"/>
   <LABEL name="lblDevices" id="af3c963fa34df561" memberName="lblDevices"
          virtualName="" explicitFocusOrder="0" pos="72 0 424 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="USB devices (readable by BuskMagic):"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="15.0" kerning="0.0" bold="0"
-         italic="0" justification="33"/>
+         edBkgCol="0" labelText="Devices (readable by BuskMagic):" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="btnMap" id="9ef5ee916134b79a" memberName="btnMap" virtualName=""
               explicitFocusOrder="0" pos="0 152 72 24" buttonText="Map &#8595;"
               connectedEdges="4" needsCallback="1" radioGroupId="0"/>

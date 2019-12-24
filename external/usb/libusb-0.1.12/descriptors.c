@@ -63,7 +63,7 @@ int usb_parse_descriptor(unsigned char *source, char *description, void *dest)
     }
   }
 
-  return sp - source;
+  return (int)sp - (int)source;
 }
 
 /*
