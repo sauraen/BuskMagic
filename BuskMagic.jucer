@@ -16,6 +16,8 @@
       <GROUP id="{E2D2E361-BE7B-6D4F-0D41-F7DB50F45452}" name="gui">
         <GROUP id="{EA8D599D-25E4-CBA5-6611-0959C1C7171B}" name="Controller">
           <FILE id="bxKqN5" name="CCKnob.h" compile="0" resource="0" file="src/gui/Controller/CCKnob.h"/>
+          <FILE id="QKIpZQ" name="ControllerCanvas.cpp" compile="1" resource="0"
+                file="src/gui/Controller/ControllerCanvas.cpp"/>
           <FILE id="gVhDW5" name="ControllerCanvas.h" compile="0" resource="0"
                 file="src/gui/Controller/ControllerCanvas.h"/>
           <FILE id="zTlkk0" name="ControllerCmps.cpp" compile="1" resource="0"

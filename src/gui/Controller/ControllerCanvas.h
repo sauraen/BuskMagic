@@ -25,14 +25,19 @@
 class ControllerCanvas : public Component
 {
 public:
+    static const int size = 2000;
+    static ControllerCanvas *canvas_static;
+
     ControllerCanvas() {
+        jassert(canvas_static == nullptr);
+        canvas_static = this;
         setOpaque(true);
-        setSize(2000, 2000);
+        setSize(size, size);
         refreshComponents();
     }
 
     ~ControllerCanvas() {
-
+        canvas_static = nullptr;
     }
 
     void paint(Graphics &g) override {
@@ -46,6 +51,14 @@ public:
 
     void mouseDrag(const MouseEvent &event) override {
         findParentComponentOfClass<Viewport>()->setViewPosition(dragbegin_vp - event.getOffsetFromDragStart());
+    }
+
+    Point<int> GetCenterPoint() {
+        Viewport *vp = findParentComponentOfClass<Viewport>();
+        Point<int> ret = vp->getViewPosition();
+        ret.x += vp->getWidth() / 2;
+        ret.y += vp->getHeight() / 2;
+        return ret;
     }
 
     void addComp(Controller *c){

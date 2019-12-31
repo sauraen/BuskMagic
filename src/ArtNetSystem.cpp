@@ -1,17 +1,17 @@
 /*
 * BuskMagic - Live lighting control system
 * Copyright (C) 2019 Sauraen
-* 
+*
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-* 
+*
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-* 
+*
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
@@ -23,7 +23,7 @@
 #include <cstring>
 
 namespace ArtNetSystem {
-    
+
     static ReadWriteLock devices_mutex;
     //These are intentionally named the same so you cannot start with a read
     //lock and escalate to a write lock
@@ -46,7 +46,7 @@ namespace ArtNetSystem {
         else if(style == Style::config)     ret += "C";
         else if(style == Style::visual)     ret += "V";
         else                                ret += "X";
-        ret += String::formatted(" %03d.%03d.%03d.%03d ", 
+        ret += String::formatted(" %03d.%03d.%03d.%03d ",
             ip.address[0], ip.address[1], ip.address[2], ip.address[3]);
         ret += hex(bindindex) + " ";
         ret += hex(map ? map_net : net) + ".";
@@ -67,7 +67,7 @@ namespace ArtNetSystem {
         ret += " " + shortname;
         return ret;
     }
-    
+
     String ArtNetDevice::GetDescription(){
         DEVICES_LOCK_READ();
         String ret;
@@ -86,25 +86,25 @@ namespace ArtNetSystem {
         else                                ret += "Error";
         return ret;
     }
-    
+
     ArtNetDevice::ArtNetDevice() : mode(Mode::manual), style(Style::node),
         status{0xFF, 0xFF}, oem(0x0000), esta(0x4F4E), fw(0x0000),
-        net(0x00), subnet(0x0), 
+        net(0x00), subnet(0x0),
         inuni{0x7F, 0x7F, 0x7F, 0x7F}, outuni{0x7F, 0x7F, 0x7F, 0x7F},
-        map(false), map_net(0x00), map_subnet(0x0), 
+        map(false), map_net(0x00), map_subnet(0x0),
         map_inuni{0x7F, 0x7F, 0x7F, 0x7F}, map_outuni{0x7F, 0x7F, 0x7F, 0x7F},
         bindindex(0), artdmx_sequence(1), ip(), mac(),
-        shortname("<Short name>"), 
-        longname("<Device long name>"), 
+        shortname("<Short name>"),
+        longname("<Device long name>"),
         nodereport("(Have not received ArtPollReply from this device)") {}
-        
+
     #define LOAD_FOUR_UNI_VALUES(idSomething, somethinguni) { \
         ValueTree temp = dev_node.getChildWithName(idSomething); \
         if(!temp.isValid()) { jassertfalse; return; } \
         if(!(temp.getNumChildren() == 4)) { jassertfalse; return; } \
         for(int i=0; i<4; ++i) somethinguni[i] = (int)temp.getChild(i).getProperty(idUniverse, 0x7F); \
     } REQUIRESEMICOLON
-    
+
     ArtNetDevice::ArtNetDevice(ValueTree dev_node) : ArtNetDevice() {
         if(!dev_node.isValid()) { jassertfalse; return; }
         mode = static_cast<Mode>((uint8_t)(int)dev_node.getProperty(idMode, 0));
@@ -123,7 +123,7 @@ namespace ArtNetSystem {
         shortname = dev_node.getProperty(idShortName, "<Short name>").toString();
         longname = dev_node.getProperty(idLongName, "<Device long name>").toString();
     }
-    
+
     #define SAVE_FOUR_UNI_VALUES(idSomething, somethinguni) { \
         ValueTree temp(idSomething); \
         for(int i=0; i<4; ++i){ \
@@ -133,7 +133,7 @@ namespace ArtNetSystem {
         } \
         ret.addChild(temp, -1, nullptr); \
     } REQUIRESEMICOLON
-    
+
     ValueTree ArtNetDevice::Save(){
         ValueTree ret(idArtNetDevice);
         ret.setProperty(idMode, (int)static_cast<uint8_t>(mode), nullptr);
@@ -153,9 +153,9 @@ namespace ArtNetSystem {
         ret.setProperty(idLongName, longname, nullptr);
         return ret;
     }
-    
+
     static OwnedArray<ArtNetDevice> devices;
-    
+
     int NumDevices() { return devices.size(); }
     ArtNetDevice *GetDevice(int d) {
         DEVICES_LOCK_READ();
@@ -166,7 +166,7 @@ namespace ArtNetSystem {
         }
         return devices[d];
     }
-    
+
     void AddBlankDevice(){
         DEVICES_LOCK_WRITE();
         devices.add(new ArtNetDevice());
@@ -175,7 +175,7 @@ namespace ArtNetSystem {
         DEVICES_LOCK_WRITE();
         devices.remove(d);
     }
-    
+
     void GetNeededUniversesSorted(Array<uint16_t> &list){
         DEVICES_LOCK_READ();
         DefaultElementComparator<uint16_t> sorter;
@@ -197,7 +197,7 @@ namespace ArtNetSystem {
             }
         }
     }
-    
+
     uint32_t ParseUniverseText(String unitxt){
         StringArray unis = StringArray::fromTokens(unitxt, ",", "");
         if(unis.size() != 4) return 0xFFFFFFFF;
@@ -243,12 +243,12 @@ namespace ArtNetSystem {
         }
         return ret;
     }
-    
+
     static DatagramSocket *sendsock = nullptr;
     static CriticalSection sendsock_mutex;
-    
-    static void SendArtNet(IPAddress dest, uint16_t opcode, const uint8_t *data, 
-            int dlen, bool packetHasProtVer = true, 
+
+    static void SendArtNet(IPAddress dest, uint16_t opcode, const uint8_t *data,
+            int dlen, bool packetHasProtVer = true,
             ArtNetDevice *optionalDevForStatus = nullptr){
         const ScopedLock sendsocklock(sendsock_mutex);
         int hlen = packetHasProtVer ? 12 : 10;
@@ -291,8 +291,8 @@ namespace ArtNetSystem {
         }
         delete[] buf;
     }
-    
-    void ChangeDeviceUniverses(int d, uint8_t net, uint8_t subnet, 
+
+    void ChangeDeviceUniverses(int d, uint8_t net, uint8_t subnet,
         const uint8_t *inuni, const uint8_t *outuni){
         DEVICES_LOCK_READ();
         ArtNetDevice *dev = devices[d];
@@ -317,7 +317,7 @@ namespace ArtNetSystem {
         SendArtNet(dev->ip, 0x6000, data, 95, true, dev);
         delete[] data;
     }
-    
+
     void SendDMX512(uint16_t universe, const uint8_t *buf512){
         DEVICES_LOCK_READ();
         uint8_t *data = new uint8_t[518];
@@ -333,7 +333,7 @@ namespace ArtNetSystem {
                         flag = true;
                         send_universe = (uint16_t)dev->net << 8;
                         send_universe |= dev->subnet << 4;
-                        send_universe |= dev->outuni[i] <= 0xF ? 
+                        send_universe |= dev->outuni[i] <= 0xF ?
                             dev->outuni[i] : dev->map_outuni[i];
                         break;
                     }
@@ -363,17 +363,17 @@ namespace ArtNetSystem {
         }
         delete[] data;
     }
-    
+
     static int pollmode; //0: disabled 1: static 2: DHCP
     int GetPollMode() { return pollmode; }
     void SetPollMode(int pmode) { pollmode = pmode; }
-    
+
     const static IPAddress staticBroadcast(2, 255, 255, 255);
     static IPAddress dhcpBroadcast;
     IPAddress GetDHCPBroadcastAddress(){
         return dhcpBroadcast;
     }
-    
+
     static bool isIPInSubnet(const IPAddress &target, const IPAddress &subnet){
         bool snmode = true;
         for(int i=3; i>=0; --i){
@@ -382,7 +382,7 @@ namespace ArtNetSystem {
         }
         return true;
     }
-    
+
     class Poller : public Timer {
     public:
         Poller() { startTimer(2500); }
@@ -402,7 +402,7 @@ namespace ArtNetSystem {
         }
     };
     static Poller *poller = nullptr;
-    
+
     void SendArtPollReply(IPAddress senderIP){
         IPAddress dest;
         if(pollmode == 2){
@@ -430,7 +430,7 @@ namespace ArtNetSystem {
         data[8] = 0x00; //NetSwitch
         data[9] = 0x00; //SubSwitch
         data[10] = 0xFF; //OEM HL
-        data[11] = 0xFF; 
+        data[11] = 0xFF;
         data[12] = 0; //UBEA
         data[13] = 0b11010000; //Status1
         data[14] = 0x00; //ESTA LH
@@ -462,7 +462,7 @@ namespace ArtNetSystem {
         }
         delete[] data;
     }
-    
+
     void ReceivedArtPollReply(IPAddress senderIP, uint8_t *pkt, int len){
         if(len < 213){
             std::cout << "ReceivedArtPollReply: packet too short!\n";
@@ -510,7 +510,7 @@ namespace ArtNetSystem {
         dev->bindindex = pkt[211];
         dev->status[1] = pkt[212];
     }
-    
+
     class ArtNetReceiver : public Thread {
     public:
         ArtNetReceiver() : Thread("ArtNetReceiver") {}
@@ -560,11 +560,11 @@ namespace ArtNetSystem {
         }
     };
     static ArtNetReceiver *receiver = nullptr;
-    
+
     void Init(ValueTree as_node){
         DEVICES_LOCK_WRITE();
         if(sendsock != nullptr){
-            std::cout << "ArtNetSystem nultiply initted!\n";
+            std::cout << "ArtNetSystem multiply initted!\n";
             jassertfalse;
             return;
         }
@@ -596,7 +596,7 @@ namespace ArtNetSystem {
         delete sendsock; sendsock = nullptr;
         devices.clear();
     }
-    
+
     ValueTree Save(){
         DEVICES_LOCK_READ();
         ValueTree ret(idArtNetSystem);
@@ -606,5 +606,5 @@ namespace ArtNetSystem {
         }
         return ret;
     }
-    
+
 }

@@ -57,6 +57,10 @@
 			isa = PBXBuildFile;
 			fileRef = 1EB0C5A4879A3BC88B0DDE41;
 		};
+		80B6891D5E545CA62748F793 = {
+			isa = PBXBuildFile;
+			fileRef = 2DFC44586C3F378E040800C1;
+		};
 		5D8CD718C1F02EA85BBFACE8 = {
 			isa = PBXBuildFile;
 			fileRef = 2228834872E4324176A77A1D;
@@ -388,6 +392,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = AppConfig.h;
 			path = ../../JuceLibraryCode/AppConfig.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		2DFC44586C3F378E040800C1 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ControllerCanvas.cpp;
+			path = ../../src/gui/Controller/ControllerCanvas.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		2EB33737E6A339CFF1B6777B = {
@@ -1006,6 +1017,7 @@
 			isa = PBXGroup;
 			children = (
 				C40A6BCF939DD38BF25B1CEC,
+				2DFC44586C3F378E040800C1,
 				448F5F68DF58CBEB91ECDC49,
 				2228834872E4324176A77A1D,
 				B5F1FB9F187E24A131C3CC0C,
@@ -1426,6 +1438,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				17CA2AA161C4E37F5AA3C8FD,
+				80B6891D5E545CA62748F793,
 				5D8CD718C1F02EA85BBFACE8,
 				A2388BD606A8CE3795A82AB1,
 				2BAFB1621A32991C31661EA7,

@@ -69,6 +69,7 @@ endif
 
 OBJECTS_APP := \
   $(JUCE_OBJDIR)/bm_usb_8fdef3d4.o \
+  $(JUCE_OBJDIR)/ControllerCanvas_cfc4a03d.o \
   $(JUCE_OBJDIR)/ControllerCmps_e940cc52.o \
   $(JUCE_OBJDIR)/ImageImporter_9dee1ece.o \
   $(JUCE_OBJDIR)/CMY_3f3eb7e2.o \
@@ -130,6 +131,11 @@ $(JUCE_OBJDIR)/bm_usb_8fdef3d4.o: ../../external/usb/bm_usb.c
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling bm_usb.c"
 	$(V_AT)$(CC) $(JUCE_CFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/ControllerCanvas_cfc4a03d.o: ../../src/gui/Controller/ControllerCanvas.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ControllerCanvas.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/ControllerCmps_e940cc52.o: ../../src/gui/Controller/ControllerCmps.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)

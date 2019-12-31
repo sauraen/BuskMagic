@@ -94,11 +94,13 @@ Controller::Controller()
 
 Controller::~Controller() {}
 Controller::Controller(const Controller &other) : MIDIUser(other),
-      pos(other.pos + Point<int>(100,100)), nostate(other.nostate),
+      pos(other.pos + Point<int>(32,16)), nostate(other.nostate),
       name(other.name + " 2"), uuid(GenerateUUID()), group(other.group),
       color(other.color), groupColor(other.groupColor),
       states_enabled(other.states_enabled), component(nullptr)
 {
+    if(pos.x + 50 > ControllerCanvas::size) pos.x = other.pos.x - 16;
+    if(pos.y + 50 > ControllerCanvas::size) pos.y = other.pos.y - 32;
     if(group > 0){
         for(int i=0; i<=ControllerSystem::NumStates(); ++i){
             states_enabled.set(i, false);
@@ -193,8 +195,7 @@ void Controller::SetGroupColor(Colour col){
             ctrlr->RefreshComponent();
         }
         //This is only called on the message thread
-        ControllerCanvas *canvas = GetCanvas();
-        if(canvas != nullptr) canvas->repaint();
+        ControllerCanvas::canvas_static->repaint();
     }else{
         RefreshComponent();
     }
@@ -278,12 +279,6 @@ void Controller::RegisterComponent(ControllerCmp *cmp){
 }
 void Controller::RefreshComponent(){
     component->notifyRepaint();
-}
-ControllerCanvas *Controller::GetCanvas(){
-    LS_LOCK_READ();
-    if(component == nullptr) return nullptr;
-    ControllerCanvas *canvas = component->findParentComponentOfClass<ControllerCanvas>();
-    return canvas;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -571,10 +566,12 @@ namespace ControllerSystem {
         }
         return ctrlrs[i];
     }
-    void AddInternal(Controller *c){
+    void AddInternal(Controller *c, bool totallynew){
         LS_LOCK_WRITE();
-        if(ctrlrs.size() >= 1){
-            c->pos = ctrlrs[ctrlrs.size()-1]->pos + Point<int>(100, 100);
+        if(totallynew){
+            c->pos = ControllerCanvas::canvas_static->GetCenterPoint();
+            c->pos.x = ((c->pos.x - 32) >> 3) << 3;
+            c->pos.y = ((c->pos.y - 32) >> 3) << 3;
         }
         ctrlrs.add(c);
         RefreshMatrixEditor(true);
@@ -583,7 +580,7 @@ namespace ControllerSystem {
         static_assert(std::is_base_of<Controller, CTRLR>::value,
             "Invalid use of AddController()!");
         CTRLR *c = new CTRLR();
-        AddInternal(c);
+        AddInternal(c, true);
         return c;
     }
     template SimpleController *AddController<SimpleController>();
@@ -591,7 +588,7 @@ namespace ControllerSystem {
     template ModulatorController *AddController<ModulatorController>();
     Controller *DuplicateController(Controller *orig){
         Controller *n = orig->clone();
-        AddInternal(n);
+        AddInternal(n, false);
         return n;
     }
     void RemoveController(Controller *ctrlr){

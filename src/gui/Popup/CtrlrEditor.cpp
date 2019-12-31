@@ -217,19 +217,15 @@ void CtrlrEditor::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == btnDuplicate.get())
     {
         //[UserButtonCode_btnDuplicate] -- add your button handler code here..
-        ControllerCanvas *canvas = controller->GetCanvas();
-        if(canvas == nullptr) return;
-        canvas->addComp(ControllerSystem::DuplicateController(controller));
-        canvas->grabKeyboardFocus(); //This will take focus away from the popup, which will lead to it closing
+        ControllerCanvas::canvas_static->addComp(ControllerSystem::DuplicateController(controller));
+        ControllerCanvas::canvas_static->grabKeyboardFocus(); //This will take focus away from the popup, which will lead to it closing
         //[/UserButtonCode_btnDuplicate]
     }
     else if (buttonThatWasClicked == btnDelete.get())
     {
         //[UserButtonCode_btnDelete] -- add your button handler code here..
-        ControllerCanvas *canvas = controller->GetCanvas();
-        if(canvas == nullptr) return;
-        canvas->deleteComp(controller);
-        canvas->grabKeyboardFocus(); //This will take focus away from the popup, which will lead to it closing
+        ControllerCanvas::canvas_static->deleteComp(controller);
+        ControllerCanvas::canvas_static->grabKeyboardFocus(); //This will take focus away from the popup, which will lead to it closing
         //[/UserButtonCode_btnDelete]
     }
 

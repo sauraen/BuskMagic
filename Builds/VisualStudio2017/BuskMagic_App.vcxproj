@@ -139,6 +139,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\external\usb\bm_usb.c"/>
+    <ClCompile Include="..\..\src\gui\Controller\ControllerCanvas.cpp"/>
     <ClCompile Include="..\..\src\gui\Controller\ControllerCmps.cpp"/>
     <ClCompile Include="..\..\src\gui\Controller\ImageImporter.cpp"/>
     <ClCompile Include="..\..\src\gui\FixParamEd\ColorMode\CMY.cpp"/>

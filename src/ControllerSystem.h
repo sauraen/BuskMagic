@@ -55,7 +55,6 @@ private:
 };
 
 class ControllerCmp;
-class ControllerCanvas;
 
 class Controller : public MIDIUser {
 public:
@@ -95,7 +94,6 @@ public:
 
     void RegisterComponent(ControllerCmp *cmp);
     void RefreshComponent();
-    ControllerCanvas *GetCanvas();
 
     virtual void RemoveAllMagicValuesForChannel(const Channel *chn) = 0;
 
