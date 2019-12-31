@@ -23,6 +23,7 @@
 #include "gui/MatrixEditor.h"
 
 int PhasorEditor::snapangles = 7;
+static const float middlezone = 0.15f;
 
 PhasorEditor::PhasorEditor(void *data) : gml(*this) {
     Startup *startup = (Startup*)data;
@@ -33,6 +34,7 @@ PhasorEditor::PhasorEditor(void *data) : gml(*this) {
     Desktop::getInstance().addGlobalMouseListener(&gml);
     initialDragDone = false;
     enteredMiddleZone = false;
+    firstTimeOut = (phasor->mag >= 0.0f && phasor->mag < middlezone);
     exitOnUp = true;
     //
     txtMag.reset(new TextEditor("txtMag"));
@@ -180,6 +182,7 @@ bool PhasorEditor::keyPressed(const KeyPress &key){
 void PhasorEditor::mouseDrag(const MouseEvent &event){
     if(invalidated) return;
     if(!isRightClick(event)) return;
+    //Basic position
     Point<float> center = (getScreenPosition() + Point<int>(70, 70)).toFloat();
     Point<float> end = event.getScreenPosition().toFloat();
     float mag = center.getDistanceFrom(end);
@@ -190,10 +193,26 @@ void PhasorEditor::mouseDrag(const MouseEvent &event){
         mag = 0.0f;
         angle = 0.0f;
     }
-    //Determine whether to use negative magnitude mode
+    if(angle < 0.0f) angle += 1.0f;
+    jassert(angle >= 0.0f && angle < 1.0f);
+    //Snapping
+    if(!event.mods.isShiftDown()){
+        const float snapradius_mag = 0.08f;
+        const float snapradius_angle = 0.02f;
+        float snapped_mag = 1.0f;
+        if(std::abs(mag - snapped_mag) <= snapradius_mag) mag = snapped_mag;
+        float snapped_angle = std::floor((angle * (float)snapangles) + 0.5) / (float)snapangles;
+        if(std::abs(angle - snapped_angle) <= snapradius_angle) angle = snapped_angle;
+        if(angle >= 1.0f) angle -= 1.0f;
+    }
+    jassert(angle >= 0.0f && angle < 1.0f);
+    //Negative magnitude mode
     bool negmag = phasor->mag < 0;
-    const float middlezone = 0.15f;
-    if(!enteredMiddleZone){
+    if(firstTimeOut){
+        if(mag >= middlezone){
+            firstTimeOut = false;
+        }
+    }else if(!enteredMiddleZone){
         if(mag < middlezone){
             enteredMiddleZone = true;
             middleZoneAngleEntered = angle;
@@ -219,17 +238,8 @@ void PhasorEditor::mouseDrag(const MouseEvent &event){
         mag = -mag;
         angle += 0.5f;
     }
-    if(angle < 0.0f) angle += 1.0f;
     if(angle >= 1.0f) angle -= 1.0f;
-    if(!event.mods.isShiftDown()){
-        const float snapradius_mag = 0.08f;
-        const float snapradius_angle = 0.02f;
-        float snapped_mag = 1.0f;
-        if(std::abs(mag - snapped_mag) <= snapradius_mag) mag = snapped_mag;
-        float snapped_angle = std::floor((angle * (float)snapangles) + 0.5) / (float)snapangles;
-        if(std::abs(angle - snapped_angle) <= snapradius_angle) angle = snapped_angle;
-        if(angle >= 1.0f) angle -= 1.0f;
-    }
+    jassert(angle >= 0.0f && angle < 1.0f);
     phasor->mag = mag;
     phasor->angle = angle;
     txtMag->setText(LightingSystem::ValueToString(phasor->mag));

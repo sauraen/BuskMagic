@@ -22,7 +22,7 @@
 struct Phasor;
 class Channel;
 
-class PhasorEditor : public Component, 
+class PhasorEditor : public Component,
                      public TextEditor::Listener,
                      public Button::Listener
 {
@@ -32,19 +32,19 @@ public:
         Channel *channel;
         Startup(Phasor *p, Channel *c) : phasor(p), channel(c) {}
     };
-    
+
     PhasorEditor(void *data);
     ~PhasorEditor();
 
     void paint (Graphics&) override;
     void resized() override;
-    
+
     void textEditorTextChanged(TextEditor &editorThatWasChanged) override;
     void buttonClicked(Button* buttonThatWasClicked) override;
-    
+
     void globalMouseDrag(const MouseEvent &event);
     void globalMouseUp(const MouseEvent &event);
-    
+
     void mouseDrag(const MouseEvent &event) override;
     void focusGained(FocusChangeType cause) override;
     bool keyPressed(const KeyPress &key) override;
@@ -53,10 +53,10 @@ private:
     Phasor *phasor;
     Channel *channel;
     bool invalidated;
-    
+
     std::unique_ptr<TextEditor> txtMag;
     std::unique_ptr<TextEditor> txtAngle;
-    
+
     class GlobalMouseListener : public MouseListener {
     public:
         GlobalMouseListener(PhasorEditor &p) : parent(p) {}
@@ -67,14 +67,14 @@ private:
     };
     GlobalMouseListener gml;
     bool initialDragDone, exitOnUp;
-    
-    bool enteredMiddleZone;
+
+    bool enteredMiddleZone, firstTimeOut;
     float middleZoneAngleEntered;
     bool negmagEntered;
-    
+
     static int snapangles;
-    
+
     void closeEditor();
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PhasorEditor)
 };
