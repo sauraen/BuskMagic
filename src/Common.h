@@ -372,6 +372,12 @@ extern Identifier idShortName;
 extern Identifier idLongName;
 //USBDMXSystem
 extern Identifier idLoadMapMode;
+extern Identifier idSlot;
+extern Identifier idChannels;
+extern Identifier idUSBDevice;
+extern Identifier idBusNum;
+extern Identifier idDevNum;
+extern Identifier idSerialDevice;
 //MIDISystem
 extern Identifier idInPorts;
 extern Identifier idInPort;

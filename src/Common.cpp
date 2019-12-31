@@ -73,6 +73,12 @@ Identifier idShortName("shortname");
 Identifier idLongName("longname");
 //USBDMXSystem
 Identifier idLoadMapMode("loadmapmode");
+Identifier idSlot("slot");
+Identifier idChannels("channels");
+Identifier idUSBDevice("usbdevice");
+Identifier idBusNum("busnum");
+Identifier idDevNum("devnum");
+Identifier idSerialDevice("serialdevice");
 //MIDISystem
 Identifier idInPorts("inports");
 Identifier idInPort("inport");

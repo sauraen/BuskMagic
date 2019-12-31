@@ -20,6 +20,28 @@
 
 namespace USBDMXSystem {
 
+    bool loadmapmodetype;
+    bool IsLoadMapModeType() { return loadmapmodetype; }
+    void SetLoadMapMode(bool mapType) { loadmapmodetype = mapType; }
+    String GetLoadMapModeHelpText(){
+        return "This option specifies how communication is re-opened with "
+               "USB-DMX devices when this showfile is loaded.\n\n"
+               "Map by port: The devices are identified by their Bus "
+               "and Device number for USB devices (which identify the "
+               "physical USB port the device is connected to), or by "
+               "the OS's device name for serial devices. This is best if "
+               "you have multiple dongles of the same type. However, "
+               "the devices must be manually remapped in this window "
+               "if they are ever plugged into a different USB port, or "
+               "in some cases if other USB devices are (dis)connected.\n\n"
+               "Map by type: The devices are identified by their type. "
+               "This is best if you only have one dongle of any type, "
+               "since you can plug it into any USB port without having "
+               "to remap. However, if you have multiple dongles of the "
+               "same type, they will get mapped in a random order when "
+               "the showfile is loaded.";
+    }
+
     static ReadWriteLock devices_mutex;
     //These are intentionally named the same so you cannot start with a read
     //lock and escalate to a write lock
@@ -41,6 +63,16 @@ namespace USBDMXSystem {
             default: return "ERROR";
         }
     }
+    static LocalDeviceType TypeFromString(String s){
+        String t = "";
+        uint32_t i = 0;
+        while(t != "ERROR"){
+            t = TypeToString((LocalDeviceType)i);
+            if(t == s) return (LocalDeviceType)i;
+            ++i;
+        }
+        return LocalDeviceType::None;
+    }
 
     class LocalDevice {
     public:
@@ -52,7 +84,10 @@ namespace USBDMXSystem {
         virtual bool IsSupported() const = 0;
         virtual void Map(uint32_t s) = 0;
         virtual void Unmap() = 0;
+        virtual bool IsMapped() = 0;
         virtual String SendDMX(const uint8_t *buf512, uint16_t chans) = 0;
+        virtual bool Matches(ValueTree node) = 0;
+        virtual ValueTree Save() = 0;
     };
 
     struct UDSlot {
@@ -165,9 +200,7 @@ namespace USBDMXSystem {
         }
         USBDevice(struct usb_device *dev, int busnum_) : LocalDevice() {
             //Defaults
-            manu = "Could not read\n";
-            product = "Could not read\n";
-            sn = "Could not read\n";
+            manu = product = sn = "Could not read\n";
             type = LocalDeviceType::None;
             //Query device
             vid = dev->descriptor.idVendor;
@@ -241,6 +274,9 @@ namespace USBDMXSystem {
             usb_close(handle);
             handle = nullptr;
         }
+        virtual bool IsMapped() override {
+            return handle != nullptr;
+        }
         virtual String SendDMX(const uint8_t *buf512, uint16_t chans) override {
             if(type != LocalDeviceType::USB_uDMX){
                 return "Internal error";
@@ -262,6 +298,20 @@ namespace USBDMXSystem {
                 }
             }
             delete[] tmpbuf;
+            return ret;
+        }
+
+        bool Matches(ValueTree node) override {
+            jassert(node.isValid());
+            return TypeToString(type) == node.getProperty(idType, "ERROR").toString()
+                    && (int)busnum == (int)node.getProperty(idBusNum, 0)
+                    && (int)devnum == (int)node.getProperty(idDevNum, 0);
+        }
+        ValueTree Save() override {
+            ValueTree ret(idUSBDevice);
+            ret.setProperty(idType, TypeToString(type), nullptr);
+            ret.setProperty(idBusNum, (int)busnum, nullptr);
+            ret.setProperty(idDevNum, (int)devnum, nullptr);
             return ret;
         }
 
@@ -297,7 +347,7 @@ namespace USBDMXSystem {
     class SerialDevice : LocalDevice {
     public:
         static void Init(){
-            ((void)0); //do nothing
+            ((void)0);
         }
         static void RefreshDeviceList(){
             String serialregex;
@@ -318,20 +368,20 @@ namespace USBDMXSystem {
         virtual ~SerialDevice() {
 
         }
-        virtual LocalDeviceType GetType() const {
+        virtual LocalDeviceType GetType() const override {
             return LocalDeviceType::Serial;
         }
-        virtual String GetDescription() const {
+        virtual String GetDescription() const override {
             return "Serial: " + name;
         }
-        virtual String GetFullInfo() const {
+        virtual String GetFullInfo() const override {
             return "USB-to-serial adapter\n" + name
                     + "\nBuskMagic hopes this is: USB to DMX dongle";
         }
-        virtual bool IsSupported() const {
+        virtual bool IsSupported() const override {
             return true;
         }
-        virtual void Map(uint32_t s) {
+        virtual void Map(uint32_t s) override {
             jassert(fd < 0);
             do{
                 //Legacy comment from LukeNow:
@@ -387,12 +437,15 @@ namespace USBDMXSystem {
             if(fd >= 0) close(fd);
             fd = -1;
         }
-        virtual void Unmap() {
+        virtual void Unmap() override {
             if(fd < 0) return;
             close(fd);
             fd = -1;
         }
-        virtual String SendDMX(const uint8_t *buf512, uint16_t chans) {
+        virtual bool IsMapped() override {
+            return fd >= 0;
+        }
+        virtual String SendDMX(const uint8_t *buf512, uint16_t chans) override {
             jassert(fd >= 0);
             jassert(chans >= 1 && chans <= 512);
             uint8_t sendbuf[chans+1];
@@ -413,6 +466,16 @@ namespace USBDMXSystem {
             if(ret.isEmpty()){
                 ret = "Serial write successful";
             }
+            return ret;
+        }
+
+        bool Matches(ValueTree node) override {
+            jassert(node.isValid());
+            return name == node.getProperty(idName, "ERROR").toString();
+        }
+        ValueTree Save() override {
+            ValueTree ret(idSerialDevice);
+            ret.setProperty(idName, name, nullptr);
             return ret;
         }
     private:
@@ -551,30 +614,9 @@ namespace USBDMXSystem {
         }
     }
 
-    bool loadmapmodetype;
-    bool IsLoadMapModeType() { return loadmapmodetype; }
-    void SetLoadMapMode(bool mapType) { loadmapmodetype = mapType; }
-    String GetLoadMapModeHelpText(){
-        return "This option specifies how communication is "
-               "re-opened with USB-DMX devices when this showfile "
-               "is loaded.\n\n"
-               "Map by port: The devices are identified by their Bus "
-               "and Device number, which together define the physical "
-               "USB port the device is connected to. This is best if "
-               "you have multiple dongles of the same type. However, "
-               "the devices must be manually remapped in this window "
-               "if they are ever plugged into a different USB port.\n\n"
-               "Map by type: The devices are identified by their type. "
-               "This is best if you only have one dongle of any type, "
-               "since you can plug it into any USB port without having "
-               "to remap. However, if you have multiple dongles of the "
-               "same type, only the first one of each type will get "
-               "mapped when the showfile is loaded.";
-    }
-
     void Init(ValueTree us_node){
-        loadmapmodetype = us_node.isValid() ? (bool)us_node.getProperty(idLoadMapMode, false) : false;
-        //TODO
+        DEVICES_LOCK_WRITE();
+        loadmapmodetype = us_node.isValid() ? (bool)us_node.getProperty(idLoadMapMode, true) : true;
 #ifdef BUSKMAGIC_LIBUSB
         USBDevice::Init();
 #endif
@@ -582,6 +624,27 @@ namespace USBDMXSystem {
         SerialDevice::Init();
 #endif
         RefreshDeviceList();
+        if(!us_node.isValid()) return;
+        for(int i=0; i<us_node.getNumChildren(); ++i){
+            ValueTree slotnode = us_node.getChild(i);
+            UDSlot s;
+            s.name = slotnode.getProperty(idName, "ERROR");
+            s.status = "Not yet started";
+            s.uni = (int)slotnode.getProperty(idUniverse, 0);
+            s.chans = (int)slotnode.getProperty(idChannels, 512);
+            slots.push_back(s);
+            LocalDeviceType type = TypeFromString(slotnode.getProperty(idType, "None"));
+            if(type == LocalDeviceType::None) continue;
+            jassert(type != LocalDeviceType::Unsupported);
+            jassert(slotnode.getNumChildren() == 1);
+            ValueTree devnode = slotnode.getChild(0);
+            for(int i=0; i<devices.size(); ++i){
+                if(devices[i]->GetType() != type) continue;
+                if(devices[i]->IsMapped()) continue;
+                if(!loadmapmodetype && !devices[i]->Matches(devnode)) continue;
+                devices[i]->Map(slots.size()-1);
+            }
+        }
     }
     void Finalize(){
         DEVICES_LOCK_WRITE();
@@ -589,9 +652,20 @@ namespace USBDMXSystem {
     }
 
     ValueTree Save(){
+        DEVICES_LOCK_READ();
         ValueTree ret(idUSBDMXSystem);
         ret.setProperty(idLoadMapMode, loadmapmodetype, nullptr);
-        //TODO
+        for(int i=0; i<slots.size(); ++i){
+            ValueTree slotnode(idSlot);
+            slotnode.setProperty(idName, slots[i].name, nullptr);
+            slotnode.setProperty(idUniverse, (int)slots[i].uni, nullptr);
+            slotnode.setProperty(idChannels, (int)slots[i].chans, nullptr);
+            slotnode.setProperty(idType, SlotType(i), nullptr);
+            if(slots[i].dev != nullptr){
+                slotnode.addChild(slots[i].dev->Save(), -1, nullptr);
+            }
+            ret.addChild(slotnode, -1, nullptr);
+        }
         return ret;
     }
 
