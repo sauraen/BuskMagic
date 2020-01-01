@@ -21,8 +21,8 @@
 #include "JuceHeader.h"
 #include <cassert>
 
-inline bool isInt(String str, bool allowNegative = true){
-    str = str.trim();
+inline bool isInt(String str, bool allowNegative = true, bool trim = true){
+    if(trim) str = str.trim();
     if(str.isEmpty()) return false;
     CharPointer_UTF32 s = str.toUTF32();
     for(int i=0; i<s.length(); ++s){
@@ -105,6 +105,16 @@ template<typename INT_TYPE> inline String hex(INT_TYPE i, int bits){
 inline String hex(uint8_t i) { return hex(i, 8); }
 inline String hex(uint16_t i) { return hex(i, 16); }
 inline String hex(uint32_t i) { return hex(i, 32); }
+
+inline bool endsWithInt(String s, String &out_prefix, int &out_int){
+    if(!isInt(s.getLastCharacters(1), false, false)) return false;
+    int i=2;
+    while(i < s.length()) if(!isInt(s.getLastCharacters(i++), false, false)) break;
+    i -= 2;
+    out_prefix = s.substring(0, s.length() - i);
+    out_int = s.getLastCharacters(i).getIntValue();
+    return true;
+}
 
 inline String safeASCII(char c){
     if(c >= ' ' && c <= '~') return String::charToString(c);

@@ -95,10 +95,16 @@ Controller::Controller()
 Controller::~Controller() {}
 Controller::Controller(const Controller &other) : MIDIUser(other),
       pos(other.pos + Point<int>(32,16)), nostate(other.nostate),
-      name(other.name + " 2"), uuid(GenerateUUID()), group(other.group),
+      name(""), uuid(GenerateUUID()), group(other.group),
       color(other.color), groupColor(other.groupColor),
       states_enabled(other.states_enabled), component(nullptr)
 {
+    String othername_prefix; int othername_int;
+    if(endsWithInt(other.name, othername_prefix, othername_int)){
+        name = othername_prefix + String(othername_int + 1);
+    }else{
+        name = other.name + " 2";
+    }
     if(pos.x + 50 > ControllerCanvas::size) pos.x = other.pos.x - 16;
     if(pos.y + 50 > ControllerCanvas::size) pos.y = other.pos.y - 32;
     if(group > 0){
@@ -566,12 +572,19 @@ namespace ControllerSystem {
         }
         return ctrlrs[i];
     }
+    static inline int FixPosition(int p){
+        p -= 64;
+        p += Random::getSystemRandom().nextInt(72);
+        p >>= 3;
+        p <<= 3;
+        return p;
+    }
     void AddInternal(Controller *c, bool totallynew){
         LS_LOCK_WRITE();
         if(totallynew){
             c->pos = ControllerCanvas::canvas_static->GetCenterPoint();
-            c->pos.x = ((c->pos.x - 32) >> 3) << 3;
-            c->pos.y = ((c->pos.y - 32) >> 3) << 3;
+            c->pos.x = FixPosition(c->pos.x);
+            c->pos.y = FixPosition(c->pos.y);
         }
         ctrlrs.add(c);
         RefreshMatrixEditor(true);
