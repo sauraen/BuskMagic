@@ -138,3 +138,4 @@ Identifier idSState("sstate");
 Identifier idProtected("protected");
 //LightingSystem
 Identifier idValueViewMode("valueviewmode");
+Identifier idSortByChannel("sortbychannel");

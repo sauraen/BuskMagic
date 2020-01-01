@@ -80,6 +80,12 @@ MatrixEditor::MatrixEditor() : view(0, 0) {
     ConfigureOptionButton(optVVMPercent, this, 1, Colours::white, "Percent", LightingSystem::GetValueViewMode() == LightingSystem::Percent);
     ConfigureOptionButton(optVVMByte, this, 1, Colours::white, "Byte", LightingSystem::GetValueViewMode() == LightingSystem::Byte);
     ConfigureOptionButton(optVVMHex, this, 1, Colours::white, "Hex", LightingSystem::GetValueViewMode() == LightingSystem::Hex);
+    optSortByFix.reset(new ToggleButton("optSortByFix"));
+    optSortByChan.reset(new ToggleButton("optSortByChan"));
+    addAndMakeVisible(optSortByFix.get());
+    addAndMakeVisible(optSortByChan.get());
+    ConfigureOptionButton(optSortByFix, this, 2, Colours::white, "Fixture", !LightingSystem::SortByChannel());
+    ConfigureOptionButton(optSortByChan, this, 2, Colours::white, "Channel", LightingSystem::SortByChannel());
     //
     lstCtType->add("Simple");
     lstCtType->add("Continuous");
@@ -119,6 +125,9 @@ void MatrixEditor::paint (Graphics& g) {
     g.drawLine(0, row_height, getWidth(), row_height, 2);
     g.drawLine(ct_width, main_bottom_y, getWidth(), main_bottom_y, 2);
     g.drawText("Phasor Matrix", 1, 0, ct_width - 1, row_height, Justification::centredLeft, false);
+    g.setColour(Colours::white);
+    g.drawText("Sort by:", ct_width + 3*ch_listbox_width + 8, getHeight() - ch_dbottom + 132,
+        100, 16,  Justification::centredLeft, false);
     LS_LOCK_READ();
     //Rows = controllers
     g.saveState();
@@ -240,6 +249,8 @@ void MatrixEditor::resized() {
     optVVMPercent->setBounds(x, y + 56, 100, 24);
     optVVMByte->setBounds(x, y + 80, 100, 24);
     optVVMHex->setBounds(x, y + 104, 100, 24);
+    optSortByFix->setBounds(x, y + 152, 100, 24);
+    optSortByChan->setBounds(x, y + 176, 100, 24);
 }
 
 void MatrixEditor::rowSelected(TextListBox* parent, int row) {
@@ -281,6 +292,12 @@ void MatrixEditor::buttonClicked(Button *buttonThatWasClicked) {
         LightingSystem::SetValueViewMode(LightingSystem::Hex);
         repaint();
         ControllerSystem::RefreshAllComponents();
+    }else if(buttonThatWasClicked == optSortByFix.get()){
+        LightingSystem::SetSortByChannel(false);
+        repaint();
+    }else if(buttonThatWasClicked == optSortByChan.get()){
+        LightingSystem::SetSortByChannel(true);
+        repaint();
     }
 }
 

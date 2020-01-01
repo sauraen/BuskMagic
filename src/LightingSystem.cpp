@@ -135,6 +135,10 @@ namespace LightingSystem {
         }
     }
 
+    static bool sortbychannel;
+    bool SortByChannel() { return sortbychannel; }
+    void SetSortByChannel(bool bychn) { sortbychannel = bychn; }
+
     Logger *log;
 
     void Init(ValueTree ls_node){
@@ -148,8 +152,10 @@ namespace LightingSystem {
         lth = new LightingThread();
         if(ls_node.isValid()){
             valueviewmode = (ValueViewMode)(int)ls_node.getProperty(idValueViewMode, 0);
+            sortbychannel = ls_node.getProperty(idSortByChannel, true);
         }else{
             valueviewmode = ValueViewMode::Ratio;
+            sortbychannel = true;
         }
     }
 
@@ -164,6 +170,7 @@ namespace LightingSystem {
     ValueTree Save(){
         ValueTree ret(idLightingSystem);
         ret.setProperty(idValueViewMode, (int)valueviewmode, nullptr);
+        ret.setProperty(idSortByChannel, sortbychannel, nullptr);
         return ret;
     }
 }

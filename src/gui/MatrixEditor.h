@@ -61,6 +61,8 @@ private:
     std::unique_ptr<ToggleButton> optVVMPercent;
     std::unique_ptr<ToggleButton> optVVMByte;
     std::unique_ptr<ToggleButton> optVVMHex;
+    std::unique_ptr<ToggleButton> optSortByFix;
+    std::unique_ptr<ToggleButton> optSortByChan;
 
     PopupWindow popup;
 

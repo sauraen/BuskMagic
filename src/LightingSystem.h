@@ -40,6 +40,9 @@ namespace LightingSystem {
     String ValueToString(float val);
     bool ParseValue(String text, float &out);
 
+    bool SortByChannel();
+    void SetSortByChannel(bool bychn);
+
     void Init(ValueTree ls_node = ValueTree());
     void Finalize();
     ValueTree Save();

@@ -447,3 +447,4 @@ extern Identifier idSState;
 extern Identifier idProtected;
 //LightingSystem
 extern Identifier idValueViewMode;
+extern Identifier idSortByChannel;
