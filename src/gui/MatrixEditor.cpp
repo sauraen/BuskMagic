@@ -148,11 +148,19 @@ void MatrixEditor::paint (Graphics& g) {
     //Columns = channels
     g.saveState();
     g.reduceClipRegion(ct_width, 0, getWidth() - ct_width, ch_bottom_y);
-    int colsmergefixid = 0, colsmergefixname = 0;
+    int colsmergechan = 0, colsmergefixid = 0, colsmergefixname = 0;
     for(int c = minviewcol; c < chSet.size() && c <= maxviewcol; ++c){
+        String chname = chSet[c]->GetName();
         int fixid = chSet[c]->GetFixID();
         String fixname = chSet[c]->GetFixName();
-        bool firstcolmergefixid = false, firstcolmergefixname = false;
+        bool firstcolmergechan = false, firstcolmergefixid = false, firstcolmergefixname = false;
+        if(colsmergechan == 0){
+            for(int c2 = c+1; c2 < chSet.size() && c2 <= maxviewcol; ++c2){
+                if(chSet[c2]->GetName() != chname) break;
+                ++colsmergechan;
+                firstcolmergechan = true;
+            }
+        }
         if(colsmergefixid == 0){
             for(int c2 = c+1; c2 < chSet.size() && c2 <= maxviewcol; ++c2){
                 if(chSet[c2]->GetFixID() != fixid) break;
@@ -175,8 +183,13 @@ void MatrixEditor::paint (Graphics& g) {
             col_width, row_height, Justification::centred, false);
         g.drawText("X", x, main_bottom_y + row_height,
             col_width, row_height, Justification::centred, false);
-        g.drawText(chSet[c]->GetLetters(), x, main_bottom_y + 2*row_height,
-            col_width, row_height, Justification::centred, false);
+        if(colsmergechan == 0 || firstcolmergechan){
+            g.drawText(colsmergechan >= 3 ? chname : chSet[c]->GetLetters(),
+                x, main_bottom_y + 2*row_height,
+                col_width * (colsmergechan + 1), row_height, Justification::centred, false);
+        }else{
+            --colsmergechan;
+        }
         if(colsmergefixid == 0 || firstcolmergefixid){
             g.drawText(fixid < 0 ? "-" : String(fixid), x, main_bottom_y + 3*row_height,
                 col_width * (colsmergefixid + 1), row_height, Justification::centred, false);
@@ -190,10 +203,13 @@ void MatrixEditor::paint (Graphics& g) {
             --colsmergefixname;
         }
         g.setColour(linecolor);
-        int lineend = colsmergefixname == 0 ? ch_bottom_y
-                      : colsmergefixid == 0 ? ch_bottom_y - row_height
-                      : ch_bottom_y - 2*row_height;
-        g.drawVerticalLine(x + col_width, 0, lineend);
+        int y = ch_bottom_y - 3*row_height;
+        g.drawVerticalLine(x + col_width, 0, y);
+        if(colsmergechan == 0) g.drawVerticalLine(x + col_width, y, y + row_height);
+        y += row_height;
+        if(colsmergefixid == 0) g.drawVerticalLine(x + col_width, y, y + row_height);
+        y += row_height;
+        if(colsmergefixname == 0) g.drawVerticalLine(x + col_width, y, y + row_height);
     }
     g.restoreState();
     //Cells = phasors
@@ -294,9 +310,11 @@ void MatrixEditor::buttonClicked(Button *buttonThatWasClicked) {
         ControllerSystem::RefreshAllComponents();
     }else if(buttonThatWasClicked == optSortByFix.get()){
         LightingSystem::SetSortByChannel(false);
+        RefreshVisibleChannelSet();
         repaint();
     }else if(buttonThatWasClicked == optSortByChan.get()){
         LightingSystem::SetSortByChannel(true);
+        RefreshVisibleChannelSet();
         repaint();
     }
 }
@@ -470,14 +488,30 @@ void MatrixEditor::RefreshVisibleChannelSet(){
             chSet.add(ch);
         }
     }
-    for(int f=0; f<FixtureSystem::NumFixtures(); ++f){
-        Fixture *fix = FixtureSystem::Fix(f);
-        if(!lstFixID->isItemSelected(String(fix->GetFixID()))) continue;
-        if(!lstFixName->isItemSelected(fix->GetName())) continue;
-        for(int c=0; c<fix->GetNumChannels(); ++c){
-            Channel *ch = fix->GetChannel(c);
-            if(!lstChName->isItemSelected(ch->GetName())) continue;
-            chSet.add(ch);
+    if(LightingSystem::SortByChannel()){
+        for(int cn=0; cn<lstChName->getNumRows(); ++cn){
+            if(!lstChName->isRowSelected(cn)) continue;
+            for(int f=0; f<FixtureSystem::NumFixtures(); ++f){
+                Fixture *fix = FixtureSystem::Fix(f);
+                if(!lstFixID->isItemSelected(String(fix->GetFixID()))) continue;
+                if(!lstFixName->isItemSelected(fix->GetName())) continue;
+                for(int c=0; c<fix->GetNumChannels(); ++c){
+                    Channel *ch = fix->GetChannel(c);
+                    if(ch->GetName() != lstChName->get(cn)) continue;
+                    chSet.add(ch);
+                }
+            }
+        }
+    }else{
+        for(int f=0; f<FixtureSystem::NumFixtures(); ++f){
+            Fixture *fix = FixtureSystem::Fix(f);
+            if(!lstFixID->isItemSelected(String(fix->GetFixID()))) continue;
+            if(!lstFixName->isItemSelected(fix->GetName())) continue;
+            for(int c=0; c<fix->GetNumChannels(); ++c){
+                Channel *ch = fix->GetChannel(c);
+                if(!lstChName->isItemSelected(ch->GetName())) continue;
+                chSet.add(ch);
+            }
         }
     }
     repaint();
