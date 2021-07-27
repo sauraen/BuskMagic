@@ -27,7 +27,7 @@ inline bool isInt(String str, bool allowNegative = true, bool trim = true){
     CharPointer_UTF32 s = str.toUTF32();
     for(int i=0; i<s.length(); ++s){
         if(s[i] == '-'){
-            if(i != 0 || !allowNegative) return false;
+            if(i != 0 || !allowNegative || s.length() == 1) return false;
             continue;
         }else if(s[i] >= '0' && s[i] <= '9'){
             continue;
@@ -60,10 +60,10 @@ inline bool isDec(String str, bool allowNegative = true){
     bool decimalpoint = false;
     for(int i=0; i<s.length(); ++s){
         if(s[i] == '-'){
-            if(i != 0 || !allowNegative) return false;
+            if(i != 0 || !allowNegative || s.length() == 1) return false;
             continue;
         }else if(s[i] == '.'){
-            if(decimalpoint) return false;
+            if(decimalpoint || s.length() == 1) return false;
             decimalpoint = true;
             continue;
         }else if(s[i] >= '0' && s[i] <= '9'){
