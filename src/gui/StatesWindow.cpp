@@ -69,9 +69,13 @@ StatesWindow::StatesWindow(ValueTree sw_node){
     chkProtected.reset(new ToggleButton("Protected"));
     addAndMakeVisible(chkProtected.get());
     chkProtected->addListener(this);
-    chkProtected->setBounds(176, 12, 100, 24);
+    chkProtected->setBounds(176, 4, 100, 24);
     chkProtected->setToggleState(ControllerSystem::IsStateProtected(
             ControllerSystem::GetDisplayState()), dontSendNotification);
+    txtFade.reset(new TextEditor("txtFade"));
+    addAndMakeVisible(txtFade.get());
+    ConfigureTextEditor(txtFade, this, FloatToString(ControllerSystem::GetDestFadeTime(), 1, 2));
+    txtFade->setBounds(228, 30, 36, 24);
     //
     ValueTree buttons_node = VT_GetChildWithName(sw_node, idStates);
     for(int i=0; i<ControllerSystem::NumStates(); ++i) MakeButton(i, buttons_node);
@@ -105,6 +109,7 @@ void StatesWindow::paint(Graphics &g){
     g.drawText("States:", 10, 4, 54, 16, Justification::centredLeft, false);
     g.drawText("Copy", 64, 40, 48, 16, Justification::centred, false);
     g.drawText("Blind", 120, 40, 48, 16, Justification::centred, false);
+    g.drawText("Fade in:", 176, 30, 52, 24, Justification::centredLeft, false);
     String helpstr;
     switch(guistate){
     case 0: {
@@ -131,14 +136,23 @@ void StatesWindow::paint(Graphics &g){
 void StatesWindow::resized() {}
 
 void StatesWindow::timerCallback() {
+    static bool lastTransitioning = false;
     if(guistate == 3){
         trgsState[copyfrom]->SetLight(blinker);
     }else if(guistate == 2){
         //don't flash the blind state
     }else if(ControllerSystem::GetStageState() != ControllerSystem::GetDisplayState()){
         trgsState[ControllerSystem::GetStageState()-1]->SetLight(blinker);
+    }else if(ControllerSystem::IsStateTransitioning()){
+        trgsState[ControllerSystem::GetDestState()-1]->SetLight(blinker);
+        lastTransitioning = true;
     }
     blinker = !blinker;
+    if(lastTransitioning && !ControllerSystem::IsStateTransitioning()){
+        SetOnlyLight(ControllerSystem::GetStageState()-1);
+        repaint();
+        lastTransitioning = false;
+    }
 }
 
 void StatesWindow::buttonClicked(Button *buttonThatWasClicked){
@@ -165,6 +179,7 @@ void StatesWindow::buttonClicked(Button *buttonThatWasClicked){
                     ControllerSystem::ActivateState(i+1);
                     chkProtected->setToggleState(ControllerSystem::IsStateProtected(
                             ControllerSystem::GetDisplayState()), dontSendNotification);
+                    txtFade->setText(FloatToString(ControllerSystem::GetDestFadeTime(), 1, 2));
                     SetOnlyLight(i);
                     repaint();
                     break;
@@ -210,6 +225,17 @@ void StatesWindow::holdButtonStateChanged(HoldButton *buttonWhoseStateChanged){
             repaint();
         }
     }
+}
+
+void StatesWindow::textEditorTextChanged(TextEditor &editorThatWasChanged){
+    bool turnRed = false;
+    String text = editorThatWasChanged.getText();
+    bool isdec = isDec(text, false);
+    float decval = text.getFloatValue();
+    if(&editorThatWasChanged == txtFade.get()){
+        if(!isdec) turnRed = true; else ControllerSystem::SetDestFadeTime(decval);
+    }
+    TurnRed(&editorThatWasChanged, turnRed);
 }
 
 void StatesWindow::HandleMIDI(int port, MidiMessage msg){

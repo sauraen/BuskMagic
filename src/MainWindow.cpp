@@ -116,6 +116,7 @@ void MainWindow::Init(ValueTree showfile_node){
 void MainWindow::Finalize(){
     setVisible(false);
     clearContentComponent();
+    std::cout << "LoadInternal deleting windows\n";
     timingWindow = nullptr;
     statesWindow = nullptr;
     controllersWindow = nullptr;
@@ -123,13 +124,21 @@ void MainWindow::Finalize(){
     midiWindow = nullptr;
     usbdmxWindow = nullptr;
     artnetWindow = nullptr;
+    std::cout << "LoadInternal LightingSystem::Finalize\n";
     LightingSystem::Finalize();
+    std::cout << "LoadInternal ControllerSystem::Finalize\n";
     ControllerSystem::Finalize();
+    std::cout << "LoadInternal FixtureSystem::Finalize\n";
     FixtureSystem::Finalize();
+    std::cout << "LoadInternal ChannelSystem::Finalize\n";
     ChannelSystem::Finalize();
+    std::cout << "LoadInternal TimingSystem::Finalize\n";
     TimingSystem::Finalize();
+    std::cout << "LoadInternal MIDISystem::Finalize\n";
     MIDISystem::Finalize();
+    std::cout << "LoadInternal USBDMXSystem::Finalize\n";
     USBDMXSystem::Finalize();
+    std::cout << "LoadInternal ArtNetSystem::Finalize\n";
     ArtNetSystem::Finalize();
 }
 
@@ -148,9 +157,13 @@ bool MainWindow::LoadInternal(File showfile, bool doFinalize){
         WarningBox(showfile.getFullPathName() + " is not a valid BuskMagic showfile!");
         return false;
     }
+    std::cout << "LoadInternal pre-lock\n";
     LS_LOCK_WRITE();
+    std::cout << "LoadInternal post-lock\n";
     if(doFinalize) Finalize();
+    std::cout << "LoadInternal pre-init\n";
     Init(showfile_node);
+    std::cout << "LoadInternal done\n";
     return true;
 }
 void MainWindow::Save(bool saveas){

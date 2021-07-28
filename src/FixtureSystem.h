@@ -53,6 +53,7 @@ public:
     inline int GetNumChannels() const { return channels.size(); }
     Channel *GetChannel(int i) const;
     
+    float EvaluateChannel(Channel *c, bool isHue);
     void Evaluate(uint8_t *uniarray);
 private:
     ValueTree def;

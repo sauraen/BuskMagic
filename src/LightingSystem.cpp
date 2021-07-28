@@ -21,6 +21,7 @@
 #include "ArtNetSystem.h"
 #include "USBDMXSystem.h"
 #include "FixtureSystem.h"
+#include "ControllerSystem.h"
 
 #include <cstring>
 
@@ -36,7 +37,7 @@ namespace LightingSystem {
         LightingThread() { last_eval_ms = Time::getMillisecondCounterHiRes(); startTimer(33); }
         virtual ~LightingThread() {}
         double last_eval_ms;
-        const double maxCallbackTime = 10.0; //ms
+        const double maxCallbackTime = 50.0; //ms
         bool priorityset = false;
         virtual void hiResTimerCallback() override {
             if(!priorityset){
@@ -49,10 +50,15 @@ namespace LightingSystem {
                 priorityset = true;
             }
             double ms = Time::getMillisecondCounterHiRes();
-            if(ms - last_eval_ms > maxCallbackTime){
+            double frameDelayMs = ms - last_eval_ms;
+            if(frameDelayMs > maxCallbackTime){
                 Logger::writeToLog("Time between evaluations was " + String(ms - last_eval_ms) + " ms!");
             }
             last_eval_ms = ms;
+            {
+                LS_TRY_LOCK_READ();
+                ControllerSystem::UpdateFade((float)(frameDelayMs / 1000.0));
+            }
             double callbackDuration;
             {
                 ScopedTimeMeasurement m(callbackDuration);
@@ -63,7 +69,7 @@ namespace LightingSystem {
                     uint16_t universe = eval_universes[u];
                     memset(unidata, 0, 512);
                     {
-                        LS_LOCK_READ();
+                        LS_TRY_LOCK_READ();
                         for(int f=0; f<FixtureSystem::NumFixtures(); ++f){
                             Fixture *fix = FixtureSystem::Fix(f);
                             if(fix->GetUniverse() != universe) continue;

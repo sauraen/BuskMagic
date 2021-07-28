@@ -201,6 +201,31 @@ inline void WhiteFadeCMY(float lightness, float &colorchan){
     }
 }
 
+float Fixture::EvaluateChannel(Channel *c, bool isHue){
+    if(ControllerSystem::IsStateTransitioning()){
+        ControllerSystem::SetEvalSourceState();
+        float s = c->Evaluate(0.0f);
+        ControllerSystem::SetEvalDestState();
+        float d = c->Evaluate(0.0f);
+        ControllerSystem::SetEvalSourceState();
+        float f = ControllerSystem::GetTransitionFactor();
+        if(isHue){
+            s -= std::floor(s);
+            d -= std::floor(d);
+            if(d - s > 0.5f){
+                s += 1.0f;
+            }else if(d - s < -0.5f){
+                d += 1.0f;
+            }
+            f = (d - s) * f + s;
+            return f - std::floor(f);
+        }else{
+            return (d - s) * f + s;
+        }
+    }else{
+        return c->Evaluate(0.0f);
+    }
+}
 
 void Fixture::Evaluate(uint8_t *uniarray){
     int footprint = def.getProperty(idFootprint, 1);
@@ -209,11 +234,11 @@ void Fixture::Evaluate(uint8_t *uniarray){
         ValueTree param = def.getChild(p);
         String ptype = param.getProperty(idType, "");
         if(ptype == "Generic"){
-            float gvalue = channels[c++]->Evaluate(0.0f);
+            float gvalue = EvaluateChannel(channels[c++], false);
             WriteAllValueDMXChannels(gvalue, param, chn, footprint, uniarray);
         }else if(ptype == "Color"){
-            float hue = channels[c++]->Evaluate(0.0f);
-            float lightness = channels[c++]->Evaluate(0.0f);
+            float hue = EvaluateChannel(channels[c++], true);
+            float lightness = EvaluateChannel(channels[c++], false);
             if(lightness < 0.0f) lightness = 0.0f;
             if(lightness > 1.5f) lightness = 1.5f;
             String colormode = param.getProperty(idColorMode, "RGB");

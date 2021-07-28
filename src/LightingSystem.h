@@ -25,6 +25,7 @@ namespace LightingSystem {
     //These are intentionally named the same so you cannot start with a read
     //lock and escalate to a write lock
     #define LS_LOCK_READ() const ScopedReadLock lslock(LightingSystem::mutex)
+    #define LS_TRY_LOCK_READ() const ScopedTryReadLock lslock(LightingSystem::mutex); if(!lslock.locked()) { std::cout << "TryReadLock bailing!\n"; return; } REQUIRESEMICOLON
     #define LS_LOCK_WRITE() const ScopedWriteLock lslock(LightingSystem::mutex)
 
     void SignalRecursion();

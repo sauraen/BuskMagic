@@ -239,4 +239,15 @@ namespace ControllerSystem {
     void BlindState(int s); //1-indexed, see above
     bool IsStateProtected(int s); //1-indexed, see above
     void ProtectState(int s, bool protect); //1-indexed, see above
+    
+    bool IsStateTransitioning();
+    float GetTransitionFactor();
+    void SetEvalSourceState();
+    void SetEvalDestState();
+    int GetSourceState();
+    int GetDestState();
+    void UpdateFade(float dt);
+    
+    float GetDestFadeTime();
+    void SetDestFadeTime(float f);
 }

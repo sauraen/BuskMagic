@@ -640,19 +640,25 @@ namespace ControllerSystem {
     }
 
     int nstates;
-    int dstate, sstate;
+    int dstate, sstate, fadedeststate;
+    float fade;
+    bool eval_fadedeststate;
     Array<bool> states_protected;
+    Array<float> states_fadeintime;
+
+#define DEFAULT_FADETIME 0.0f
 
     void Init(ValueTree as_node){
         if(as_node.isValid()){
             nstates = as_node.getProperty(idNStates, 10);
             dstate = as_node.getProperty(idDState, 1);
-            sstate = as_node.getProperty(idSState, 1);
+            sstate = fadedeststate = as_node.getProperty(idSState, 1);
             ValueTree states_node = as_node.getChildWithName(idStates);
             if(!states_node.isValid()) { jassertfalse; return; }
             jassert(states_node.getNumChildren() == nstates+1);
             for(int i=0; i<=nstates; ++i){
                 states_protected.add(states_node.getChild(i).getProperty(idProtected, false));
+                states_fadeintime.add(states_node.getChild(i).getProperty(idFadeInTime, DEFAULT_FADETIME));
             }
             for(int i=0; i<as_node.getNumChildren(); ++i){
                 ValueTree v = as_node.getChild(i);
@@ -673,13 +679,19 @@ namespace ControllerSystem {
             }
         }else{
             nstates = 10;
-            for(int i=0; i<=nstates; ++i) states_protected.add(false);
-            dstate = sstate = 1;
+            for(int i=0; i<=nstates; ++i){
+                states_protected.add(false);
+                states_fadeintime.add(DEFAULT_FADETIME);
+            }
+            dstate = sstate = fadedeststate = 1;
         }
+        fade = -1.0f;
+        eval_fadedeststate = false;
     }
     void Finalize(){
         ctrlrs.clear();
         states_protected.clear();
+        states_fadeintime.clear();
     }
     ValueTree Save(){
         ValueTree ret(idControllerSystem);
@@ -690,6 +702,7 @@ namespace ControllerSystem {
         for(int i=0; i<states_protected.size(); ++i){
             ValueTree state_node(idState);
             state_node.setProperty(idProtected, states_protected[i], nullptr);
+            state_node.setProperty(idFadeInTime, states_fadeintime[i], nullptr);
             states_node.addChild(state_node, -1, nullptr);
         }
         ret.addChild(states_node, -1, nullptr);
@@ -705,6 +718,8 @@ namespace ControllerSystem {
     void AddState(){
         LS_LOCK_WRITE();
         ++nstates;
+        states_protected.add(false);
+        states_fadeintime.add(DEFAULT_FADETIME);
         for(int i=0; i<ctrlrs.size(); ++i){
             ctrlrs[i]->NumStatesChanged();
         }
@@ -715,6 +730,12 @@ namespace ControllerSystem {
         --nstates;
         if(dstate > nstates) dstate = nstates;
         if(sstate > nstates) sstate = nstates;
+        if(fadedeststate > nstates){
+            fadedeststate = nstates;
+            fade = -1.0f;
+        }
+        states_protected.removeLast();
+        states_fadeintime.removeLast();
         for(int i=0; i<ctrlrs.size(); ++i){
             ctrlrs[i]->NumStatesChanged();
         }
@@ -730,6 +751,8 @@ namespace ControllerSystem {
             jassertfalse;
             return;
         }
+        states_protected.set(dst, (dst == 0) ? false : states_protected[src]);
+        states_fadeintime.set(dst, states_fadeintime[src]);
         for(int i=0; i<ctrlrs.size(); ++i){
             ctrlrs[i]->CopyState(dst, src);
         }
@@ -739,19 +762,27 @@ namespace ControllerSystem {
     }
 
     int GetStageState(){
-        return sstate;
+        return eval_fadedeststate ? fadedeststate : sstate;
     }
     int GetDisplayState(){
         return dstate;
     }
-    void ActivateState(int s){
-        LS_LOCK_READ();
-        jassert(s >= 1 && s <= nstates);
+    void ActivateStateInternal(int s){
         if(states_protected[s]){
             CopyState(0, s);
         }
-        dstate = sstate = s;
+        dstate = sstate = fadedeststate = s;
         AllCtrlrsDisplayStateChanged();
+    }
+    void ActivateState(int s){
+        LS_LOCK_READ();
+        jassert(s >= 1 && s <= nstates);
+        if(states_fadeintime[s] <= 0.0f){
+            ActivateStateInternal(s);
+        }else{
+            fade = 0.0f;
+            fadedeststate = s;
+        }
     }
     void BlindState(int s){
         LS_LOCK_READ();
@@ -776,5 +807,41 @@ namespace ControllerSystem {
             }
         }
         states_protected.set(s, protect);
+    }
+    
+    bool IsStateTransitioning(){
+        return sstate != fadedeststate;
+    }
+    float GetTransitionFactor(){
+        return fade;
+    }
+    void SetEvalSourceState(){
+        eval_fadedeststate = false;
+    }
+    void SetEvalDestState(){
+        eval_fadedeststate = true;
+    }
+    int GetSourceState(){
+        return sstate;
+    }
+    int GetDestState(){
+        return fadedeststate;
+    }
+    void UpdateFade(float dt){
+        LS_LOCK_READ();
+        if(!IsStateTransitioning()) return;
+        fade += dt / states_fadeintime[fadedeststate];
+        if(fade >= 1.0f){
+            fade = -1.0f;
+            ActivateStateInternal(fadedeststate);
+        }
+    }
+    
+    float GetDestFadeTime(){
+        return states_fadeintime[fadedeststate];
+    }
+    void SetDestFadeTime(float f){
+        if(!(f > 0.0f)) f = 0.0f;
+        states_fadeintime.set(fadedeststate, f);
     }
 }

@@ -136,6 +136,7 @@ Identifier idNStates("nstates");
 Identifier idDState("dstate");
 Identifier idSState("sstate");
 Identifier idProtected("protected");
+Identifier idFadeInTime("fadeintime");
 //LightingSystem
 Identifier idValueViewMode("valueviewmode");
 Identifier idSortByChannel("sortbychannel");

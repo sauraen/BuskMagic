@@ -423,9 +423,9 @@ namespace USBDMXSystem {
 #elif defined(JUCE_LINUX)
                 ttyio.c_cflag &= ~CBAUD; //Ignoring baudrate
                 ttyio.c_cflag |= BOTHER; //Other baud rate
-                ttyio.c_ospeed = baudRate; //Setting output rate
+                ttyio.c_ospeed = DMX_BAUD; //Setting output rate
                 if(ioctl(fd, TCSETS2, &ttyio) < 0) {
-                    cerr << "SerialDevice::Map: failed to set termios2 for TTY\n";
+                    std::cout << "SerialDevice::Map: failed to set termios2 for TTY\n";
                     break;
                 }
 #endif

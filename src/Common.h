@@ -326,6 +326,22 @@ inline bool VT_Save(ValueTree vt, File f, String extension, String commentinside
         "<!-- " + commentinsides + " -->", "UTF-8", 60);
 }
 
+class ScopedTryReadLock {
+public:
+    ScopedTryReadLock(ReadWriteLock &mutex) : m(mutex) {
+        for(int delay = 1; ; delay <<= 1){
+            l = mutex.tryEnterRead();
+            if(l) return;
+            if(delay >= 32) return;
+            Thread::sleep(delay);
+        }
+    }
+    ~ScopedTryReadLock() { if(l) m.exitRead(); }
+    bool locked() const { return l; }
+private:
+    ReadWriteLock &m;
+    bool l;
+};
 
 //Identifiers
 extern Identifier idBuskMagicShow;
@@ -445,6 +461,7 @@ extern Identifier idNStates;
 extern Identifier idDState;
 extern Identifier idSState;
 extern Identifier idProtected;
+extern Identifier idFadeInTime;
 //LightingSystem
 extern Identifier idValueViewMode;
 extern Identifier idSortByChannel;
