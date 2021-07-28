@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="C2wpTw" name="BuskMagic" projectType="guiapp" jucerVersion="5.4.5"
-              reportAppUsage="0" displaySplashScreen="0" splashScreenColour="Light"
-              companyWebsite="sauraen.com" companyEmail="sauraen@gmail.com"
-              companyName="Sauraen" companyCopyright="Copyright (C) 2019 Sauraen / Licensed under the GPL3"
-              cppLanguageStandard="14" version="0.01" headerPath="../../src/">
+<JUCERPROJECT id="C2wpTw" name="BuskMagic" projectType="guiapp" reportAppUsage="0"
+              displaySplashScreen="0" splashScreenColour="Light" companyWebsite="sauraen.com"
+              companyEmail="sauraen@gmail.com" companyName="Sauraen" companyCopyright="Copyright (C) 2019 Sauraen / Licensed under the GPL3"
+              cppLanguageStandard="14" version="0.01" headerPath="../../src/"
+              jucerFormatVersion="1">
   <MAINGROUP id="nK6FP9" name="BuskMagic">
     <GROUP id="{3D7A48D5-F157-0876-07BA-C3B2C4947ED1}" name="external">
       <GROUP id="{42B7BC6C-38C5-2DC3-5835-59571080CE8F}" name="usb">

@@ -462,11 +462,11 @@ namespace MIDISystem {
     }
     
     struct MIDIInPort {
-        MidiInput *device = nullptr;
+        std::unique_ptr<MidiInput> device;
         int devnum = -1;
     };
     struct MIDIOutPort {
-        MidiOutput *device = nullptr;
+        std::unique_ptr<MidiOutput> device;
         int devnum = -1;
     };
     static std::vector<MIDIInPort> inports;
@@ -475,7 +475,7 @@ namespace MIDISystem {
     class MIDISystemCallback : public MidiInputCallback {
         virtual void handleIncomingMidiMessage(MidiInput *source, const MidiMessage &message) override {
             for(int i=0; i<inports.size(); ++i){
-                if(source == inports[i].device){
+                if(source == inports[i].device.get()){
                     HandleMIDIInput(i, message);
                     return;
                 }
@@ -527,14 +527,12 @@ namespace MIDISystem {
     }
     void Finalize(){
         for(int i=0; i<inports.size(); ++i){
-            if(inports[i].device != nullptr){
-                inports[i].device->stop();
-                delete inports[i].device;
-            }
+            if(inports[i].device != nullptr) inports[i].device->stop();
+            inports[i].device.reset(nullptr);
         }
         inports.clear();
         for(int i=0; i<outports.size(); ++i){
-            if(outports[i].device != nullptr) delete outports[i].device;
+            outports[i].device.reset(nullptr);
         }
         outports.clear();
     }
@@ -566,10 +564,8 @@ namespace MIDISystem {
     void AddInPort() { inports.push_back(MIDIInPort()); }
     void RemoveInPort(int p){
         if(p < 0 || p >= inports.size()) return;
-        if(inports[p].device != nullptr){
-            inports[p].device->stop();
-            delete inports[p].device;
-        }
+        if(inports[p].device != nullptr) inports[p].device->stop();
+        inports[p].device.reset(nullptr);
         inports.erase(inports.begin() + p);
     }
     int InPortDeviceNumber(int p){
@@ -584,21 +580,20 @@ namespace MIDISystem {
     void AssignInDevice(int d, int p){
         if(p < 0 || p >= inports.size()) return;
         if(inports[p].device != nullptr) return;
-        MidiInput *device = MidiInput::openDevice(d, &callback);
+        std::unique_ptr<MidiInput> device(MidiInput::openDevice(d, &callback));
         if(device == nullptr){
             std::cout << "Error opening MIDI input device " << d << "!\n";
             return;
         }
-        inports[p].device = device;
-        inports[p].devnum = d;
         device->start();
+        inports[p].device.reset(device.release());
+        inports[p].devnum = d;
     }
     void UnassignInPort(int p){
         if(p < 0 || p >= inports.size()) return;
         if(inports[p].device == nullptr) return;
         inports[p].device->stop();
-        delete inports[p].device;
-        inports[p].device = nullptr;
+        inports[p].device.reset(nullptr);
         inports[p].devnum = -1;
     }
     
@@ -606,7 +601,7 @@ namespace MIDISystem {
     void AddOutPort() { outports.push_back(MIDIOutPort()); }
     void RemoveOutPort(int p){
         if(p < 0 || p >= outports.size()) return;
-        if(outports[p].device != nullptr) delete outports[p].device;
+        outports[p].device.reset(nullptr);
         outports.erase(outports.begin() + p);
     }
     int OutPortDeviceNumber(int p){
@@ -621,19 +616,18 @@ namespace MIDISystem {
     void AssignOutDevice(int d, int p){
         if(p < 0 || p >= outports.size()) return;
         if(outports[p].device != nullptr) return;
-        MidiOutput *device = MidiOutput::openDevice(d);
+        std::unique_ptr<MidiOutput> device(MidiOutput::openDevice(d));
         if(device == nullptr){
             std::cout << "Error opening MIDI input device " << d << "!\n";
             return;
         }
-        outports[p].device = device;
+        outports[p].device.reset(device.release());
         outports[p].devnum = d;
     }
     void UnassignOutPort(int p){
         if(p < 0 || p >= outports.size()) return;
         if(outports[p].device == nullptr) return;
-        delete outports[p].device;
-        outports[p].device = nullptr;
+        outports[p].device.reset(nullptr);
         outports[p].devnum = -1;
     }
     

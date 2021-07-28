@@ -33,10 +33,10 @@ TextListBox::TextListBox(Listener *l, bool showAllNoneButtons, String headerCapt
     setColour(ListBox::outlineColourId, Colours::lightgrey);
     //
     if(!headerCaption.isEmpty()){
-        Label *lbl = new Label("lblName", headerCaption);
+        std::unique_ptr<Label> lbl(new Label("lblName", headerCaption));
         lbl->setSize(100, 16);
         lbl->setColour(Label::backgroundColourId, LFWindowColor());
-        setHeaderComponent(lbl); //gets deleted automatically
+        setHeaderComponent(std::move(lbl));
     }
     //
     if(showAllNoneButtons){
