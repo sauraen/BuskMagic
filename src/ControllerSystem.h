@@ -232,22 +232,22 @@ namespace ControllerSystem {
     void AddState();
     void RemoveState();
     void CopyState(int dst, int src); //1-indexed, but 0 allowed here only
-
-    int GetStageState();
-    int GetDisplayState();
-    void ActivateState(int s); //1-indexed, see above
-    void BlindState(int s); //1-indexed, see above
     bool IsStateProtected(int s); //1-indexed, see above
     void ProtectState(int s, bool protect); //1-indexed, see above
+
+    int GetEffectiveStageState();
+    int GetSelectedStageState();
+    int GetEffectiveDisplayState();
+    int GetSelectedDisplayState();
+    int GetFadeDestState();
     
-    bool IsStateTransitioning();
+    void ActivateState(int s); //1-indexed, see above
+    void BlindState(int s); //1-indexed, see above
+    
     float GetTransitionFactor();
     void SetEvalSourceState();
     void SetEvalDestState();
-    int GetSourceState();
-    int GetDestState();
     void UpdateFade(float dt);
-    
     float GetDestFadeTime();
     void SetDestFadeTime(float f);
 }

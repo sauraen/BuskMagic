@@ -61,4 +61,5 @@ private:
     void MakeButton(int i, ValueTree buttons_node);
     void ChangeSize();
     void SetOnlyLight(int i);
+    void UpdateChkProtected();
 };

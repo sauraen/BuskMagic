@@ -35,6 +35,7 @@ static std::unique_ptr<XmlElement> findFontsConfFile()
         if (auto xml = parseXML (File (path)))
             return xml;
 
+    std::cout << "Could not find/read any font config file\n";
     return {};
 }
 
@@ -64,7 +65,7 @@ StringArray FTTypefaceList::getDefaultFontDirectories()
 
                         fontPath = File (xdgDataHome).getChildFile (fontPath).getFullPathName();
                     }
-
+                    std::cout << "Adding font path " << fontPath << "\n";
                     fontDirs.add (fontPath);
                 }
             }
@@ -130,6 +131,12 @@ struct DefaultFontNames
     String defaultSans, defaultSerif, defaultFixed;
 
 private:
+    static bool isBoldItalic(const String& s)
+    {
+        return s.containsIgnoreCase("bold") || s.containsIgnoreCase("italic") 
+            || s.containsIgnoreCase("oblique");
+    }
+
     static String pickBestFont (const StringArray& names, const char* const* choicesArray)
     {
         const StringArray choices (choicesArray);
@@ -138,6 +145,16 @@ private:
             if (names.contains (choice, true))
                 return choice;
 
+        for (auto& choice : choices)
+            for (auto& name : names)
+                if (name.startsWithIgnoreCase (choice) && !isBoldItalic(name))
+                    return name;
+
+        for (auto& choice : choices)
+            for (auto& name : names)
+                if (name.containsIgnoreCase (choice) && !isBoldItalic(name))
+                    return name;
+        
         for (auto& choice : choices)
             for (auto& name : names)
                 if (name.startsWithIgnoreCase (choice))
@@ -158,7 +175,9 @@ private:
 
         static const char* targets[] = { "Verdana", "Bitstream Vera Sans", "Luxi Sans",
                                          "Liberation Sans", "DejaVu Sans", "Sans", nullptr };
-        return pickBestFont (allFonts, targets);
+        String ret = pickBestFont (allFonts, targets);
+        std::cout << ret << ": default sans serif font\n";
+        return ret;
     }
 
     static String getDefaultSerifFontName()
@@ -168,7 +187,9 @@ private:
 
         static const char* targets[] = { "Bitstream Vera Serif", "Times", "Nimbus Roman",
                                          "Liberation Serif", "DejaVu Serif", "Serif", nullptr };
-        return pickBestFont (allFonts, targets);
+        String ret = pickBestFont (allFonts, targets);
+        std::cout << ret << ": default serif font\n";
+        return ret;
     }
 
     static String getDefaultMonospacedFontName()
@@ -178,7 +199,9 @@ private:
 
         static const char* targets[] = { "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Sans Mono",
                                          "Liberation Mono", "Courier", "DejaVu Mono", "Mono", nullptr };
-        return pickBestFont (allFonts, targets);
+        String ret = pickBestFont (allFonts, targets);
+        std::cout << ret << ": default mono font\n";
+        return ret;
     }
 
     JUCE_DECLARE_NON_COPYABLE (DefaultFontNames)

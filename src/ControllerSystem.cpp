@@ -258,13 +258,10 @@ void Controller::CopyState(int dst, int src){
     states_enabled.set(dst, states_enabled[src]);
 }
 int Controller::GetEffectiveStageState() const{
-    int ss = ControllerSystem::GetStageState();
-    return (nostate || ControllerSystem::IsStateProtected(ss)) ? 0 : ss;
+    return nostate ? 0 : ControllerSystem::GetEffectiveStageState();
 }
 int Controller::GetEffectiveDisplayState() const{
-    int ds = ControllerSystem::GetDisplayState();
-    int ss = ControllerSystem::GetStageState();
-    return (nostate || (ds == ss && ControllerSystem::IsStateProtected(ss))) ? 0 : ds;
+    return nostate ? 0 : ControllerSystem::GetEffectiveDisplayState();
 }
 
 void Controller::ReceivedMIDIAction(ActionType t, int val){
@@ -751,8 +748,10 @@ namespace ControllerSystem {
             jassertfalse;
             return;
         }
-        states_protected.set(dst, (dst == 0) ? false : states_protected[src]);
-        states_fadeintime.set(dst, states_fadeintime[src]);
+        if(dst > 0){
+            states_protected.set(dst, states_protected[src]);
+            states_fadeintime.set(dst, states_fadeintime[src]);
+        }
         for(int i=0; i<ctrlrs.size(); ++i){
             ctrlrs[i]->CopyState(dst, src);
         }
@@ -760,13 +759,45 @@ namespace ControllerSystem {
             AllCtrlrsDisplayStateChanged();
         }
     }
-
-    int GetStageState(){
-        return eval_fadedeststate ? fadedeststate : sstate;
+    bool IsStateProtected(int s){
+        LS_LOCK_READ();
+        jassert(s >= 1 && s <= nstates);
+        return states_protected[s];
     }
-    int GetDisplayState(){
+    void ProtectState(int s, bool protect){
+        LS_LOCK_WRITE();
+        jassert(s >= 1 && s <= nstates);
+        if(states_protected[s] == protect) return;
+        if(s == sstate){
+            if(protect){
+                CopyState(0, s);
+            }else{
+                CopyState(s, 0);
+            }
+        }
+        states_protected.set(s, protect);
+    }
+
+    int GetEffectiveStageState(){
+        if(fade >= 0.0f && eval_fadedeststate) return fadedeststate;
+        if(states_protected[sstate]) return 0;
+        return sstate;
+    }
+    int GetSelectedStageState(){
+        return sstate;
+    }
+    int GetEffectiveDisplayState(){
+        if(sstate == dstate && states_protected[sstate]) return 0;
         return dstate;
     }
+    int GetSelectedDisplayState(){
+        return dstate;
+    }
+    int GetFadeDestState(){
+        return fade >= 0.0f ? fadedeststate : -1;
+    }
+    
+    
     void ActivateStateInternal(int s){
         if(states_protected[s]){
             CopyState(0, s);
@@ -790,28 +821,7 @@ namespace ControllerSystem {
         dstate = s;
         AllCtrlrsDisplayStateChanged();
     }
-    bool IsStateProtected(int s){
-        LS_LOCK_READ();
-        jassert(s >= 1 && s <= nstates);
-        return states_protected[s];
-    }
-    void ProtectState(int s, bool protect){
-        LS_LOCK_WRITE();
-        jassert(s >= 1 && s <= nstates);
-        if(states_protected[s] == protect) return;
-        if(s == sstate){
-            if(protect){
-                CopyState(0, s);
-            }else{
-                CopyState(s, 0);
-            }
-        }
-        states_protected.set(s, protect);
-    }
     
-    bool IsStateTransitioning(){
-        return sstate != fadedeststate;
-    }
     float GetTransitionFactor(){
         return fade;
     }
@@ -821,15 +831,9 @@ namespace ControllerSystem {
     void SetEvalDestState(){
         eval_fadedeststate = true;
     }
-    int GetSourceState(){
-        return sstate;
-    }
-    int GetDestState(){
-        return fadedeststate;
-    }
     void UpdateFade(float dt){
         LS_LOCK_READ();
-        if(!IsStateTransitioning()) return;
+        if(fade < 0.0f) return;
         fade += dt / states_fadeintime[fadedeststate];
         if(fade >= 1.0f){
             fade = -1.0f;

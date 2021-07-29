@@ -46,6 +46,7 @@ void StatesWindow::SetOnlyLight(int i){
 StatesWindow::StatesWindow(ValueTree sw_node){
     jassert(sw_static == nullptr);
     sw_static = this;
+    int ds = ControllerSystem::GetSelectedDisplayState();
     //
     btnCopy.reset(new HoldButton(this, VT_GetChildWithProperty(sw_node, idType, "btnCopy")));
     btnBlind.reset(new HoldButton(this, VT_GetChildWithProperty(sw_node, idType, "btnBlind")));
@@ -70,8 +71,7 @@ StatesWindow::StatesWindow(ValueTree sw_node){
     addAndMakeVisible(chkProtected.get());
     chkProtected->addListener(this);
     chkProtected->setBounds(176, 4, 100, 24);
-    chkProtected->setToggleState(ControllerSystem::IsStateProtected(
-            ControllerSystem::GetDisplayState()), dontSendNotification);
+    UpdateChkProtected();
     txtFade.reset(new TextEditor("txtFade"));
     addAndMakeVisible(txtFade.get());
     ConfigureTextEditor(txtFade, this, FloatToString(ControllerSystem::GetDestFadeTime(), 1, 2));
@@ -79,7 +79,7 @@ StatesWindow::StatesWindow(ValueTree sw_node){
     //
     ValueTree buttons_node = VT_GetChildWithName(sw_node, idStates);
     for(int i=0; i<ControllerSystem::NumStates(); ++i) MakeButton(i, buttons_node);
-    SetOnlyLight(ControllerSystem::GetDisplayState()-1);
+    SetOnlyLight(ds-1);
     //
     guistate = 0;
     blinker = false;
@@ -113,12 +113,12 @@ void StatesWindow::paint(Graphics &g){
     String helpstr;
     switch(guistate){
     case 0: {
-        int ss = ControllerSystem::GetStageState();
-        int bs = ControllerSystem::GetDisplayState();
+        int ss = ControllerSystem::GetSelectedStageState();
+        int ds = ControllerSystem::GetSelectedDisplayState();
         helpstr = "State " + String(ss);
-        if(ss != bs){
-            helpstr += ", blind " + String(bs);
-            if(ControllerSystem::IsStateProtected(bs)){
+        if(ss != ds){
+            helpstr += ", blind " + String(ds);
+            if(ControllerSystem::IsStateProtected(ds)){
                 helpstr += " (WARNING: Editing protected state!)";
             }
         }
@@ -137,26 +137,36 @@ void StatesWindow::resized() {}
 
 void StatesWindow::timerCallback() {
     static bool lastTransitioning = false;
+    int ss = ControllerSystem::GetSelectedStageState();
+    int ds = ControllerSystem::GetSelectedDisplayState();
+    int fs = ControllerSystem::GetFadeDestState();
     if(guistate == 3){
         trgsState[copyfrom]->SetLight(blinker);
     }else if(guistate == 2){
         //don't flash the blind state
-    }else if(ControllerSystem::GetStageState() != ControllerSystem::GetDisplayState()){
-        trgsState[ControllerSystem::GetStageState()-1]->SetLight(blinker);
-    }else if(ControllerSystem::IsStateTransitioning()){
-        trgsState[ControllerSystem::GetDestState()-1]->SetLight(blinker);
+    }else if(ss != ds){
+        trgsState[ss-1]->SetLight(blinker);
+    }else if(fs >= 1){
+        trgsState[fs-1]->SetLight(blinker);
         lastTransitioning = true;
     }
     blinker = !blinker;
-    if(lastTransitioning && !ControllerSystem::IsStateTransitioning()){
-        SetOnlyLight(ControllerSystem::GetStageState()-1);
+    if(lastTransitioning && fs <= 0){
+        UpdateChkProtected();
+        SetOnlyLight(ss-1);
         repaint();
         lastTransitioning = false;
     }
 }
 
+void StatesWindow::UpdateChkProtected(){
+    chkProtected->setToggleState(ControllerSystem::IsStateProtected(
+        ControllerSystem::GetSelectedDisplayState()), dontSendNotification);
+}
+
 void StatesWindow::buttonClicked(Button *buttonThatWasClicked){
     int ns = ControllerSystem::NumStates();
+    int ds = ControllerSystem::GetSelectedDisplayState();
     if(buttonThatWasClicked == btnAdd.get()){
         ControllerSystem::AddState();
         MakeButton(ns, ValueTree());
@@ -169,24 +179,21 @@ void StatesWindow::buttonClicked(Button *buttonThatWasClicked){
         ChangeSize();
         repaint();
     }else if(buttonThatWasClicked == chkProtected.get()){
-        ControllerSystem::ProtectState(ControllerSystem::GetDisplayState(), 
-                chkProtected->getToggleState());
+        ControllerSystem::ProtectState(ds, chkProtected->getToggleState());
     }else{
         for(int i=0; i<ns; ++i){
             if(buttonThatWasClicked == trgsState[i]){
                 switch(guistate){
                 case 0:
                     ControllerSystem::ActivateState(i+1);
-                    chkProtected->setToggleState(ControllerSystem::IsStateProtected(
-                            ControllerSystem::GetDisplayState()), dontSendNotification);
+                    UpdateChkProtected();
                     txtFade->setText(FloatToString(ControllerSystem::GetDestFadeTime(), 1, 2));
                     SetOnlyLight(i);
                     repaint();
                     break;
                 case 1:
                     ControllerSystem::BlindState(i+1);
-                    chkProtected->setToggleState(ControllerSystem::IsStateProtected(
-                            ControllerSystem::GetDisplayState()), dontSendNotification);
+                    UpdateChkProtected();
                     SetOnlyLight(i);
                     btnBlind->setHoldState(false);
                     break;
@@ -212,7 +219,7 @@ void StatesWindow::holdButtonStateChanged(HoldButton *buttonWhoseStateChanged){
             guistate = 2;
             repaint();
         }else{
-            SetOnlyLight(ControllerSystem::GetDisplayState()-1);
+            SetOnlyLight(ControllerSystem::GetSelectedDisplayState()-1);
             guistate = 0;
             repaint();
         }

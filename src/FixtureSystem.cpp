@@ -202,7 +202,7 @@ inline void WhiteFadeCMY(float lightness, float &colorchan){
 }
 
 float Fixture::EvaluateChannel(Channel *c, bool isHue){
-    if(ControllerSystem::IsStateTransitioning()){
+    if(ControllerSystem::GetFadeDestState() >= 1){
         ControllerSystem::SetEvalSourceState();
         float s = c->Evaluate(0.0f);
         ControllerSystem::SetEvalDestState();
