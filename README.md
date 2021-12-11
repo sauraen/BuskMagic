@@ -102,3 +102,26 @@ or knobs to control what "Color A" and "Color B" are, which would allow you to
 change "Color A" within the fading effect from green to yellow live. Of course
 this also means you can have "Color A" be the output of another modulator--and
 this can go as many layers deep as you like!
+
+## USB-DMX Setup
+
+BuskMagic supports two types of USB-DMX dongles on Mac OS and Linux. Both are
+available for <$20 on eBay. It may not be clear from the item description which
+one you are getting.
+
+### FTDI USB to Serial Chip
+
+BuskMagic should be able to see, but not successfully connect to, the USB to
+Serial dongle out of the box. `sudo usermod -a -G dialout your_username`
+should allow it to connect (may need to restart BuskMagic and/or reinsert the
+dongle).
+
+### uDMX Knockoffs / Clones
+
+Add a file with a name like `71-usb.rules` to `/etc/udev/rules.d/`, with
+contents:
+```
+SUBSYSTEM=="usb", ATTRS{idVendor}=="16c0", ATTRS{idProduct}="05dc", TAG+="uaccess"
+```
+Then `sudo udevadm control --reload-rules` and remove/reinsert the dongle.
+BuskMagic should then see it. You can also try rebooting if that doesn't work.
