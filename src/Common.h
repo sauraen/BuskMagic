@@ -25,9 +25,9 @@ inline bool isInt(String str, bool allowNegative = true, bool trim = true){
     if(trim) str = str.trim();
     if(str.isEmpty()) return false;
     CharPointer_UTF32 s = str.toUTF32();
-    for(int i=0; i<s.length(); ++s){
+    for(int i=0; i<str.length(); ++i){
         if(s[i] == '-'){
-            if(i != 0 || !allowNegative || s.length() == 1) return false;
+            if(i != 0 || !allowNegative || str.length() == 1) return false;
             continue;
         }else if(s[i] >= '0' && s[i] <= '9'){
             continue;
@@ -43,7 +43,7 @@ inline bool isHex(String str, bool allow0x = true){
     if(str.isEmpty()) return false;
     if(str.startsWith("0x") && allow0x) str = str.substring(2);
     CharPointer_UTF32 s = str.toUTF32();
-    for(int i=0; i<s.length(); ++s){
+    for(int i=0; i<str.length(); ++i){
         if((s[i] >= '0' && s[i] <= '9') || (s[i] >= 'a' && s[i] <= 'f')){
             continue;
         }else{
@@ -58,12 +58,12 @@ inline bool isDec(String str, bool allowNegative = true){
     if(str.isEmpty()) return false;
     CharPointer_UTF32 s = str.toUTF32();
     bool decimalpoint = false;
-    for(int i=0; i<s.length(); ++s){
+    for(int i=0; i<str.length(); ++i){
         if(s[i] == '-'){
-            if(i != 0 || !allowNegative || s.length() == 1) return false;
+            if(i != 0 || !allowNegative || str.length() == 1) return false;
             continue;
         }else if(s[i] == '.'){
-            if(decimalpoint || s.length() == 1) return false;
+            if(decimalpoint || str.length() == 1) return false;
             decimalpoint = true;
             continue;
         }else if(s[i] >= '0' && s[i] <= '9'){
