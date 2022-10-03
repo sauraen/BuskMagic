@@ -22,7 +22,7 @@
 
 #elif defined(JUCE_WINDOWS)
 
-#error "TODO add libusb-win32!"
+//TODO add libusb-win32
 
 #else
 
