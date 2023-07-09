@@ -53,7 +53,9 @@ String Channel::OpGetLetters(ChannelOp o){
     case OpPrioMaxWDefault: return "MD";
     case OpPrioMinWDefault: return "md";
     case OpAdd: return "+";
+    case OpAddWDefault: return "+D";
     case OpMultiply: return CharPointer_UTF8 ("\xc3\x97");
+    case OpMultiplyWDefault: return CharPointer_UTF8 ("\xc3\x97\x44");
     default: jassertfalse; return "E";
     }
 }
@@ -67,7 +69,9 @@ String Channel::OpGetDescription(ChannelOp o){
     case OpPrioMaxWDefault: return "Maximum Value (Incl. Default)";
     case OpPrioMinWDefault: return "minimum value (incl. default)";
     case OpAdd: return "Add";
+    case OpAddWDefault: return "Add (Incl. Default)";
     case OpMultiply: return "Multiply";
+    case OpMultiplyWDefault: return "Multiply (Incl. Default)";
     default: jassertfalse; return "Error";
     }
 }
@@ -273,15 +277,17 @@ float Channel::Evaluate(float angle) const {
         }
         return val;
     case OpAdd:
+    case OpAddWDefault:
     case OpMultiply:
+    case OpMultiplyWDefault:
         flag = false;
-        val = op == OpAdd ? 0.0f : 1.0f;
+        val = (op == OpAdd) ? 0.0f : (op == OpMultiply) ? 1.0f : defaultvalue;
         for(int i=0; i<phasors.size(); ++i){
             Controller *c = phasors[i]->src;
             if(c->IsEnabledStage()){
                 flag = true;
                 float v = EVALCHN();
-                if(op == OpAdd){
+                if(op == OpAdd || op == OpAddWDefault){
                     val += v;
                 }else{
                     val *= v;

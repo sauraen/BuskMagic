@@ -47,7 +47,7 @@ public:
         setVisible(true);
         setTopLeftPosition(x, y);
         contents->grabKeyboardFocus();
-        startTimer(33);
+        startTimer(300); // Initial longer delay
     }
     
     void reset(){
@@ -70,6 +70,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PopupWindow)
     
     void timerCallback() override {
+        startTimer(33); // Change back to 30 fps
         if(hasKeyboardFocus(true)) return;
         reset();
     }

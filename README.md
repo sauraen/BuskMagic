@@ -1,5 +1,5 @@
 BuskMagic - Live lighting control system
-Copyright (C) 2019 Sauraen
+Copyright (C) 2019-2023 Sauraen
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,13 +18,13 @@ Art-Net™ Designed by and Copyright Artistic Licence Holdings Ltd.
 
 # Project Status
 
-BuskMagic is in early alpha! It has been successfully used by the author at one
-nontrivial public show (MAGWest 2019), with no showstopping issues arising
-over 15+ hours of live use. However, there are still important features missing,
-and much more testing is needed to find additional bugs. (This is where you come
-in!) I recommend you evaluate the program's capabilities and stability for your
-own needs before using it in a live setting--remember, there is no warranty,
-meaning I do not guarantee that it will not crash during your show!
+BuskMagic is in alpha! It has been successfully used by the author at several
+public shows, with no showstopping issues arising over 100+ hours of live use.
+However, there are still important features missing, and much more testing is
+needed to find additional bugs. (This is where you come in!) I recommend you
+evaluate the program's capabilities and stability for your own needs before
+using it in a live setting--remember, there is no warranty, meaning I do not
+guarantee that it will not crash during your show!
 
 # Overview
 
