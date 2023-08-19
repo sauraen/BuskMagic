@@ -214,7 +214,7 @@ void MainWindow::timerCallback(){
     }
 }
 
-MainWindow::MainWindow()
+MainWindow::MainWindow(const String &commandLine)
     : DocumentWindow("BuskMagic", LFWindowColor(), DocumentWindow::allButtons, true)
 {
     LS_LOCK_WRITE();
@@ -244,8 +244,23 @@ MainWindow::MainWindow()
         if(!LoadInternal(newest, false)) break;
         flag = true;
     }while(false);
+    do{
+        if(flag) break;
+        File cmdLineFile(commandLine.unquoted());
+        if(!cmdLineFile.existsAsFile()){
+            if(!commandLine.isEmpty()){
+                WarningBox("Command-line argument for file to open \"" + commandLine + "\" does not exist!");
+            }
+            break;
+        }
+        if(!LoadInternal(cmdLineFile, false)){
+            WarningBox("Command-line argument for file to open \"" + commandLine + "\" is not a valid showfile!");
+            break;
+        }
+        flag = true;
+    }while(false);
     if(!flag){
-        Init(ValueTree()); //TODO command line parameters
+        Init(ValueTree());
     }
     GetSettingsDir().getChildFile("crashed.flg").create();
     //Start backup system

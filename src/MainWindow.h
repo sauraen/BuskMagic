@@ -67,7 +67,7 @@ private:
 
 class MainWindow : public DocumentWindow, private Timer {
 public:
-    MainWindow();
+    MainWindow(const String &commandLine);
     ~MainWindow();
     
     void closeButtonPressed() override;

@@ -30,8 +30,7 @@ public:
     bool moreThanOneInstanceAllowed() override    { return false; }
 
     void initialise (const String& commandLine) override {
-        ignoreUnused(commandLine); //TODO
-        mainWindow.reset(new MainWindow());
+        mainWindow.reset(new MainWindow(commandLine));
     }
     void shutdown() override {
         mainWindow = nullptr;
@@ -41,7 +40,7 @@ public:
         mainWindow->requestedQuit();
     }
     void anotherInstanceStarted (const String& commandLine) override {
-        ignoreUnused(commandLine); //TODO
+        ignoreUnused(commandLine);
         WarningBox("This text should never appear. Shoutouts to <insert favorite YouTuber here>");
     }
 private:
