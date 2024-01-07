@@ -29,7 +29,10 @@ PhasorEditor::PhasorEditor(void *data) : gml(*this) {
     Startup *startup = (Startup*)data;
     phasor = startup->phasor;
     channel = startup->channel;
+    applyToChannels = startup->applyToChannels;
+    applyToControllers = startup->applyToControllers;
     invalidated = false;
+    deleteAction = false;
     //
     Desktop::getInstance().addGlobalMouseListener(&gml);
     initialDragDone = false;
@@ -53,6 +56,25 @@ PhasorEditor::PhasorEditor(void *data) : gml(*this) {
 }
 
 PhasorEditor::~PhasorEditor() {
+    if(deleteAction){
+        for(int i=0; i<applyToChannels.size(); ++i){
+            Channel* ch = applyToChannels[i];
+            for(int j=0; j<applyToControllers.size(); ++j){
+                Controller* ct = applyToControllers[j];
+                ch->RemovePhasorForController(ct);
+            }
+        }
+    }else{
+        for(int i=0; i<applyToChannels.size(); ++i){
+            Channel* ch = applyToChannels[i];
+            for(int j=0; j<applyToControllers.size(); ++j){
+                Controller* ct = applyToControllers[j];
+                Phasor* ph = ch->GetPhasorForController(ct, true);
+                ph->mag = phasor->mag;
+                ph->angle = phasor->angle;
+            }
+        }
+    }
     Desktop::getInstance().removeGlobalMouseListener(&gml);
     if(MatrixEditor::mtxed_static != nullptr) MatrixEditor::mtxed_static->repaint();
 }
@@ -147,6 +169,7 @@ bool PhasorEditor::keyPressed(const KeyPress &key){
         return true;
     }else if(keycode == KeyPress::deleteKey || keycode == KeyPress::backspaceKey){
         invalidated = true;
+        deleteAction = true;
         channel->RemovePhasor(phasor);
         closeEditor();
         return true;

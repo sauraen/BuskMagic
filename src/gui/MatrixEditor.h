@@ -73,8 +73,14 @@ private:
     Point<int> viewdragstart;
     int GetColX(int c);
     int GetRowY(int r);
+    int ScreenXToCol(int x);
+    int ScreenYToRow(int y);
+    void ResetDragSelect();
 
     int drag_ct, drag_dest;
+    bool dragSelectMode;
+    int dragSelectRMin, dragSelectRMax, dragSelectCMin, dragSelectCMax;
+    int startDragSelectR, startDragSelectC;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MatrixEditor)
 };

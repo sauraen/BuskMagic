@@ -49,6 +49,8 @@ MatrixEditor::MatrixEditor() : view(0, 0) {
     mtxed_static = this;
     drag_ct = -1;
     drag_dest = -1;
+    dragSelectMode = false;
+    ResetDragSelect();
     setOpaque(true);
     //
     lstCtType.reset(new TextListBox(this, true, "Controller type:"));
@@ -102,11 +104,20 @@ MatrixEditor::~MatrixEditor() {
     mtxed_static = nullptr;
 }
 
+void MatrixEditor::ResetDragSelect(){
+    dragSelectRMin = dragSelectRMax = dragSelectCMin = dragSelectCMax = -1;
+}
 int MatrixEditor::GetColX(int c){
     return c * col_width - view.x + ct_width;
 }
 int MatrixEditor::GetRowY(int r){
     return r * row_height - view.y + row_height;
+}
+int MatrixEditor::ScreenXToCol(int x){
+    return (x + view.x - ct_width) / col_width;
+}
+int MatrixEditor::ScreenYToRow(int y){
+    return (y + view.y - row_height) / row_height;
 }
 
 void MatrixEditor::paint (Graphics& g) {
@@ -115,10 +126,10 @@ void MatrixEditor::paint (Graphics& g) {
     Colour textcolor = Colours::white;
     int main_bottom_y = getHeight() - main_dbottom;
     int ch_bottom_y = getHeight() - ch_dbottom;
-    int minviewcol = std::max(view.x / col_width, 0);
-    int minviewrow = std::max(view.y / row_height, 0);
-    int maxviewcol = (view.x + getWidth() - ct_width) / col_width;
-    int maxviewrow = (view.y + main_bottom_y - row_height) / row_height;
+    int minviewcol = ScreenXToCol(ct_width);
+    int minviewrow = ScreenYToRow(row_height);
+    int maxviewcol = ScreenXToCol(getWidth());
+    int maxviewrow = ScreenYToRow(main_bottom_y);
     g.setFont(GetNormalFont());
     g.setColour(linecolor);
     g.drawLine(ct_width, 0, ct_width, main_bottom_y, 2);
@@ -132,7 +143,7 @@ void MatrixEditor::paint (Graphics& g) {
     //Rows = controllers
     g.saveState();
     g.reduceClipRegion(0, row_height, getWidth(), main_bottom_y - row_height);
-    for(int r = minviewrow; r < ctSet.size() && r <= maxviewrow; ++r){
+    for(int r = std::max(minviewrow, 0); r < ctSet.size() && r <= maxviewrow; ++r){
         int y = GetRowY(r);
         g.setColour(linecolor);
         g.drawHorizontalLine(y + row_height, 0, getWidth());
@@ -149,7 +160,7 @@ void MatrixEditor::paint (Graphics& g) {
     g.saveState();
     g.reduceClipRegion(ct_width, 0, getWidth() - ct_width, ch_bottom_y);
     int colsmergechan = 0, colsmergefixid = 0, colsmergefixname = 0;
-    for(int c = minviewcol; c < chSet.size() && c <= maxviewcol; ++c){
+    for(int c = std::max(minviewcol, 0); c < chSet.size() && c <= maxviewcol; ++c){
         String chname = chSet[c]->GetName();
         int fixid = chSet[c]->GetFixID();
         String fixname = chSet[c]->GetFixName();
@@ -215,9 +226,9 @@ void MatrixEditor::paint (Graphics& g) {
     //Cells = phasors
     g.saveState();
     g.reduceClipRegion(ct_width, row_height, getWidth()-ct_width, main_bottom_y - row_height);
-    for(int c = minviewcol; c < chSet.size() && c <= maxviewcol; ++c){
+    for(int c = std::max(minviewcol, 0); c < chSet.size() && c <= maxviewcol; ++c){
         int x = GetColX(c);
-        for(int r = minviewrow; r < ctSet.size() && r <= maxviewrow; ++r){
+        for(int r = std::max(minviewrow, 0); r < ctSet.size() && r <= maxviewrow; ++r){
             int y = GetRowY(r);
             Phasor *phasor = chSet[c]->GetPhasorForController(ctSet[r], false);
             if(phasor == nullptr) continue;
@@ -247,6 +258,15 @@ void MatrixEditor::paint (Graphics& g) {
                 g.drawLine(endx-1.0f, endy-1.0f, endx+1.0f, endy+1.0f, 3);
             }
         }
+    }
+    // Selection rectangle
+    if(dragSelectRMin >= 0 and dragSelectRMax >= 0 and dragSelectCMin >= 0 and dragSelectCMax >= 0){
+        g.setColour(Colours::gold);
+        float xmin = GetColX(dragSelectCMin) + 1.0f, ymin = GetRowY(dragSelectRMin) + 1.0f;
+        g.drawRect(xmin, ymin,
+            (GetColX(dragSelectCMax) + col_width) - xmin,
+            (GetRowY(dragSelectRMax) + row_height) - ymin,
+            3.0f);
     }
     g.restoreState();
 }
@@ -320,8 +340,8 @@ void MatrixEditor::buttonClicked(Button *buttonThatWasClicked) {
 }
 
 void MatrixEditor::mouseDown(const MouseEvent &event){
-    int r = (event.y + view.y - row_height) / row_height;
-    int c = (event.x - ct_width + view.x) / col_width;
+    int c = ScreenXToCol(event.x);
+    int r = ScreenYToRow(event.y);
     int esx = getScreenX() + event.x;
     int esy = getScreenY() + event.y;
     if(isRightClick(event)){
@@ -366,12 +386,32 @@ void MatrixEditor::mouseDown(const MouseEvent &event){
             if(r < 0 || r >= ctSet.size()) return;
             Controller *ct = ctSet[r];
             PhasorEditor::Startup startup(ch->GetPhasorForController(ct, true), ch);
+            if(dragSelectRMin <= r && r <= dragSelectRMax && dragSelectCMin <= c && c <= dragSelectCMax){
+                for(int r2 = std::max(dragSelectRMin, 0); r2 < ctSet.size() && r2 <= dragSelectRMax; ++r2){
+                    startup.applyToControllers.add(ctSet[r2]);
+                }
+                for(int c2 = std::max(dragSelectCMin, 0); c2 < chSet.size() && c2 <= dragSelectCMax; ++c2){
+                    startup.applyToChannels.add(chSet[c2]);
+                }
+            }
             Point<int> corner(getScreenX() + c*col_width - view.x + ct_width + (col_width/2) - 70,
                               getScreenY() + r*row_height - view.y + row_height + (row_height/2) - 70);
             popup.show<PhasorEditor>(corner.x, corner.y, &startup);
         }
     }else if(event.mods.isLeftButtonDown()){
         viewdragstart = view;
+        dragSelectMode = event.mods.isShiftDown();
+        if(dragSelectMode){
+            if(event.x < ct_width) return;
+            if(event.y >= getHeight() - main_dbottom) return;
+            if(event.y <= row_height) return;
+            //Right click in phasors area
+            if(r < 0 || r >= ctSet.size()) return;
+            if(c < 0 || c >= chSet.size()) return;
+            startDragSelectR = dragSelectRMin = dragSelectRMax = r;
+            startDragSelectC = dragSelectCMin = dragSelectCMax = c;
+            repaint();
+        }
     }
 }
 void MatrixEditor::mouseDrag(const MouseEvent &event){
@@ -385,13 +425,24 @@ void MatrixEditor::mouseDrag(const MouseEvent &event){
             }
         }
     }else if(event.mods.isLeftButtonDown()){
-        view = viewdragstart - event.getOffsetFromDragStart();
-        int maxx = chSet.size() * col_width - (getWidth() - ct_width);
-        int maxy = ctSet.size() * row_height - (getHeight() - main_dbottom - row_height);
-        if(view.x > maxx) view.x = maxx;
-        if(view.y > maxy) view.y = maxy;
-        if(view.x < 0) view.x = 0;
-        if(view.y < 0) view.y = 0;
+        if(dragSelectMode){
+            int c = ScreenXToCol(event.x);
+            int r = ScreenYToRow(event.y);
+            if(c < 0 || c >= chSet.size()) return;
+            if(r < 0 || r >= ctSet.size()) return;
+            dragSelectRMin = std::min(r, startDragSelectR);
+            dragSelectRMax = std::max(r, startDragSelectR);
+            dragSelectCMin = std::min(c, startDragSelectC);
+            dragSelectCMax = std::max(c, startDragSelectC);
+        }else{
+            view = viewdragstart - event.getOffsetFromDragStart();
+            int maxx = chSet.size() * col_width - (getWidth() - ct_width);
+            int maxy = ctSet.size() * row_height - (getHeight() - main_dbottom - row_height);
+            if(view.x > maxx) view.x = maxx;
+            if(view.y > maxy) view.y = maxy;
+            if(view.x < 0) view.x = 0;
+            if(view.y < 0) view.y = 0;
+        }
         repaint();
     }
 }
@@ -427,6 +478,7 @@ void MatrixEditor::mouseUp(const MouseEvent &event){
 
 void MatrixEditor::RefreshControllerFilters(){
     LS_LOCK_WRITE();
+    ResetDragSelect();
     StringArray ctgroups, ctnames;
     for(int c=0; c<ControllerSystem::NumControllers(); ++c){
         Controller *ctrlr = ControllerSystem::GetController(c);
@@ -442,6 +494,7 @@ void MatrixEditor::RefreshControllerFilters(){
 
 void MatrixEditor::RefreshChannelFilters(){
     LS_LOCK_WRITE();
+    ResetDragSelect();
     StringArray fixids, fixnames, chnames;
     for(int c=0; c<ChannelSystem::NumFreeChannels(); ++c){
         chnames.addIfNotAlreadyThere(ChannelSystem::GetFreeChannel(c)->GetName());
@@ -467,6 +520,7 @@ void MatrixEditor::RefreshChannelFilters(){
 
 void MatrixEditor::RefreshVisibleControllerSet(){
     LS_LOCK_WRITE();
+    ResetDragSelect();
     ctSet.clear();
     for(int c=0; c<ControllerSystem::NumControllers(); ++c){
         Controller *ctrlr = ControllerSystem::GetController(c);
@@ -480,6 +534,7 @@ void MatrixEditor::RefreshVisibleControllerSet(){
 
 void MatrixEditor::RefreshVisibleChannelSet(){
     LS_LOCK_WRITE();
+    ResetDragSelect();
     chSet.clear();
     if(lstFixID->isItemSelected("Free channels")){
         for(int c=0; c<ChannelSystem::NumFreeChannels(); ++c){

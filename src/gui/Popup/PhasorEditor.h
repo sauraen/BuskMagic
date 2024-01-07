@@ -21,6 +21,7 @@
 
 struct Phasor;
 class Channel;
+class Controller;
 
 class PhasorEditor : public Component,
                      public TextEditor::Listener,
@@ -30,6 +31,8 @@ public:
     struct Startup {
         Phasor *phasor;
         Channel *channel;
+        Array<Channel*> applyToChannels;
+        Array<Controller*> applyToControllers;
         Startup(Phasor *p, Channel *c) : phasor(p), channel(c) {}
     };
 
@@ -52,7 +55,10 @@ public:
 private:
     Phasor *phasor;
     Channel *channel;
+    Array<Channel*> applyToChannels;
+    Array<Controller*> applyToControllers;
     bool invalidated;
+    bool deleteAction;
 
     std::unique_ptr<TextEditor> txtMag;
     std::unique_ptr<TextEditor> txtAngle;
